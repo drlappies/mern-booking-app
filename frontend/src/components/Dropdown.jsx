@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthenticationContext } from './contexts/AuthenticationContext'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
@@ -14,6 +15,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Dropdown() {
+    const { isLoggedIn, handleLogout } = useContext(AuthenticationContext);
     const classes = useStyles()
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -25,6 +27,10 @@ function Dropdown() {
         setAnchorEl(null);
     };
 
+    const handleCloseAndLogout = () => {
+        setAnchorEl(null);
+        handleLogout()
+    }
     return (
         <React.Fragment>
             <Button aria-controls="menu" aria-haspopup="true" onClick={handleClick}>
@@ -40,7 +46,13 @@ function Dropdown() {
                 <MenuItem onClick={handleClose}><Link className={classes.menuItem} to="/">主頁</Link></MenuItem>
                 <MenuItem onClick={handleClose}><Link className={classes.menuItem} to="/about">關於我們</Link></MenuItem>
                 <MenuItem onClick={handleClose}><Link className={classes.menuItem} to="/room">搜尋琴房</Link></MenuItem>
-                <MenuItem onClick={handleClose}><Link className={classes.menuItem} to="/register"> 登入 / 註冊 </Link></MenuItem>
+                {isLoggedIn
+                    ?
+                    <MenuItem onClick={handleCloseAndLogout}><Link className={classes.menuItem} to="/"> 登出 </Link></MenuItem>
+                    :
+                    <MenuItem onClick={handleClose}><Link className={classes.menuItem} to="/login"> 登入 / 註冊 </Link></MenuItem>
+                }
+
             </Menu>
         </React.Fragment>
     )

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
+import { AuthenticationContext } from './contexts/AuthenticationContext'
 import { NavLink } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/Appbar';
@@ -14,6 +15,7 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Hidden from '@material-ui/core/Hidden';
 import Slide from '@material-ui/core/Slide';
 import CreateIcon from '@material-ui/icons/Create';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -27,8 +29,15 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Navbar() {
+    const { isLoggedIn, isRoomOwner, handleLogout } = useContext(AuthenticationContext);
     const classes = useStyles()
     const isScrolled = useScrollTrigger();
+
+    const handleClick = (e => {
+        handleLogout();
+
+    })
+
     return (
         <div className={classes.root}>
             <Slide appear={false} direction="down" in={!isScrolled}>
@@ -45,14 +54,19 @@ function Navbar() {
                                 <Button component={NavLink} to="/room" size="large" startIcon={<RoomIcon />}>找琴房</Button>
                             </div>
                             <div>
-                                <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button>
-                                <Button component={NavLink} to="/login" size="large" startIcon={<PersonIcon />}>註冊 / 登入</Button>
+                                {isLoggedIn ?
+                                    <div>
+                                        {isRoomOwner ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
+                                        <Button size="large" startIcon={<ExitToAppIcon />} onClick={handleClick}>登出</Button>
+                                    </div>
+                                    :
+                                    <Button component={NavLink} to="/login" size="large" startIcon={<PersonIcon />}>註冊 / 登入</Button>}
                             </div>
                         </Hidden>
                     </Toolbar>
                 </AppBar>
             </Slide>
-        </div>
+        </div >
     )
 }
 

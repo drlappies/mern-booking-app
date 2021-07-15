@@ -4,7 +4,6 @@ const { imageDestroy } = require('../utils/s3')
 
 module.exports.getRooms = async (req, res) => {
     try {
-        console.log(req.user)
         const allRooms = await Room.find()
             .populate('owner')
         res.json(allRooms)

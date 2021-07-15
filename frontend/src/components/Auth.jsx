@@ -6,11 +6,25 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import axios from 'axios'
-import qs from 'qs'
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+    paper: {
+        width: "300px",
+        height: "40vh",
+        padding: "30px"
+    },
+    input: {
+        margin: "15px 0 15px 0"
+    },
+    button: {
+        margin: "15px 0 15px 0"
+    }
+})
 
 function Auth() {
-    // const { } = useContext(AuthenticationContext)
+    const classes = useStyles();
+    const { handleLogin } = useContext(AuthenticationContext);
     const [form, setForm] = useState({
         username: '',
         password: '',
@@ -24,59 +38,48 @@ function Auth() {
         })
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const user = {
-                username: form.username,
-                password: form.password
-            }
-            const res = await axios.post('/user/login', qs.stringify(user), {
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded'
-                },
-                withCredentials: true
-            })
-            console.log(res)
-        } catch (error) {
-            if (error.response) {
-
-                console.log(error.response)
-
-            } else if (error.request) {
-
-                console.log(error.request)
-
-            } else if (error.message) {
-
-                console.log(error.message)
-
-            }
-        }
+    const handleSubmit = () => {
+        handleLogin(form.username, form.password)
     }
+
     return (
-        <Paper>
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    id="username"
-                    name="username"
-                    label="帳號"
-                    variant="outlined"
-                    value={form.username}
-                    onChange={handleChange}
-                />
-                <TextField
-                    id="password"
-                    name="password"
-                    label="密碼"
-                    type="password"
-                    variant="outlined"
-                    value={form.password}
-                    onChange={handleChange}
-                />
-                <Button type="submit">登入</Button>
-            </form>
-        </Paper >
+        <Container>
+            <Grid
+                container
+                justify="center"
+            >
+                <Grid item>
+                    <Paper className={classes.paper} elevation={3} >
+                        <TextField
+                            className={classes.input}
+                            fullWidth
+                            size="small"
+                            id="username"
+                            name="username"
+                            label="帳號"
+                            variant="outlined"
+                            value={form.username}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            className={classes.input}
+                            fullWidth
+                            size="small"
+                            id="password"
+                            name="password"
+                            label="密碼"
+                            type="password"
+                            variant="outlined"
+                            value={form.password}
+                            onChange={handleChange}
+                        />
+                        <Button className={classes.button} onClick={handleSubmit} fullWidth variant="contained" color="primary">登入</Button>
+                        <Typography>沒有帳號？立刻註冊：</Typography>
+                        <Button className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
+                    </Paper>
+                </Grid>
+            </Grid>
+        </Container>
     )
 }
 

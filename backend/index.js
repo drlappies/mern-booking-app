@@ -32,6 +32,7 @@ db.once('open', function () {
     console.log('connected to db')
 })
 
+app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     credentials: true,
