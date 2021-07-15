@@ -19,9 +19,20 @@ const roomHelper = [
             building: '好景商業中心',
             region: '九龍'
         },
-        operatingHour: {
-            openingTime: 9,
-            closingTime: 23
+        availability: {
+            weekday: {
+                monday: true,
+                tuesday: true,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: true,
+                sunday: true
+            },
+            operatingTime: {
+                openingTime: 9,
+                closingTime: 23
+            }
         }
     },
     {
@@ -44,9 +55,20 @@ const roomHelper = [
             building: '嘉時工廠大廈',
             region: '新蒲崗'
         },
-        operatingHour: {
-            openingTime: 9,
-            closingTime: 23
+        availability: {
+            weekday: {
+                monday: true,
+                tuesday: true,
+                wednesday: false,
+                thursday: true,
+                friday: false,
+                saturday: true,
+                sunday: true
+            },
+            operatingTime: {
+                openingTime: 9,
+                closingTime: 23
+            }
         }
     },
     {
@@ -69,9 +91,20 @@ const roomHelper = [
             building: '長榮大廈',
             region: '旺角'
         },
-        operatingHour: {
-            openingTime: 9,
-            closingTime: 23
+        availability: {
+            weekday: {
+                monday: false,
+                tuesday: false,
+                wednesday: true,
+                thursday: true,
+                friday: true,
+                saturday: true,
+                sunday: true
+            },
+            operatingTime: {
+                openingTime: 9,
+                closingTime: 23
+            }
         }
     }
 ]

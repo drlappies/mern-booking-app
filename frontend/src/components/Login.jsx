@@ -1,12 +1,13 @@
 import React from 'react';
 import Container from '@material-ui/core/Container'
+import Auth from './Auth'
 
-function Register() {
+function Login() {
     return (
         <Container>
-            Register
+            <Auth />
         </Container>
     )
 }
 
-export default Register
+export default Login

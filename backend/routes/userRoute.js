@@ -4,14 +4,6 @@ const passport = require('passport');
 const User = require('../model/User');
 const hashingPassword = require('../utils/hashingPassword');
 
-router.get('/loginfail', (req, res) => {
-    res.send('incorrect password or username');
-})
-
-router.get('/loginsuccessful', (req, res) => {
-    res.send('authetication worked, logged in');
-})
-
 router.post('/register', async (req, res, next) => {
     try {
         const { username, password } = req.body;
@@ -33,7 +25,13 @@ router.post('/register', async (req, res, next) => {
     }
 })
 
-router.post('/login', passport.authenticate('local', { failureRedirect: '/user/loginfail', successRedirect: '/user/loginsuccessful' }))
+router.post('/login', passport.authenticate('local'),
+    function (req, res) {
+        res.json({
+            message: 'logged'
+        })
+    }
+)
 
 router.post('/logout', (req, res) => {
     req.logout();

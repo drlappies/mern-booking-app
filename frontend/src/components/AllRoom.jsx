@@ -26,8 +26,8 @@ function AllRoom() {
                             img={el.image.imageUrl[0]}
                             owner={el.owner.username}
                             contact={el.owner.contactNumber}
-                            openingHour={el.operatingHour.openingTime}
-                            closingHour={el.operatingHour.closingTime}
+                            openingHour={el.availability.operatingTime.openingTime}
+                            closingHour={el.availability.operatingTime.closingTime}
                             title={el.title}
                             region={el.address.region}
                         />

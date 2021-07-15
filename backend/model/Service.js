@@ -1,38 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const timeslotSchema = new Schema({
-    slot: {
-        year: {
-            type: Number,
-            required: true,
-        },
-        month: {
-            type: Number,
-            required: true,
-        },
-        date: {
-            type: Number,
-            required: true,
-        },
-        hour: {
-            type: Number,
-            required: true,
-        },
-    },
-    isAvailable: {
-        type: Boolean,
-        default: true,
-        required: true
-    },
-    expireAt: {
-        type: Date,
-        required: true
-    }
-})
-
-timeslotSchema.index({ "expireAt": 1 }, { expireAfterSeconds: 0 });
-
 const serviceSchema = new Schema({
     name: {
         type: String,
@@ -50,8 +18,7 @@ const serviceSchema = new Schema({
     },
     remark: {
         type: String,
-    },
-    timeslots: [timeslotSchema]
+    }
 })
 
 module.exports = mongoose.model('Service', serviceSchema);

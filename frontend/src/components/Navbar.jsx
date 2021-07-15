@@ -13,6 +13,7 @@ import Dropdown from '../components/Dropdown';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Hidden from '@material-ui/core/Hidden';
 import Slide from '@material-ui/core/Slide';
+import CreateIcon from '@material-ui/icons/Create';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -43,7 +44,10 @@ function Navbar() {
                                 <Button component={NavLink} to="/about" size="large" startIcon={<InfoIcon />}>關於我們</Button>
                                 <Button component={NavLink} to="/room" size="large" startIcon={<RoomIcon />}>找琴房</Button>
                             </div>
-                            <Button component={NavLink} to="/register" size="large" startIcon={<PersonIcon />}>註冊 / 登入</Button>
+                            <div>
+                                <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button>
+                                <Button component={NavLink} to="/login" size="large" startIcon={<PersonIcon />}>註冊 / 登入</Button>
+                            </div>
                         </Hidden>
                     </Toolbar>
                 </AppBar>

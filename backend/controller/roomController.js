@@ -4,6 +4,7 @@ const { imageDestroy } = require('../utils/s3')
 
 module.exports.getRooms = async (req, res) => {
     try {
+        console.log(req.user)
         const allRooms = await Room.find()
             .populate('owner')
         res.json(allRooms)
@@ -36,7 +37,7 @@ module.exports.getOneRoom = async (req, res, next) => {
 
 module.exports.createRoom = async (req, res, next) => {
     try {
-        const newRoom = new Room(req.body)
+        const newRoom = new Room(req.body);
         newRoom.image.imageUrl.push(req.file.location);
         newRoom.image.imageKey.push(req.file.key);
         await newRoom.save()
@@ -58,7 +59,7 @@ module.exports.editRoom = async (req, res, next) => {
             updatedRoom.image.imageUrl.push(req.file.location);
             updatedRoom.image.imageKey.push(req.file.key);
         }
-        await updatedRoom.save()
+        await updatedRoom.save();
         res.json(updatedRoom)
     } catch (err) {
         res.status(422)

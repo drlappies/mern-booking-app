@@ -7,14 +7,22 @@ const appointmentSchema = new Schema({
         ref: 'Service',
         required: true
     },
-    time: {
-        type: Date,
-        required: true,
-        validate: {
-            validator: (value) => {
-                return (value > new Date())
-            },
-            message: '你有時光機嗎？'
+    timeslot: {
+        year: {
+            type: Number,
+            required: true
+        },
+        month: {
+            type: Number,
+            required: true
+        },
+        date: {
+            type: Number,
+            required: true
+        },
+        hour: {
+            type: Number,
+            required: true
         }
     }
 }, { timestamps: true })

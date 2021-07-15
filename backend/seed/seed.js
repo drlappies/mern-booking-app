@@ -20,12 +20,6 @@ const roomHelper = require('../seed/seedRoomHelper');
 const userHelper = require('../seed/seedUserHelper');
 const serviceHelper = require('../seed/seedServiceHelper');
 const hashingPassword = require('../utils/hashingPassword');
-const moment = require('moment')
-
-const currentTime = moment();
-const startTime = currentTime.clone().startOf('date');
-const endTime = currentTime.clone().startOf('day').add(1, 'month');
-const duration = moment.duration(endTime.diff(startTime)).asHours();
 
 async function Seeding() {
     await User.deleteMany();
@@ -54,32 +48,13 @@ async function Seeding() {
             const seedService = new Service({
                 ...service
             })
-            const timeslotsArr = [];
-            for (let j = 0; j < duration; j++) {
-                let slot = startTime.clone().add(j, 'hour').toISOString();
-                timeslotsArr.push(slot);
-            }
-            timeslotsArr.forEach(el => {
-                const date = new Date(el);
-                const expiryDate = date.setDate(date.getDate() + parseInt(1));
-                const timeslotObj = {
-                    slot: {
-                        year: new Date(el).getFullYear(),
-                        month: new Date(el).getMonth() + 1,
-                        date: new Date(el).getDate(),
-                        hour: new Date(el).getHours()
-                    },
-                    isAvailable: true,
-                    expireAt: expiryDate
-                }
-                seedService.timeslots.push(timeslotObj);
-                seedRoom.services.push(seedService);
-            })
+            seedRoom.services.push(seedService);
             await seedService.save();
         })
         await seedRoom.save();
         await roomOwner.save();
-        console.log(`${i} saved`);
+        console.log(`${i + 1} room saved`);
     }
 }
+
 Seeding();

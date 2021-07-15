@@ -32,7 +32,10 @@ db.once('open', function () {
     console.log('connected to db')
 })
 
-app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    credentials: true,
+}));
 
 app.use(session({
     secret: process.env.NODE_ENV !== 'production' ? 'sike thats a wrong number' : process.env.SESSION_SECRET,
@@ -48,8 +51,6 @@ app.use(session({
         expires: 30 * 24 * 60 * 60 * 1000
     }
 }));
-
-app.use(express.urlencoded({ extended: true }));
 
 app.use(passport.initialize());
 app.use(passport.session());

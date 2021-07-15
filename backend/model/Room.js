@@ -56,17 +56,55 @@ const roomSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: 'Service',
-            required: true
         }
     ],
-    operatingHour: {
-        openingTime: {
-            type: Number,
-            required: [true, '開門時間不能留空！']
+    availability: {
+        weekday: {
+            monday: {
+                type: Boolean,
+                default: true,
+                required: true
+            },
+            tuesday: {
+                type: Boolean,
+                default: true,
+                required: true
+            },
+            wednesday: {
+                type: Boolean,
+                default: true,
+                required: true
+            },
+            thursday: {
+                type: Boolean,
+                default: true,
+                required: true
+            },
+            friday: {
+                type: Boolean,
+                default: true,
+                required: true
+            },
+            saturday: {
+                type: Boolean,
+                default: true,
+                required: true
+            },
+            sunday: {
+                type: Boolean,
+                default: true,
+                required: true
+            }
         },
-        closingTime: {
-            type: Number,
-            required: [true, '關門時間不能留空！']
+        operatingTime: {
+            openingTime: {
+                type: Number,
+                required: true
+            },
+            closingTime: {
+                type: Number,
+                required: true
+            }
         }
     },
     reviews: [
