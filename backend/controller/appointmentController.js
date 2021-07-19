@@ -8,8 +8,6 @@ module.exports.getAppointment = async (req, res, next) => {
     try {
         const obj = await Room.findById(req.params.roomId).select('operatingHour');
         const { openingTime, closingTime } = obj.operatingHour
-        console.log(openingTime)
-        console.log(closingTime)
         const timeslots = await Service.findOne({
             _id: { $eq: req.params.serviceId },
             timeslots: { slot: { date: { $and: [{ $gte: openingTime }, { $lte: closingTime }] } } }
@@ -23,7 +21,7 @@ module.exports.getAppointment = async (req, res, next) => {
 
 module.exports.makeAppointment = async (req, res, next) => {
     try {
-        const { time } = req.body; //timeslot is an ISOString
+        const { time } = req.body; 
         const newAppointment = new Appointment({
             time: time,
             service: req.params.serviceId,
