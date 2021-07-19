@@ -7,10 +7,13 @@ import RoomInfoPage from './components/RoomInfoPage';
 import Navbar from './components/Navbar';
 import Appointment from './components/Appointment';
 import CreateRoom from './components/CreateRoom';
+import Register from './components/Register';
+import Confirmation from './components/Confirmation';
 import { Switch } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { AuthenticationProvider } from './components/contexts/AuthenticationContext';
+import { AppointmentProvider } from './components/contexts/AppointmentContext';
 import { SnackbarProvider } from 'notistack';
 import theme from './Theme/themeTypography';
 import { BrowserRouter as Router } from 'react-router-dom'
@@ -30,7 +33,11 @@ function App() {
               <Route exact path="/login" component={Login} />
               <Route exact path="/room/create" component={CreateRoom} />
               <Route exact path="/room/:id" component={RoomInfoPage} />
-              <Route exact path="/room/:roomId/service/:serviceId/appointment" component={Appointment} />
+              <AppointmentProvider>
+                <Route exact path="/room/:roomId/service/:serviceId/appointment" component={Appointment} />
+                <Route exact path="/room/:roomId/service/:serviceId/appointment/confirmation" component={Confirmation}/>
+              </AppointmentProvider>
+              <Route exact path="/register" component={Register} />
             </Switch>
           </ThemeProvider>
         </AuthenticationProvider>

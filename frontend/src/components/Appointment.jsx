@@ -5,29 +5,45 @@ import Container from '@material-ui/core/Container';
 import Calendar from './Calendar';
 
 function Appointment() {
-    const [booking, setBooking] = useState([]);
-    const [openingTime, setOpeningTime] = useState(9);
-    const [closingTime, setClosingTime] = useState(23);
+    const [openingTime, setOpeningTime] = useState();
+    const [closingTime, setClosingTime] = useState();
+    const [roomName, setRoomName] = useState();
+    const [serviceName, setServiceName] = useState();
+    const [serviceRemark, setServiceRemark] = useState();
+    const [servicePrice, setServicePrice] = useState();
+    const [availableWeekday, setAvailableWeekday] = useState();
     const { roomId, serviceId } = useParams();
 
     useEffect(() => {
         fetchAppointments()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const fetchAppointments = async () => {
-        const bookings = await axios.get(`/room/${roomId}/service/${serviceId}/appointment`);
-        const room = await axios.get(`/room/${roomId}`);
-        setBooking(bookings.timeslots);
-        setOpeningTime(room.data.operatingHour.openingTime);
-        setClosingTime(room.data.operatingHour.closingTime);
+        try {
+            const res = await axios.get(`/room/${roomId}`);
+            setOpeningTime(res.data.availability.operatingTime.openingTime);
+            setClosingTime(res.data.availability.operatingTime.closingTime);
+            setRoomName(res.data.title);
+            setServiceName(res.data.services.find(el => el._id === serviceId).name)
+            setServiceRemark(res.data.services.find(el => el._id === serviceId).remark)
+            setServicePrice(res.data.services.find(el => el._id === serviceId).pricing)
+            setAvailableWeekday(res.data.availability.weekday);
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     return (
         <Container>
             <Calendar
-                booking={booking}
                 openingTime={openingTime}
                 closingTime={closingTime}
+                roomName={roomName}
+                serviceName={serviceName}
+                serviceRemark={serviceRemark}
+                servicePrice={servicePrice}
+                availableWeekday={availableWeekday}
             />
         </Container>
     )

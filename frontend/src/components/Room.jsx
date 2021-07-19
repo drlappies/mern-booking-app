@@ -86,7 +86,6 @@ function Room(props) {
                 <CardActions>
                     <ButtonGroup fullWidth={true}>
                         <Button component={Link} to={`/room/${props.roomId}`} endIcon={<InfoIcon />}>查詢</Button>
-                        <Button endIcon={<KeyboardArrowRightIcon />}>租借</Button>
                     </ButtonGroup>
                 </CardActions>
             </Box>

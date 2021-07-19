@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthenticationContext } from './contexts/AuthenticationContext';
+import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -23,6 +24,7 @@ const useStyles = makeStyles({
 })
 
 function Auth() {
+    console.log('context renders')
     const classes = useStyles();
     const { handleLogin } = useContext(AuthenticationContext);
     const [form, setForm] = useState({
@@ -75,7 +77,7 @@ function Auth() {
                         />
                         <Button className={classes.button} onClick={handleSubmit} fullWidth variant="contained" color="primary">登入</Button>
                         <Typography>沒有帳號？立刻註冊：</Typography>
-                        <Button className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
+                        <Button component={Link} to="/register" className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
                     </Paper>
                 </Grid>
             </Grid>

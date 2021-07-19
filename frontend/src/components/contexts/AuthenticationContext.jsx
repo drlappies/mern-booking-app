@@ -16,6 +16,7 @@ export function AuthenticationProvider(props) {
     const handleLogout = async (e) => {
         try {
             const res = await axios.post('/user/logout');
+            console.log(res)
             if (res.status === 200) {
                 setIsLoggedIn(false);
                 setIsAdmin(false);
@@ -35,7 +36,8 @@ export function AuthenticationProvider(props) {
                 username: username,
                 password: password
             }
-            const res = axios.post('/user/register', user);
+            const res = await axios.post('/user/register', user);
+            console.log(res)
             if (res.data) {
                 setIsLoggedIn(false);
                 setIsAdmin(res.data.isAdmin);
@@ -56,7 +58,6 @@ export function AuthenticationProvider(props) {
             const res = await axios.post('/user/login', user, {
                 withCredentials: true
             })
-            console.log(res);
             if (res.status === 200) {
                 setIsLoggedIn(true);
                 setIsAdmin(res.data.isAdmin);
@@ -64,7 +65,7 @@ export function AuthenticationProvider(props) {
                 setUsername(res.data.username);
                 enqueueSnackbar(`歡迎！${username}`, { variant: 'success', autoHideDuration: 1500 })
                 history.goBack();
-            }
+            } 
         } catch (err) {
             enqueueSnackbar('用戶名稱或密碼錯誤！', {
                 variant: 'error',
