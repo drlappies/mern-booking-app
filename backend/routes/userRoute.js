@@ -49,13 +49,17 @@ router.post('/logout', (req, res) => {
 })
 
 router.get('/currentuser', (req, res) => {
-    const { isAdmin, isRoomOwner, fullName, username } = req.user;
-    res.json({
-        isAdmin: isAdmin,
-        isRoomOwner: isRoomOwner,
-        fullName: fullName,
-        username: username
-    });
+    if (req.user) {
+        const { isAdmin, isRoomOwner, fullName, username } = req.user;
+        res.json({
+            isAdmin: isAdmin,
+            isRoomOwner: isRoomOwner,
+            fullName: fullName,
+            username: username
+        });
+    } else {
+        res.end()
+    }
 })
 
 module.exports = router
