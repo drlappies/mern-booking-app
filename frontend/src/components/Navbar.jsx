@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { AuthenticationContext } from './contexts/AuthenticationContext'
 import { NavLink } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';

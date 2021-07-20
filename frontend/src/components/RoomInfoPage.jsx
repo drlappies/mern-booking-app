@@ -33,6 +33,7 @@ function RoomInfoPage() {
     useEffect(() => {
         fetchRoom()
         console.log('render')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchRoom = async () => {

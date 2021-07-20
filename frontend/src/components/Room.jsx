@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import PersonIcon from '@material-ui/icons/Person';
 import ContactSupportIcon from '@material-ui/icons/ContactSupport';
