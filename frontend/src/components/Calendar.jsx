@@ -1,13 +1,10 @@
-import React, { useState, useMemo, useRef, useEffect, useContext } from 'react';
-import { AppointmentContext } from './contexts/AppointmentContext';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Timeslot from './Timeslot';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
 const useStyles = makeStyles({
     root: {
@@ -115,18 +112,14 @@ function generateTimeslotsRef(timeslots, timeRange) {
 }
 
 function checkIsTimeslotTaken(appointments, year, month, date, hour) {
-    for (let i = 0; i < appointments.length; i++) {
-        if (appointments[i].year === year && appointments[i].month === month && appointments[i].date === date && appointments[i].hour === hour) {
-            return true;
-        }
+    if (appointments.some(el => el.year === year && el.month === month && el.date === date && el.hour === hour)) {
+        return true
     }
     return false;
 }
 
 function Calendar(props) {
-    const { selectedTimeslots } = useContext(AppointmentContext);
     const classes = useStyles();
-    const { roomId, serviceId } = useParams();
     const [currentWeek, setCurrentWeek] = useState(0);
     const [currentWeekdates, setCurrentWeekdates] = useState([[0, 0], [0, 6]]);
     const [timeRange, setTimeRange] = useState(4);
@@ -153,21 +146,17 @@ function Calendar(props) {
     }
 
     useEffect(() => {
-        timeslotsRef.current[currentWeek][0].current.scrollIntoView({ behavior: "smooth", inline: "start" })
+        timeslotsRef.current[currentWeek][0].current.scrollIntoView({ behavior: "smooth", inline: "start" });
     }, [currentWeek])
 
     return (
         <Container>
-            <Grid container direction="row" spacing={1}>
-                <Grid item xs={11}>
+            <Grid container direction="row" justify="space-between" alignItems="center" spacing={1}>
+                <Grid item>
                     <Button disabled={!currentWeek} onClick={prevWeek}>上星期</Button>
                     <Button onClick={thisWeek}>重設</Button>
-                    <Button disabled={currentWeek === timeslots.length - 1} onClick={nextWeek}>下星期</Button>
                 </Grid>
-                <Grid item xs={1}>
-                    <Button disabled={selectedTimeslots <= 0} component={Link} to={`/room/${roomId}/service/${serviceId}/appointment/confirmation`} fullWidth endIcon={<NavigateNextIcon />}>繼續</Button>
-                </Grid>
-                <Grid item xs={12}>
+                <Grid item>
                     <Typography>
                         <span>目前查看 - </span>
                         <span>{weekdates[currentWeekdates[0][0]][currentWeekdates[0][1]].getFullYear()}年</span>
@@ -178,6 +167,9 @@ function Calendar(props) {
                         <span>{weekdates[currentWeekdates[1][0]][currentWeekdates[1][1]].getMonth() + 1}月</span>
                         <span>{weekdates[currentWeekdates[1][0]][currentWeekdates[1][1]].getDate()}日</span>
                     </Typography>
+                </Grid>
+                <Grid item>
+                    <Button disabled={currentWeek === timeslots.length - 1} onClick={nextWeek}>下星期</Button>
                 </Grid>
                 <Grid item xs={12}>
                     <div className={classes.root}>
