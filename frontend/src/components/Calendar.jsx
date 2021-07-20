@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useContext } from 'react';
+import { AppointmentContext } from './contexts/AppointmentContext';
 import { Link, useParams } from 'react-router-dom';
 import Timeslot from './Timeslot';
 import Grid from '@material-ui/core/Grid';
@@ -7,7 +8,6 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles({
     root: {
@@ -114,20 +114,17 @@ function generateTimeslotsRef(timeslots, timeRange) {
     return refs;
 }
 
-function checkIsDayOpen(availableWeekday) {
-    const availability = [];
-    let increment = 0;
-    for (let key in availableWeekday) {
-        if (availableWeekday[key]) {
-            availability.push(increment);
+function checkIsTimeslotTaken(appointments, year, month, date, hour) {
+    for (let i = 0; i < appointments.length; i++) {
+        if (appointments[i].year === year && appointments[i].month === month && appointments[i].date === date && appointments[i].hour === hour) {
+            return true;
         }
-        increment = increment + 1;
     }
-
-    return availability;
+    return false;
 }
 
 function Calendar(props) {
+    const { selectedTimeslots } = useContext(AppointmentContext);
     const classes = useStyles();
     const { roomId, serviceId } = useParams();
     const [currentWeek, setCurrentWeek] = useState(0);
@@ -136,7 +133,7 @@ function Calendar(props) {
     const timeslots = useMemo(() => generateTimeslotArr(props.openingTime, props.closingTime, timeRange), [props.openingTime, props.closingTime, timeRange])
     const operatingTime = useMemo(() => generateOperatingTimeArr(props.openingTime, props.closingTime), [props.openingTime, props.closingTime]);
     const weekdates = useMemo(() => generateWeekdatesArr(timeRange), [timeRange]);
-    const availability = useMemo(() => checkIsDayOpen(props.availableWeekday), [props.availableWeekday])
+
     const timeslotsRef = useRef([]);
     timeslotsRef.current = useMemo(() => generateTimeslotsRef(timeslots, timeRange), [timeslots, timeRange])
 
@@ -162,24 +159,13 @@ function Calendar(props) {
     return (
         <Container>
             <Grid container direction="row" spacing={1}>
-                <Grid item xs={12}>
-                    <Typography variant="h4">{props.roomName}</Typography>
-                    <Typography display="inline" variant="h5">{props.serviceName}</Typography>
-                    <Typography display="inline"> - </Typography>
-                    <Typography display="inline" variant="subtitle1">{props.serviceRemark}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="subtitle1">營業日子：逢星期{availability.map(el => <span key={uuidv4()}>&nbsp;{weekday[el]}&nbsp;</span>)}</Typography>
-                    <Typography variant="subtitle1">營業時間：{props.openingTime}:00 - {props.closingTime}:00</Typography>
-                    <Typography variant="subtitle1">收費：{props.servicePrice} / 小時</Typography>
-                </Grid>
                 <Grid item xs={11}>
                     <Button disabled={!currentWeek} onClick={prevWeek}>上星期</Button>
                     <Button onClick={thisWeek}>重設</Button>
                     <Button disabled={currentWeek === timeslots.length - 1} onClick={nextWeek}>下星期</Button>
                 </Grid>
                 <Grid item xs={1}>
-                    <Button component={Link} to={`/room/${roomId}/service/${serviceId}/appointment/confirmation`} fullWidth endIcon={<NavigateNextIcon />}>確定</Button>
+                    <Button disabled={selectedTimeslots <= 0} component={Link} to={`/room/${roomId}/service/${serviceId}/appointment/confirmation`} fullWidth endIcon={<NavigateNextIcon />}>繼續</Button>
                 </Grid>
                 <Grid item xs={12}>
                     <Typography>
@@ -198,8 +184,8 @@ function Calendar(props) {
                         <div>
                             <Typography>&nbsp;</Typography>
                             <Typography>&nbsp;</Typography>
-                            {operatingTime.map(el =>
-                                <div className={classes.slot} key={uuidv4()}>
+                            {operatingTime.map((el, i) =>
+                                <div className={classes.slot} key={i}>
                                     <Typography>{el}:00</Typography>
                                 </div>
                             )}
@@ -207,19 +193,21 @@ function Calendar(props) {
                         <div className={classes.calendar}>
                             {timeslots.map((week, i) =>
                                 week.map((day, j) =>
-                                    <div ref={timeslotsRef.current[i][j]} key={uuidv4()}>
+                                    <div ref={timeslotsRef.current[i][j]} key={j} >
                                         <div>
                                             <Typography>星期{weekday[weekdates[i][j].getDay()]}</Typography>
                                             <Typography>{weekdates[i][j].getFullYear()}年{weekdates[i][j].getMonth() + 1}月{weekdates[i][j].getDate()}日</Typography>
                                         </div>
-                                        {day.map(slot =>
+                                        {day.map((slot, k) =>
                                             <Timeslot
-                                                key={uuidv4()}
+                                                key={k}
                                                 hour={slot.time}
                                                 year={slot.date.getFullYear()}
                                                 month={slot.date.getMonth() + 1}
                                                 date={slot.date.getDate()}
-                                                isOpen={availability.includes(slot.date.getDay())}
+                                                day={slot.date.getDay()}
+                                                isOpen={props.availableWeekday.includes(slot.date.getDay())}
+                                                isTaken={checkIsTimeslotTaken(props.appointments, slot.date.getFullYear(), slot.date.getMonth() + 1, slot.date.getDate(), slot.time)}
                                             />
                                         )}
                                     </div>
