@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AppointmentContext } from './contexts/AppointmentContext';
 import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,6 +32,13 @@ function Timeslot(props) {
             removeTimeslot(props.year, props.month, props.date, props.hour, props.day)
         }
     }
+
+    useEffect(() => {
+        if (selectedTimeslots.some(el => el.hour === props.hour && el.year === props.year && el.month === props.month && el.date === props.date && el.day === props.day)) {
+            setSelected(!selected);
+        }    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <div className={classes.slot} onClick={handleClick}
