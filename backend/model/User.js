@@ -11,10 +11,6 @@ const userSchema = new Schema({
         type: String,
         required: [true, 'Hash not found!']
     },
-    salt: {
-        type: String,
-        required: [true, 'Salt not found!']
-    },
     contactNumber: {
         type: String,
         required: [true, '請提供一個香港地區電話號碼'],
