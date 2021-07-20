@@ -1,5 +1,6 @@
-import React, { useState, useContext, memo } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppointmentContext } from './contexts/AppointmentContext';
+import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -11,29 +12,35 @@ const useStyles = makeStyles({
 })
 
 function Timeslot(props) {
-    console.log('timeslot rerenders')
-    const { addTimeslot, removeTimeslot } = useContext(AppointmentContext);
     const classes = useStyles();
+    const { enqueueSnackbar } = useSnackbar();
+    const { selectedTimeslots, addTimeslot, removeTimeslot } = useContext(AppointmentContext);
     const [selected, setSelected] = useState(false);
 
     const handleClick = () => {
         if (!props.isOpen) return;
+        if (props.isTaken) return;
         setSelected(!selected);
         if (!selected) {
-            addTimeslot(props.year, props.month, props.date, props.hour)
+            if (selectedTimeslots.length >= 5) {
+                enqueueSnackbar('只可以加入5個時段', { variant: 'warning', autoHideDuration: 3000 })
+                setSelected(false);
+                return;
+            }
+            addTimeslot(props.year, props.month, props.date, props.hour, props.day)
         } else {
-            removeTimeslot(props.year, props.month, props.date, props.hour)
+            removeTimeslot(props.year, props.month, props.date, props.hour, props.day)
         }
     }
 
     return (
         <div className={classes.slot} onClick={handleClick}
             style={{
-                backgroundColor: (props.isOpen) ? (selected ? '#C0C0C0' : null) : '#808080',
-                cursor: props.isOpen ? 'pointer' : null,
+                backgroundColor: props.isOpen ? (props.isTaken ? '#808080' : (selected ? '#C5C5C5' : null)) : '#3B3B3B',
+                cursor: props.isOpen ? (props.isTaken ? null : 'pointer') : null,
             }}>
         </div>
     )
 }
 
-export default memo(Timeslot)
+export default Timeslot
