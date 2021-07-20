@@ -32,7 +32,6 @@ async function Seeding() {
         const user = new User({
             ...userHelper[i],
             hash: hash,
-            salt: salt
         })
         await user.save();
     }
