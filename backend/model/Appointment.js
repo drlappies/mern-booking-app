@@ -7,23 +7,26 @@ const appointmentSchema = new Schema({
         ref: 'Service',
         required: true
     },
-    timeslot: {
-        year: {
-            type: Number,
-            required: true
-        },
-        month: {
-            type: Number,
-            required: true
-        },
-        date: {
-            type: Number,
-            required: true
-        },
-        hour: {
-            type: Number,
-            required: true
-        }
+    room: {
+        type: Schema.Types.ObjectId,
+        ref: 'Room',
+        required: true
+    },
+    year: {
+        type: Number,
+        required: true
+    },
+    month: {
+        type: Number,
+        required: true
+    },
+    date: {
+        type: Number,
+        required: true
+    },
+    hour: {
+        type: Number,
+        required: true
     }
 }, { timestamps: true })
 
