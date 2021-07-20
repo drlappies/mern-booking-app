@@ -6,13 +6,13 @@ const isTimeslotAvailable = require('../utils/isTimeslotAvailable');
 
 module.exports.getAppointment = async (req, res, next) => {
     try {
-        const obj = await Room.findById(req.params.roomId).select('operatingHour');
-        const { openingTime, closingTime } = obj.operatingHour
-        const timeslots = await Service.findOne({
-            _id: { $eq: req.params.serviceId },
-            timeslots: { slot: { date: { $and: [{ $gte: openingTime }, { $lte: closingTime }] } } }
-        });
-        res.json(timeslots);
+        const appointments = await Appointment.find({
+            $and: [
+                { service: req.params.serviceId },
+                { room: req.params.roomId },
+            ]
+        })
+        res.json(appointments)
     } catch (err) {
         res.status(404)
         next(err);
@@ -21,19 +21,13 @@ module.exports.getAppointment = async (req, res, next) => {
 
 module.exports.makeAppointment = async (req, res, next) => {
     try {
-        const { time } = req.body; 
-        const newAppointment = new Appointment({
-            time: time,
-            service: req.params.serviceId,
-            room: req.params.id,
-        })
-        await isTimeslotAvailable(time);
-        await isServiceAvailable(req.params.roomId, req.params.serviceId, time);
-        await newAppointment.save();
-        res.json({
-            status: 'posted',
-            appointment: newAppointment
-        })
+        const { appointments } = req.body;
+        if (appointments.length > 5) throw new Error('Exceeded booking limited')
+        const { roomId } = req.params;
+        await isTimeslotAvailable(appointments);
+        await isServiceAvailable(appointments, roomId);
+        const newAppointments = await Appointment.insertMany(appointments);
+        res.json(newAppointments)
     } catch (err) {
         res.status(403)
         next(err)
