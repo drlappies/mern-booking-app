@@ -1,6 +1,5 @@
 import React, { createContext, useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 export const AppointmentContext = createContext();
@@ -30,6 +29,10 @@ export function AppointmentProvider(props) {
         )
     }
 
+    const resetTimeslot = () => {
+        setSelectedTimeslots([]);
+    }
+
     const bookTimeslot = async (roomId, serviceId, timeslots) => {
         try {
             const payload = {
@@ -49,7 +52,7 @@ export function AppointmentProvider(props) {
     }
 
     return (
-        <AppointmentContext.Provider value={{ selectedTimeslots, addTimeslot, removeTimeslot, bookTimeslot }}>
+        <AppointmentContext.Provider value={{ selectedTimeslots, addTimeslot, removeTimeslot, bookTimeslot, resetTimeslot }}>
             {props.children}
         </AppointmentContext.Provider>
     )
