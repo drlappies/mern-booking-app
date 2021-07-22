@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { createContext, useState } from 'react'
 import { useSnackbar } from 'notistack';
 import { useHistory } from 'react-router';
 import axios from 'axios';
@@ -8,95 +8,60 @@ export const AuthenticationContext = createContext();
 export function AuthenticationProvider(props) {
     const history = useHistory();
     const { enqueueSnackbar } = useSnackbar();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [isRoomOwner, setIsRoomOwner] = useState(false);
-    const [username, setUsername] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const handleLogout = async (e) => {
-        try {
-            const res = await axios.post('/user/logout');
-            console.log(res)
-            if (res.status === 200) {
-                setIsLoggedIn(false);
-                setIsAdmin(false);
-                setIsRoomOwner(false);
-                setUsername('');
-                enqueueSnackbar(`再見！`, { variant: 'success', autoHideDuration: 1500 })
-                history.push('/')
-            }
-        } catch (err) {
-            console.log(err)
-        }
+    const handleLogout = () => {
+        window.localStorage.removeItem('token')
+        setIsAuthenticated(false);
+        enqueueSnackbar(`再見！`, { variant: 'success', autoHideDuration: 1500 })
+        history.push('/')
     }
 
-    const handleRegister = async (username, password) => {
+    const handleRegister = async (username, password, title, permission) => {
         try {
-            const user = {
+            const payload = {
                 username: username,
-                password: password
+                password: password,
+                permission: permission,
+                title: title
             }
-            const res = await axios.post('/user/register', user);
-            console.log(res)
-            if (res.data) {
-                setIsLoggedIn(false);
-                setIsAdmin(res.data.isAdmin);
-                setIsRoomOwner(res.data.isRoomOwner);
-                setUsername(res.data.username);
-            }
+            await axios.post('/user/register', payload);
+            const res = await axios.post('/user/login', payload, { withCredentials: true });
+            window.localStorage.setItem('token', res.data.token);
+            setIsAuthenticated(true);
+            history.push('/')
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(`${err.response.data}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }
 
     const handleLogin = async (username, password) => {
         try {
-            const user = {
+            const payload = {
                 username: username,
-                password: password
+                password: password,
             }
-            const res = await axios.post('/user/login', user, {
-                withCredentials: true
-            })
-            if (res.status === 200) {
-                setIsLoggedIn(true);
-                setIsAdmin(res.data.isAdmin);
-                setIsRoomOwner(res.data.isRoomOwner);
-                setUsername(res.data.username);
-                enqueueSnackbar(`歡迎！${username}`, { variant: 'success', autoHideDuration: 1500 })
-                history.goBack();
-            } 
+            const res = await axios.post('/user/login', payload, { withCredentials: true });
+            window.localStorage.setItem('token', res.data.token);
+            setIsAuthenticated(true);
+            enqueueSnackbar(`你好！${res.data.user.username}`, { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+            history.goBack();
         } catch (err) {
-            enqueueSnackbar('用戶名稱或密碼錯誤！', {
-                variant: 'error',
-                anchorOrigin: {
-                    vertical: 'top',
-                    horizontal: 'center'
-                },
-                autoHideDuration: 1000
-            });
+            enqueueSnackbar(`${err.response.data}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await axios.get('/user/currentuser');
-                if (res.data) {
-                    setIsLoggedIn(true);
-                    setIsAdmin(res.data.isAdmin);
-                    setIsRoomOwner(res.data.isRoomOwner);
-                    setUsername(res.data.username);
-                }
-            } catch (err) {
-                console.log(err)
-            }
+    const checkValidity = async () => {
+        try {
+            await axios.get('/user', { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
+        } catch (err) {
+            enqueueSnackbar(`${err.response.data}`, { variant: 'warning', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+            history.push('/login')
         }
-        fetchUser()
-    }, [])
+    }
 
     return (
-        <AuthenticationContext.Provider value={{ isLoggedIn, isAdmin, isRoomOwner, username, handleLogout, handleLogin, handleRegister }}>
+        <AuthenticationContext.Provider value={{ isAuthenticated, handleLogout, handleLogin, handleRegister, checkValidity }}>
             {props.children}
         </AuthenticationContext.Provider>
     )
