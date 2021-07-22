@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useCallback } from 'react';
 import { AppointmentContext } from './contexts/AppointmentContext';
-import { Link, useParams, useLocation, useHistory } from 'react-router-dom';
+import { AuthenticationContext } from './contexts/AuthenticationContext';
+import { useSnackbar } from 'notistack';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import Container from '@material-ui/core/Container';
 import Calendar from './Calendar';
@@ -8,16 +10,6 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-
-const weekday = [
-    '日',
-    '一',
-    '二',
-    '三',
-    '四',
-    '五',
-    '六',
-]
 
 function checkIsDayOpen(availableWeekday) {
     const availability = [];
@@ -33,22 +25,18 @@ function checkIsDayOpen(availableWeekday) {
 }
 
 function Appointment() {
-    const { pathname } = useLocation();
+    console.log('appointment rerenders')
+    const { enqueueSnackbar } = useSnackbar();
     const history = useHistory();
-    const { selectedTimeslots } = useContext(AppointmentContext)
-    const [openingTime, setOpeningTime] = useState(9);
-    const [closingTime, setClosingTime] = useState(23);
+    const { roomId, serviceId } = useParams();
+    const { selectedTimeslots } = useContext(AppointmentContext);
+    const { checkValidity } = useContext(AuthenticationContext);
+    const [openingTime, setOpeningTime] = useState();
+    const [closingTime, setClosingTime] = useState();
     const [availableWeekday, setAvailableWeekday] = useState([]);
     const [appointments, setAppointments] = useState([]);
-    const { roomId, serviceId } = useParams();
 
-    useEffect(() => {
-        fetchData()
-        window.scrollTo(0, 0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pathname])
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const room = await axios.get(`/room/${roomId}`);
             const appointments = await axios.get(`/room/${roomId}/service/${serviceId}/appointment`)
@@ -57,9 +45,16 @@ function Appointment() {
             setClosingTime(room.data.availability.operatingTime.closingTime);
             setAvailableWeekday(room.data.availability.weekday);
         } catch (err) {
+            enqueueSnackbar(`${err}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
             console.log(err)
         }
-    }
+    }, [enqueueSnackbar, roomId, serviceId])
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        checkValidity();
+        fetchData();
+    }, [checkValidity, fetchData])
 
     const availability = useMemo(() => checkIsDayOpen(availableWeekday), [availableWeekday])
 
@@ -73,12 +68,16 @@ function Appointment() {
                     <Button disabled={selectedTimeslots <= 0} component={Link} to={`/room/${roomId}/service/${serviceId}/appointment/confirmation`} endIcon={<ArrowForwardIosIcon />}>繼續</Button>
                 </Grid>
                 <Grid item xs={12}>
-                    <Calendar
-                        openingTime={openingTime}
-                        closingTime={closingTime}
-                        appointments={appointments}
-                        availableWeekday={availability}
-                    />
+                    {openingTime && closingTime && appointments && availability ?
+                        <Calendar
+                            openingTime={openingTime}
+                            closingTime={closingTime}
+                            appointments={appointments}
+                            availableWeekday={availability}
+                        />
+                        :
+                        <div></div>
+                    }
                 </Grid>
             </Grid>
         </Container>
