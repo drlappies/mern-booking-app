@@ -29,7 +29,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Navbar() {
-    const { isLoggedIn, isRoomOwner, handleLogout } = useContext(AuthenticationContext);
+    const { isAuthenticated, handleLogout } = useContext(AuthenticationContext);
     const classes = useStyles()
     const isScrolled = useScrollTrigger();
 
@@ -54,9 +54,9 @@ function Navbar() {
                                 <Button component={NavLink} to="/room" size="large" startIcon={<RoomIcon />}>找琴房</Button>
                             </div>
                             <div>
-                                {isLoggedIn ?
+                                {isAuthenticated ?
                                     <div>
-                                        {isRoomOwner ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
+                                        {isAuthenticated ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
                                         <Button size="large" startIcon={<ExitToAppIcon />} onClick={handleClick}>登出</Button>
                                     </div>
                                     :
