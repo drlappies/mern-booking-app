@@ -1,154 +1,44 @@
-import React, { useState, useContext } from 'react';
-import { AuthenticationContext } from './contexts/AuthenticationContext';
-import Button from '@material-ui/core/Button';
+import React from 'react';
+import RegisterType from './RegisterType';
+import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import Container from '@material-ui/core/Container';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-    paper: {
-        width: "300px",
-        height: "40vh",
-        padding: "30px"
-    },
-    input: {
-        margin: "15px 0 15px 0"
-    },
-    button: {
-        margin: "15px 0 15px 0"
-    }
-})
+import PublishIcon from '@material-ui/icons/Publish';
+import DateRangeIcon from '@material-ui/icons/DateRange';
+import PaymentIcon from '@material-ui/icons/Payment';
+import RoomIcon from '@material-ui/icons/Room';
+import TextsmsIcon from '@material-ui/icons/Textsms';
 
 function Register() {
-    const classes = useStyles();
-    const { handleRegister } = useContext(AuthenticationContext);
-    const [form, setForm] = useState({
-        username: '',
-        password: '',
-        confirmPassword: ''
-    })
-
-    const [error, setError] = useState({
-        usernameIsError: false,
-        usernameError: '',
-        passwordIsError: false,
-        passwordError: '',
-        confirmPasswordIsError: false,
-        confirmPasswordError: ''
-    });
-
-    const handleValidate = () => {
-        if (!form.username) {
-            console.log('username validation')
-            setError(error => ({
-                ...error,
-                usernameIsError: true,
-                usernameError: '用戶名稱不能留空'
-            }))
-        }
-        if (!form.password) {
-            console.log('password validation')
-            setError(error => ({
-                ...error,
-                passwordIsError: true,
-                passwordError: '密碼不能留空'
-            }))
-        }
-        if (!form.confirmPassword) {
-            console.log('confirm password validation')
-            setError(error => ({
-                ...error,
-                confirmPasswordIsError: true,
-                confirmPasswordError: '確認密碼不能留空'
-            }))
-            return false;
-        }
-        // if (form.confirmPassword !== form.password) {
-        //     setError({
-        //         ...error,
-        //         confirmPasswordIsError: true,
-        //         confirmPasswordError: '確認密碼與密碼不相同'
-        //     })
-        //     return false;
-        // }
-        return true;
-    }
-
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setForm({
-            ...form,
-            [name]: value
-        })
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(error)
-        const isFormValid = handleValidate();
-        console.log(isFormValid)
-        if (isFormValid) {
-            handleRegister(form.username, form.password)
-        }
-    }
-
-    console.log(error);
-
     return (
         <Container>
-            <Grid
-                container
-                justify="center"
-            >
-                <Grid item>
-                    <Paper className={classes.paper} elevation={3} >
-                        <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                            <TextField
-                                error={error.usernameIsError}
-                                helperText={error.usernameError}
-                                className={classes.input}
-                                fullWidth
-                                required
-                                name="username"
-                                size="small"
-                                label="帳號"
-                                variant="outlined"
-                                value={form.username}
-                                onChange={handleChange}
-                            />
-                            <TextField
-                                error={error.passwordIsError}
-                                helperText={error.passwordError}
-                                className={classes.input}
-                                fullWidth
-                                required
-                                name="password"
-                                size="small"
-                                label="密碼"
-                                type="password"
-                                variant="outlined"
-                                value={form.password}
-                                onChange={handleChange}
-                            />
-                            <TextField
-                                error={error.confirmPasswordIsError}
-                                helperText={error.confirmPasswordError}
-                                className={classes.input}
-                                fullWidth
-                                required
-                                name="confirmPassword"
-                                size="small"
-                                label="確認密碼"
-                                type="password"
-                                variant="outlined"
-                                value={form.confirmPassword}
-                                onChange={handleChange}
-                            />
-                            <Button className={classes.button} fullWidth variant="contained" color="primary" type="submit">註冊</Button>
-                        </form>
-                    </Paper>
+            <Grid container spacing={10}>
+                <Grid item xs={6}>
+                    <RegisterType
+                        title={'建立店家帳號'}
+                        subtitle={'成為店家用戶 你可以...'}
+                        feature1icon={<PublishIcon />}
+                        feature1={'上傳你的房間到平台並讓用戶可以找到你的服務'}
+                        feature2icon={<DateRangeIcon />}
+                        feature2={'在這裏提供你的房間的服務時間並讓用戶預約'}
+                        feature3icon={<PaymentIcon />}
+                        feature3={'在這裏處理所有有關房間預約的收款'}
+                        buttonText={'註冊成為店家用戶'}
+                        buttonGoto={'/register/roomowner'}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <RegisterType
+                        title={'建立普通帳號'}
+                        subtitle={'成為普通用戶 你可以...'}
+                        feature1icon={<RoomIcon />}
+                        feature1={'尋找不同類型的琴房及服務並一站式付款預約'}
+                        feature2icon={<TextsmsIcon />}
+                        feature2={'預約及使用後到房間頁面留下用後感'}
+                        feature3icon={<DateRangeIcon />}
+                        feature3={'查詢不同房間服務的有效預約時段'}
+                        buttonText={'註冊成為普通用戶'}
+                        buttonGoto={'/register/roomfinder'}
+                    />
                 </Grid>
             </Grid>
         </Container>
