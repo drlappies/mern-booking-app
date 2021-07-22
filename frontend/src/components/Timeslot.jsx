@@ -36,8 +36,8 @@ function Timeslot(props) {
     useEffect(() => {
         if (selectedTimeslots.some(el => el.hour === props.hour && el.year === props.year && el.month === props.month && el.date === props.date && el.day === props.day)) {
             setSelected(!selected);
-        }    
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
