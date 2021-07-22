@@ -77,6 +77,7 @@ function RoomInfoPage() {
         setReview(review.reverse())
     }
     const availability = useMemo(() => checkIsDayOpen(availableWeekday), [availableWeekday])
+    
     return (
         <Container>
             <Typography variant="h3">{header.title}</Typography>
