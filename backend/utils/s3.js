@@ -29,7 +29,7 @@ module.exports.upload = multer({
         }
     }),
     limits: {
-        fileSize: 1024 * 1024 * 50, //5mb limit
+        fileSize: 1024 * 1024 * 200,
         files: 5
     },
     fileFilter: function (req, file, cb) {
