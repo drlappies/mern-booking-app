@@ -1,6 +1,6 @@
 const Room = require('../model/Room');
 const Service = require('../model/Service');
-const { imageDestroy } = require('../utils/s3')
+const { imageDestroy } = require('../utils/s3');
 
 module.exports.getRooms = async (req, res) => {
     try {
@@ -36,13 +36,37 @@ module.exports.getOneRoom = async (req, res, next) => {
 
 module.exports.createRoom = async (req, res, next) => {
     try {
-        const newRoom = new Room(req.body);
-        newRoom.image.imageUrl.push(req.file.location);
-        newRoom.image.imageKey.push(req.file.key);
+        const { monday, tuesday, wednesday, thursday, friday, saturday, sunday, title, description, street, floor, flat, building, region, openingTime, closingTime } = req.body
+        const newRoom = new Room({
+            owner: req.user.id,
+            title: title,
+            description: description,
+            address: {
+                street: street,
+                floor: floor,
+                flat: flat,
+                building: building,
+                region: region,
+            },
+            openWeekday: {
+                monday: monday,
+                tuesday: tuesday,
+                wednesday: wednesday,
+                thursday: thursday,
+                friday: friday,
+                saturday: saturday,
+                sunday: sunday
+            },
+            openingTime: openingTime,
+            closingTime: closingTime
+        });
+        req.files.forEach(el => {
+            newRoom.image.imageUrl.push(el.location);
+            newRoom.image.imageKey.push(el.key)
+        })
         await newRoom.save()
         res.json(newRoom)
     } catch (err) {
-        res.status(422)
         next(err)
     }
 }

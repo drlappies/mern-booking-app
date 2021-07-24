@@ -1,6 +1,4 @@
 const Appointment = require('../model/Appointment');
-const Service = require('../model/Service');
-const Room = require('../model/Room');
 const isServiceAvailable = require('../utils/isServiceAvailable');
 const isTimeslotAvailable = require('../utils/isTimeslotAvailable');
 
