@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router()
 const roomController = require('../controller/roomController');
 const { upload } = require('../utils/s3');
-const { isLoggedIn, isRoomOwner } = require('../utils/middleware')
+const { isAuthorised } = require('../utils/middleware');
 
 router.get('/', roomController.getRooms);
 
-router.post('/', isLoggedIn, isRoomOwner, upload.single('image'), roomController.createRoom);
+router.post('/', isAuthorised, upload.array('image', 5), roomController.createRoom);
 
 router.get('/:id', roomController.getOneRoom);
 
-router.put('/:id', isLoggedIn, isRoomOwner, upload.single('image'), roomController.editRoom);
+router.put('/:id', upload.array('image', 5), roomController.editRoom);
 
-router.delete('/:id', isLoggedIn, isRoomOwner, roomController.deleteRoom);
+router.delete('/:id', roomController.deleteRoom);
 
 module.exports = router
