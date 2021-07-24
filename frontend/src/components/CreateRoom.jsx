@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthenticationContext } from './contexts/AuthenticationContext';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
@@ -56,11 +57,19 @@ const convertWeekdays = (startDay, endDay) => {
 
 const useStyles = makeStyles({
     form: {
-        padding: 50
+        padding: '25px',
+        width: '600px'
+    },
+    title: {
+        margin: '15px 0px 15px 0px'
+    },
+    button: {
+        margin: "15px 0 15px 0"
     }
 })
 
 function CreateRoom() {
+    const { checkPermission, isOwner } = useContext(AuthenticationContext);
     const classes = useStyles()
     const [form, setForm] = useState({
         title: '',
@@ -74,6 +83,11 @@ function CreateRoom() {
     })
     const [openingTime, setOpeningTime] = useState(moment().clone().startOf('hour'));
     const [closingTime, setClosingTime] = useState(moment().clone().startOf('hour'));
+    const [image, setImage] = useState();
+
+    useEffect(() => {
+        checkPermission('Owner')
+    }, [checkPermission, isOwner])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -90,35 +104,6 @@ function CreateRoom() {
         })
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const [startDay, endDay] = form.weekday
-        const weekdays = convertWeekdays(startDay, endDay)
-        const payload = {
-            title: form.title,
-            description: form.description,
-            address: {
-                street: form.street,
-                floor: form.floor,
-                flat: form.flat,
-                building: form.building,
-                region: form.region
-            },
-            availability: {
-                weekday: weekdays,
-                operatingTime: {
-                    openingTime: openingTime._d.getHours(),
-                    closingTime: closingTime._d.getHours()
-                }
-            }
-        }
-        try {
-            await axios.post('/room', payload)
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
     const handleReset = () => {
         setForm({
             title: '',
@@ -128,157 +113,206 @@ function CreateRoom() {
             flat: '',
             building: '',
             region: '',
-            weekday: [0, 6]
+            weekday: [0, 6],
         })
         setOpeningTime(moment().clone().startOf('hour'));
         setClosingTime(moment().clone().startOf('hour'));
     }
 
+    const handleSubmit = async (e) => {
+        try {
+            e.preventDefault();
+            const [startDay, endDay] = form.weekday
+            const weekdays = convertWeekdays(startDay, endDay)
+            const payload = {
+                ...weekdays,
+                title: form.title,
+                description: form.description,
+                street: form.street,
+                floor: form.floor,
+                flat: form.flat,
+                building: form.building,
+                region: form.region,
+                openingTime: openingTime._d.getHours().toString(),
+                closingTime: closingTime._d.getHours().toString(),
+            }
+            let formData = new FormData();
+            for (let key in payload) {
+                if (typeof payload[key] === 'object') {
+                    for (let subkey in payload[key]) {
+                        formData.append(`${key}.${subkey}`, payload[key][subkey])
+                    }
+                } else {
+                    formData.append(`${key}`, payload[key])
+                }
+            }
+            for (let key in image) {
+                formData.append('image', image[key])
+            }
+            const res = await axios.post('/room', formData, {
+                headers:
+                {
+                    'content-type': 'multipart/form-data',
+                    'x-auth-token': window.localStorage.getItem('token')
+                }
+            })
+            console.log(res)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
-        <Container maxWidth='md'>
-            <Paper className={classes.form} elevation={3}>
-                <form onSubmit={handleSubmit}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <Typography variant='h4'>創立新的房間</Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='h5'>基本資訊</Typography>
-                        </Grid>
-                        <Grid item md={6} sm={12}>
-                            <TextField
-                                fullWidth
-                                id="title"
-                                name="title"
-                                label="琴房名稱"
-                                variant="outlined"
-                                value={form.title}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item md={6} sm={12}>
-                            <TextField
-                                fullWidth
-                                id="description"
-                                name="description"
-                                label="琴房介紹"
-                                variant="outlined"
-                                value={form.description}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='h5'>地址</Typography>
-                        </Grid>
-                        <Grid item xs={2}>
-                            <TextField
-                                id="floor"
-                                name="floor"
-                                label="樓層"
-                                variant="outlined"
-                                value={form.floor}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <TextField
-                                id="flat"
-                                name="flat"
-                                label="單位"
-                                variant="outlined"
-                                value={form.flat}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={8}>
-                            <TextField
-                                fullWidth
-                                id="building"
-                                name="building"
-                                label="大廈"
-                                variant="outlined"
-                                value={form.building}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={10}>
-                            <TextField
-                                fullWidth
-                                id="street"
-                                name="street"
-                                label="街道名稱"
-                                variant="outlined"
-                                value={form.street}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <TextField
-                                fullWidth
-                                id="region"
-                                name="region"
-                                label="區域"
-                                variant="outlined"
-                                value={form.region}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='h5'>營業時間</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography>日期</Typography>
-                            <Slider
-                                marks={weekdayMarks}
-                                steps={6}
-                                min={0}
-                                max={6}
-                                value={form.weekday}
-                                onChange={handleDaySlide}
-                            />
-                        </Grid>
-                        <Grid item xs={3}>
-                            <MuiPickersUtilsProvider utils={MomentUtils}>
-                                <TimePicker
-                                    label="開門時間"
-                                    value={openingTime}
-                                    minutesStep={60}
-                                    onChange={setOpeningTime}
+        <Container>
+            <Grid container justify="center">
+                <Paper className={classes.form} elevation={4}>
+                    <form onSubmit={handleSubmit}>
+                        <Grid container direction="row" spacing={2} alignContent="space-around">
+                            <Grid item xs={12}>
+                                <Typography variant='h5'>創立新的房間</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant='h6'>基本資訊</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField
+                                    className={classes.input}
+                                    id="title"
+                                    name="title"
+                                    label="琴房名稱"
+                                    variant="outlined"
+                                    value={form.title}
+                                    onChange={handleChange}
                                 />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <MuiPickersUtilsProvider utils={MomentUtils}>
-                                <TimePicker
-                                    label="開門時間"
-                                    value={closingTime}
-                                    minutesStep={60}
-                                    onChange={setClosingTime}
+                            </Grid>
+                            <Grid item xs={8}>
+                                <TextField
+                                    fullWidth
+                                    id="description"
+                                    name="description"
+                                    label="琴房介紹"
+                                    variant="outlined"
+                                    value={form.description}
+                                    onChange={handleChange}
                                 />
-                            </MuiPickersUtilsProvider>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant='h6'>地址</Typography>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <TextField
+                                    fullWidth
+                                    id="floor"
+                                    name="floor"
+                                    label="樓層"
+                                    variant="outlined"
+                                    value={form.floor}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={9}>
+                                <TextField
+                                    fullWidth
+                                    id="flat"
+                                    name="flat"
+                                    label="單位"
+                                    variant="outlined"
+                                    value={form.flat}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={5}>
+                                <TextField
+                                    fullWidth
+                                    id="building"
+                                    name="building"
+                                    label="大廈"
+                                    variant="outlined"
+                                    value={form.building}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={5}>
+                                <TextField
+                                    fullWidth
+                                    id="street"
+                                    name="street"
+                                    label="街道"
+                                    variant="outlined"
+                                    value={form.street}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={2}>
+                                <TextField
+                                    id="region"
+                                    name="region"
+                                    label="區域"
+                                    variant="outlined"
+                                    value={form.region}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant='h6'>營業時間</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Slider
+                                    marks={weekdayMarks}
+                                    steps={6}
+                                    min={0}
+                                    max={6}
+                                    value={form.weekday}
+                                    onChange={handleDaySlide}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="h6">日期</Typography>
+                            </Grid>
+                            <Grid item>
+                                <MuiPickersUtilsProvider utils={MomentUtils}>
+                                    <TimePicker
+                                        label="開門時間"
+                                        value={openingTime}
+                                        minutesStep={60}
+                                        onChange={setOpeningTime}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </Grid>
+                            <Grid item>
+                                <MuiPickersUtilsProvider utils={MomentUtils}>
+                                    <TimePicker
+                                        label="開門時間"
+                                        value={closingTime}
+                                        minutesStep={60}
+                                        onChange={setClosingTime}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="h6">圖片上傳</Typography>
+                                <DropzoneArea
+                                    acceptedFiles={['image/*']}
+                                    dropzoneText={"拖放或點擊"}
+                                    filesLimit={5}
+                                    maxFileSize={20000000}
+                                    showPreviewsInDropzone={true}
+                                    showAlerts={false}
+                                    onChange={(loadedFiles) => setImage(loadedFiles)}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Button className={classes.button} fullWidth variant="contained" color="primary" onClick={handleReset}>重設</Button>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Button className={classes.button} fullWidth variant="contained" color="primary" onClick={handleSubmit}>提交</Button>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant="h5">圖片上傳</Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <DropzoneArea
-                                acceptedFiles={['image/*']}
-                                dropzoneText={"拖放或點擊"}
-                                filesLimit={5}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Button fullWidth variant="contained" onClick={handleReset}>重設</Button>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Button fullWidth variant="contained" type="submit">提交</Button>
-                        </Grid>
-                    </Grid>
-                </form>
-            </Paper>
+                    </form>
+                </Paper>
+            </Grid>
         </Container >
     )
 }
-
 
 export default CreateRoom
