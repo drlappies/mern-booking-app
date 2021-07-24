@@ -50,7 +50,7 @@ const roomSchema = new Schema({
         region: {
             type: String,
             required: [true, '區域不能留空！']
-        }
+        },
     },
     services: [
         {
@@ -58,54 +58,50 @@ const roomSchema = new Schema({
             ref: 'Service',
         }
     ],
-    availability: {
-        weekday: {
-            monday: {
-                type: Boolean,
-                default: true,
-                required: true
-            },
-            tuesday: {
-                type: Boolean,
-                default: true,
-                required: true
-            },
-            wednesday: {
-                type: Boolean,
-                default: true,
-                required: true
-            },
-            thursday: {
-                type: Boolean,
-                default: true,
-                required: true
-            },
-            friday: {
-                type: Boolean,
-                default: true,
-                required: true
-            },
-            saturday: {
-                type: Boolean,
-                default: true,
-                required: true
-            },
-            sunday: {
-                type: Boolean,
-                default: true,
-                required: true
-            }
+    openWeekday: {
+        monday: {
+            type: Boolean,
+            default: true,
+            required: true
         },
-        operatingTime: {
-            openingTime: {
-                type: Number,
-                required: true
-            },
-            closingTime: {
-                type: Number,
-                required: true
-            }
+        tuesday: {
+            type: Boolean,
+            default: true,
+            required: true
+        },
+        wednesday: {
+            type: Boolean,
+            default: true,
+            required: true
+        },
+        thursday: {
+            type: Boolean,
+            default: true,
+            required: true
+        },
+        friday: {
+            type: Boolean,
+            default: true,
+            required: true
+        },
+        saturday: {
+            type: Boolean,
+            default: true,
+            required: true
+        },
+        sunday: {
+            type: Boolean,
+            default: true,
+            required: true
         }
+    },
+    openingTime: {
+        type: Number,
+        required: true
+    },
+    closingTime: {
+        type: Number,
+        required: true
     },
     reviews: [
         {
