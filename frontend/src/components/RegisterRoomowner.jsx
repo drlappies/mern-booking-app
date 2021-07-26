@@ -29,19 +29,25 @@ function RegisterRoomowner() {
         username: '',
         password: '',
         confirmPassword: '',
-        title: ''
+        title: '',
+        email: '',
     })
 
     const [error, setError] = useState({
+        emailIsError: false,
+        emailError: '',
         usernameIsError: false,
         usernameError: '',
         passwordIsError: false,
         passwordError: '',
         confirmPasswordIsError: false,
-        confirmPasswordError: ''
+        confirmPasswordError: '',
+        titleIsError: false,
+        titleError: ''
     });
 
     const handleValidate = () => {
+        const format = new RegExp(/[ !@#$%^&*()_+\-=\\[\]{};':"\\|,.<>\\/?]/g);
         if (!form.username) {
             setError(error => ({
                 ...error,
@@ -49,11 +55,32 @@ function RegisterRoomowner() {
                 usernameError: '用戶名稱不能留空'
             }))
         }
+        if (!form.email) {
+            setError(error => ({
+                ...error,
+                emailIsError: true,
+                emailError: '電郵地址不能留空'
+            }))
+        }
+        if (format.test(form.username)) {
+            setError(error => ({
+                ...error,
+                usernameIsError: true,
+                usernameError: '用戶名稱不能有特殊符號'
+            }))
+        }
         if (!form.password) {
             setError(error => ({
                 ...error,
                 passwordIsError: true,
                 passwordError: '密碼不能留空'
+            }))
+        }
+        if (!form.title) {
+            setError(error => ({
+                ...error,
+                titleIsError: true,
+                titleError: '店家名稱不能留空'
             }))
         }
         if (!form.confirmPassword) {
@@ -87,21 +114,36 @@ function RegisterRoomowner() {
         e.preventDefault();
         const isFormValid = handleValidate();
         if (isFormValid) {
-            handleRegister(form.username, form.password, form.title, 'owner')
+            handleRegister(form.email, form.username, form.password, form.title, 'owner')
         }
     }
+
     return (
         <Container>
             <Grid container justify='center'>
                 <Paper className={classes.form} elevation={4} >
-                    <Typography variant="h6">建立普通用戶帳號</Typography>
+                    <Typography variant="h6">建立店家用戶帳號</Typography>
                     <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
+                            className={classes.input}
+                            error={error.emailIsError}
+                            helperText={error.emailError}
+                            name="email"
+                            size="small"
+                            type="email"
+                            label="電郵地址"
+                            variant="outlined"
+                            value={form.email}
+                            onChange={handleChange}
+                        />
                         <TextField
                             fullWidth
                             className={classes.input}
                             error={error.usernameIsError}
                             helperText={error.usernameError}
                             name="username"
+                            type="text"
                             size="small"
                             label="帳號"
                             variant="outlined"
@@ -137,8 +179,8 @@ function RegisterRoomowner() {
                         <TextField
                             fullWidth
                             className={classes.input}
-                            error={error.confirmPasswordIsError}
-                            helperText={error.confirmPasswordError}
+                            error={error.titleIsError}
+                            helperText={error.titleError}
                             name="title"
                             size="small"
                             label="店家名稱"
