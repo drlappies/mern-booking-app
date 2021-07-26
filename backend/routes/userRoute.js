@@ -6,6 +6,7 @@ const Owner = require('../model/Owner')
 const jwt = require('jsonwebtoken');
 const hashingPassword = require('../utils/hashingPassword');
 const verifyPassword = require('../utils/verifyPassword');
+const regExpCheck = require('../utils/regExpCheck');
 
 router.get('/', async (req, res, next) => {
     try {
@@ -18,7 +19,11 @@ router.get('/', async (req, res, next) => {
                 return res.status(401).send('請先登入');
             } else {
                 const user = await User.findById(decoded.id);
-                res.json(user)
+                res.json({
+                    userid: user._id,
+                    username: user.username,
+                    permission: user.permission
+                })
             }
         });
     } catch (err) {
@@ -28,9 +33,12 @@ router.get('/', async (req, res, next) => {
 
 router.post('/register', async (req, res, next) => {
     try {
-        const { username, password, permission, title } = req.body;
-        if (!username || !password || !permission) {
+        const { email, username, password, permission, title } = req.body;
+        if (!email || !username || !password || !permission) {
             return res.status(400).send('用戶名稱或密碼不能留空！')
+        }
+        if (regExpCheck(username)) {
+            return res.status(400).send('用戶名稱不能有特殊符號')
         }
         const user = await User.findOne({ username: username })
         if (user) {
@@ -39,16 +47,21 @@ router.post('/register', async (req, res, next) => {
         const hash = await hashingPassword(password);
         if (permission === 'finder') {
             const user = new User({
+                email: email,
                 username: username,
                 hash: hash,
             })
             await user.save();
             jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, (err, token) => {
                 if (err) throw new Error(err);
-                res.json({ token: token });
+                res.json({
+                    token: token,
+                    username: user.username,
+                });
             })
         } else if (permission === 'owner') {
             const user = new Owner({
+                email: email,
                 username: username,
                 hash: hash,
                 title: title
@@ -56,7 +69,11 @@ router.post('/register', async (req, res, next) => {
             await user.save();
             jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, (err, token) => {
                 if (err) throw new Error(err);
-                res.json({ token: token });
+                res.json({
+                    token: token,
+                    username: user.username,
+                    permission: user.permission
+                });
             })
         }
     } catch (err) {
@@ -78,11 +95,10 @@ router.post('/login', async (req, res, next) => {
         jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, (err, token) => {
             if (err) throw new Error(err);
             res.json({
-                token,
-                user: {
-                    id: user._id,
-                    username: user.username
-                }
+                token: token,
+                username: user.username,
+                userid: user._id,
+                permission: user.permission || null
             });
         })
     } catch (err) {
