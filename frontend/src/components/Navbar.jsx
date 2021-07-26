@@ -16,6 +16,7 @@ import Hidden from '@material-ui/core/Hidden';
 import Slide from '@material-ui/core/Slide';
 import CreateIcon from '@material-ui/icons/Create';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -29,7 +30,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Navbar() {
-    const { isAuthenticated, handleLogout } = useContext(AuthenticationContext);
+    const { isOwner, isAuthenticated, handleLogout } = useContext(AuthenticationContext);
     const classes = useStyles()
     const isScrolled = useScrollTrigger();
 
@@ -56,7 +57,8 @@ function Navbar() {
                             <div>
                                 {isAuthenticated ?
                                     <div>
-                                        {isAuthenticated ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
+                                        {isOwner ? <Button component={NavLink} to="/room/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
+                                        {isOwner ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
                                         <Button size="large" startIcon={<ExitToAppIcon />} onClick={handleClick}>登出</Button>
                                     </div>
                                     :
