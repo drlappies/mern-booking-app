@@ -7,7 +7,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { SnackbarProvider } from 'notistack';
 import Homepage from './components/Homepage';
 import About from './components/About';
-import AllRoom from './components/AllRoom'
+import Catalog from './components/Catalog'
 import Login from './components/Login';
 import RoomInfoPage from './components/RoomInfoPage';
 import Navbar from './components/Navbar';
@@ -15,6 +15,7 @@ import Appointment from './components/Appointment';
 import CreateRoom from './components/CreateRoom';
 import Register from './components/Register';
 import RegisterRoomowner from './components/RegisterRoomowner';
+import RoomManagement from './components/RoomManagement'
 import RegisterRoomfinder from './components/RegisterRoomfinder';
 import Confirmation from './components/Confirmation';
 import Payment from './components/Payment';
@@ -30,9 +31,10 @@ function App() {
             <Switch>
               <Route exact path="/" component={Homepage} />
               <Route exact path="/about" component={About} />
-              <Route exact path="/room" component={AllRoom} />
+              <Route exact path="/room" component={Catalog} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/room/create" component={CreateRoom} />
+              <Route exact path="/room/management" component={RoomManagement} />
               <Route exact path="/room/:id" component={RoomInfoPage} />
               <Route exact path="/register" component={Register} />
               <Route exact path="/register/roomfinder" component={RegisterRoomfinder} />
