@@ -16,20 +16,18 @@ const roomSchema = new Schema({
         type: String,
         required: [true, '房間簡介不能留空!']
     },
-    image: {
-        imageUrl: [
-            {
-                type: String,
-                required: [true, '請至少提供一張照片']
-            }
-        ],
-        imageKey: [
-            {
-                type: String,
-                required: [true, 'image key undefined']
-            }
-        ]
-    },
+    imageUrl: [
+        {
+            type: String,
+            required: [true, '請至少提供一張照片']
+        }
+    ],
+    imageKey: [
+        {
+            type: String,
+            required: [true, 'image key undefined']
+        }
+    ],
     address: {
         street: {
             type: String,
@@ -108,7 +106,11 @@ const roomSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Review'
         }
-    ]
+    ],
+    isVerified: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true })
 
 roomSchema.post('findOneAndDelete', async function (data) {
