@@ -12,6 +12,7 @@ db.once('open', function () {
 });
 
 const Room = require('../model/Room');
+const Owner = require('../model/Owner');
 const User = require('../model/User')
 const Review = require('../model/Review');
 const Service = require('../model/Service');
@@ -28,7 +29,15 @@ async function Seeding() {
     await Service.deleteMany();
     await Appointment.deleteMany();
     for (let i = 0; i < userHelper.length; i++) {
-        const { hash, salt } = await hashingPassword(userHelper[i].password);
+        const hash = await hashingPassword(userHelper[i].password);
+        if (i === 0) {
+            const owner = new Owner({
+                ...userHelper[i],
+                hash: hash
+            })
+            await owner.save();
+            continue;
+        }
         const user = new User({
             ...userHelper[i],
             hash: hash,
