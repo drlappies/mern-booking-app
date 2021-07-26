@@ -41,11 +41,19 @@ function RegisterRoomfinder() {
     });
 
     const handleValidate = () => {
+        const format = new RegExp(/[ !@#$%^&*()_+\-=\\[\]{};':"\\|,.<>\\/?]/g);
         if (!form.username) {
             setError(error => ({
                 ...error,
                 usernameIsError: true,
                 usernameError: '用戶名稱不能留空'
+            }))
+        }
+        if (format.test(form.username)) {
+            setError(error => ({
+                ...error,
+                usernameIsError: true,
+                usernameError: '用戶名稱不能有特殊符號'
             }))
         }
         if (!form.password) {
