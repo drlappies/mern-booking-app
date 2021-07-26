@@ -65,11 +65,11 @@ function RoomInfoPage() {
         const res = await axios.get(`/room/${id}`)
         setHeader(res.data)
         setReview(res.data.reviews)
-        setImg(res.data.image.imageUrl)
+        setImg(res.data.imageUrl)
         setService(res.data.services)
-        setAvailableWeekday(res.data.availability.weekday);
-        setOpeningTime(res.data.availability.operatingTime.openingTime);
-        setClosingTime(res.data.availability.operatingTime.closingTime);
+        setAvailableWeekday(res.data.openWeekday);
+        setOpeningTime(res.data.openingTime);
+        setClosingTime(res.data.closingTime);
     }
 
     const handleChange = (event) => {
@@ -77,7 +77,7 @@ function RoomInfoPage() {
         setReview(review.reverse())
     }
     const availability = useMemo(() => checkIsDayOpen(availableWeekday), [availableWeekday])
-    
+
     return (
         <Container>
             <Typography variant="h3">{header.title}</Typography>
