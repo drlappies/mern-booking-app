@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useHistory } from "react-router-dom";
+import { useHistory, Link, useParams } from "react-router-dom";
 import { AppointmentContext } from './contexts/AppointmentContext';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
@@ -23,6 +23,7 @@ const day = [
 
 function Confirmation() {
     const history = useHistory();
+    const { roomId, serviceId } = useParams();
     const { selectedTimeslots } = useContext(AppointmentContext);
 
     return (
@@ -32,7 +33,7 @@ function Confirmation() {
                     <Button startIcon={<ArrowBackIosIcon />} onClick={() => history.goBack()}>返回</Button>
                 </Grid>
                 <Grid item>
-                    <Button endIcon={<ArrowForwardIosIcon />}>確定並付款</Button>
+                    <Button component={Link} to={`/room/${roomId}/service/${serviceId}/appointment/payment`} endIcon={<ArrowForwardIosIcon />}>確定並付款</Button>
                 </Grid>
             </Grid>
             <Grid container direction="column" justify="center" alignItems="center" spacing={2}>
@@ -42,7 +43,7 @@ function Confirmation() {
                 <Grid item>
                     <List>
                         {selectedTimeslots.map((el, i) =>
-                            <ListItem>
+                            <ListItem key={i}>
                                 <ListItemText>{el.year}年{el.month}月{el.date}日 {day[el.day]} {el.hour}:00 到 {el.hour + 1}:00</ListItemText>
                             </ListItem>
                         )}
