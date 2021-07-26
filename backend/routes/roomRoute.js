@@ -6,11 +6,13 @@ const { isAuthorised } = require('../utils/middleware');
 
 router.get('/', roomController.getRooms);
 
+router.get('/management', isAuthorised, roomController.roomManagement)
+
 router.post('/', isAuthorised, upload.array('image', 5), roomController.createRoom);
 
 router.get('/:id', roomController.getOneRoom);
 
-router.put('/:id', upload.array('image', 5), roomController.editRoom);
+router.put('/:id', isAuthorised, upload.array('image', 5), roomController.editRoom);
 
 router.delete('/:id', roomController.deleteRoom);
 
