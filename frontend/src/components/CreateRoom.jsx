@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthenticationContext } from './contexts/AuthenticationContext';
+import { useHistory } from 'react-router';
+import { useSnackbar } from 'notistack';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
@@ -69,6 +71,8 @@ const useStyles = makeStyles({
 })
 
 function CreateRoom() {
+    const history = useHistory();
+    const { enqueueSnackbar } = useSnackbar();
     const { checkPermission, isOwner } = useContext(AuthenticationContext);
     const classes = useStyles()
     const [form, setForm] = useState({
@@ -138,13 +142,7 @@ function CreateRoom() {
             }
             let formData = new FormData();
             for (let key in payload) {
-                if (typeof payload[key] === 'object') {
-                    for (let subkey in payload[key]) {
-                        formData.append(`${key}.${subkey}`, payload[key][subkey])
-                    }
-                } else {
-                    formData.append(`${key}`, payload[key])
-                }
+                formData.append(`${key}`, payload[key])
             }
             for (let key in image) {
                 formData.append('image', image[key])
@@ -156,8 +154,10 @@ function CreateRoom() {
                     'x-auth-token': window.localStorage.getItem('token')
                 }
             })
-            console.log(res)
+            history.push(`/room/${res.data._id}/management`);
+            enqueueSnackbar(`已成功建立房間 ${res.data.title}`, { variant: 'success', autoHideDuration: 3000 })
         } catch (err) {
+            enqueueSnackbar(`${err}`, { variant: 'error', autoHideDuration: 3000 })
             console.log(err)
         }
     }
@@ -169,10 +169,10 @@ function CreateRoom() {
                     <form onSubmit={handleSubmit}>
                         <Grid container direction="row" spacing={2} alignContent="space-around">
                             <Grid item xs={12}>
-                                <Typography variant='h5'>創立新的房間</Typography>
+                                <Typography variant='h6'>創立新的房間</Typography>
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant='h6'>基本資訊</Typography>
+                                <Typography variant='body1'>基本資訊</Typography>
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
@@ -183,6 +183,7 @@ function CreateRoom() {
                                     variant="outlined"
                                     value={form.title}
                                     onChange={handleChange}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={8}>
@@ -194,10 +195,11 @@ function CreateRoom() {
                                     variant="outlined"
                                     value={form.description}
                                     onChange={handleChange}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant='h6'>地址</Typography>
+                                <Typography variant='body1'>地址</Typography>
                             </Grid>
                             <Grid item xs={3}>
                                 <TextField
@@ -208,6 +210,7 @@ function CreateRoom() {
                                     variant="outlined"
                                     value={form.floor}
                                     onChange={handleChange}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={9}>
@@ -219,6 +222,7 @@ function CreateRoom() {
                                     variant="outlined"
                                     value={form.flat}
                                     onChange={handleChange}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={5}>
@@ -230,6 +234,7 @@ function CreateRoom() {
                                     variant="outlined"
                                     value={form.building}
                                     onChange={handleChange}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={5}>
@@ -241,6 +246,7 @@ function CreateRoom() {
                                     variant="outlined"
                                     value={form.street}
                                     onChange={handleChange}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={2}>
@@ -251,10 +257,11 @@ function CreateRoom() {
                                     variant="outlined"
                                     value={form.region}
                                     onChange={handleChange}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant='h6'>營業時間</Typography>
+                                <Typography variant='body1'>營業時間</Typography>
                             </Grid>
                             <Grid item xs={12}>
                                 <Slider
@@ -264,10 +271,11 @@ function CreateRoom() {
                                     max={6}
                                     value={form.weekday}
                                     onChange={handleDaySlide}
+                                    size="small"
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="h6">日期</Typography>
+                                <Typography variant="body1">日期</Typography>
                             </Grid>
                             <Grid item>
                                 <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -290,7 +298,7 @@ function CreateRoom() {
                                 </MuiPickersUtilsProvider>
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="h6">圖片上傳</Typography>
+                                <Typography variant="body1">圖片上傳</Typography>
                                 <DropzoneArea
                                     acceptedFiles={['image/*']}
                                     dropzoneText={"拖放或點擊"}
