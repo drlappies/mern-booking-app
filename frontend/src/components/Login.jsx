@@ -45,32 +45,34 @@ function Login() {
             <Grid container justify="center">
                 <Grid item>
                     <Paper className={classes.form} elevation={3} >
-                        <TextField
-                            className={classes.input}
-                            fullWidth
-                            size="small"
-                            id="username"
-                            name="username"
-                            label="帳號"
-                            variant="outlined"
-                            value={form.username}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            className={classes.input}
-                            fullWidth
-                            size="small"
-                            id="password"
-                            name="password"
-                            label="密碼"
-                            type="password"
-                            variant="outlined"
-                            value={form.password}
-                            onChange={handleChange}
-                        />
-                        <Button className={classes.input} onClick={handleSubmit} fullWidth variant="contained" color="primary">登入</Button>
-                        <Typography>沒有帳號？</Typography>
-                        <Button component={Link} to="/register" className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
+                        <form>
+                            <TextField
+                                className={classes.input}
+                                fullWidth
+                                size="small"
+                                id="username"
+                                name="username"
+                                label="帳號"
+                                variant="outlined"
+                                value={form.username}
+                                onChange={handleChange}
+                            />
+                            <TextField
+                                className={classes.input}
+                                fullWidth
+                                size="small"
+                                id="password"
+                                name="password"
+                                label="密碼"
+                                type="password"
+                                variant="outlined"
+                                value={form.password}
+                                onChange={handleChange}
+                            />
+                            <Button className={classes.input} onClick={handleSubmit} fullWidth variant="contained" color="primary">登入</Button>
+                            <Typography>沒有帳號？</Typography>
+                            <Button component={Link} to="/register" className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
+                        </form>
                     </Paper>
                 </Grid>
             </Grid>
