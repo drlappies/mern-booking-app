@@ -27,7 +27,7 @@ const roomHelper = [
             sunday: true
         },
         openingTime: 9,
-        closingTime: 23
+        closingTime: 23,
     },
     {
         title: 'Studio before dawn',
@@ -57,8 +57,7 @@ const roomHelper = [
             sunday: true
         },
         openingTime: 9,
-        closingTime: 23
-
+        closingTime: 23,
     },
     {
         title: 'Moon Studio',
@@ -88,7 +87,7 @@ const roomHelper = [
             sunday: true
         },
         openingTime: 9,
-        closingTime: 23
+        closingTime: 23,
     }
 ]
 

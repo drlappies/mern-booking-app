@@ -54,7 +54,8 @@ async function Seeding() {
         })
         serviceHelper[i].forEach(async (service) => {
             const seedService = new Service({
-                ...service
+                ...service,
+                room: seedRoom._id
             })
             seedRoom.services.push(seedService);
             await seedService.save();
