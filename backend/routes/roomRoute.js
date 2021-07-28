@@ -12,7 +12,7 @@ router.post('/', isAuthorised, upload.array('image', 5), roomController.createRo
 
 router.get('/:id', roomController.getOneRoom);
 
-router.put('/:id', isAuthorised, upload.array('image', 5), roomController.editRoom);
+router.put('/:id', isAuthorised, upload.single('image'), roomController.editRoom);
 
 router.delete('/:id', roomController.deleteRoom);
 
