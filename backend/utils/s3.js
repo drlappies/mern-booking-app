@@ -44,17 +44,17 @@ module.exports.upload = multer({
     }
 })
 
-module.exports.imageDestroy = async (arr) => {
+module.exports.imageDestroy = async (key) => {
     try {
         const params = {
             Bucket: bucketName,
-            Delete: {
-                Objects: arr
-            }
+            Key: key
         }
-        await s3.deleteObjects(params, (err, data) => {
-            if (err) throw new Error(err);
-            else console.log('deleted');
+        s3.deleteObject(params, (err, data) => {
+            if (err)
+                throw new Error(err);
+            else
+                console.log('deleted');
         })
     } catch (err) {
         throw new Error(err)
