@@ -1,5 +1,5 @@
-import React, { useEffect, useContext, useCallback, useState } from 'react';
-import { AuthenticationContext } from './contexts/AuthenticationContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, Switch, Route, NavLink } from 'react-router-dom'
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -17,72 +17,56 @@ const useStyles = makeStyles(() => ({
 
 
 function RoomManagement() {
+    const [state, setState] = useState([])
     const classes = useStyles();
-    const { checkPermission } = useContext(AuthenticationContext);
-    const [state, setState] = useState([]);
-    const [currentView, setCurrentView] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
 
     const fetchData = useCallback(async () => {
-        const res = await axios.get('/room/management', { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
-        setState(prevState => {
-            return prevState = res.data
-        });
-        setIsLoading(false)
+        try {
+            const res = await axios.get('/room/management', { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
+            setState(res.data);
+        } catch (err) {
+            console.log(err)
+        }
     }, [])
-
-    const handleSwitch = (key) => {
-        setCurrentView(prevState => {
-            return prevState = key
-        })
-    }
 
     useEffect(() => {
         fetchData()
-        checkPermission('Owner');
-    }, [checkPermission, fetchData])
+    }, [fetchData])
 
     return (
         <Container>
-            <Grid container spacing={1}>
-                <Grid item xs={4}>
-                    <Paper elevation={3} className={classes.view}>
-                        {state.map((el, i) =>
-                            <Roomnav
-                                key={i}
-                                id={el._id}
-                                title={el.title}
-                                createdAt={el.createdAt}
-                                updatedAt={el.updatedAt}
-                                onClick={() => handleSwitch(i)}
-                            />
-                        )}
-                    </Paper>
+            <Router>
+                <Grid container spacing={1}>
+                    <Grid item xs={4}>
+                        <Paper elevation={3} className={classes.view}>
+                            {state.map((el, i) =>
+                                <NavLink key={i} to={`/room/management/${el._id}`} style={{ textDecoration: 'none' }} >
+                                    <Roomnav
+                                        key={i}
+                                        id={el._id}
+                                        title={el.title}
+                                        createdAt={el.createdAt}
+                                        updatedAt={el.updatedAt}
+                                    />
+                                </NavLink>
+                            )}
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={8}>
+                        <Paper elevation={3} className={classes.view}>
+                            <Switch>
+                                {state.map((el, i) =>
+                                    <Route exact path={`/room/management/${el._id}`} key={i}>
+                                        <Roomview
+                                            id={el._id}
+                                        />
+                                    </Route>
+                                )}
+                            </Switch>
+                        </Paper>
+                    </Grid>
                 </Grid>
-                <Grid item xs={8}>
-                    <Paper elevation={3} className={classes.view}>
-                        {isLoading ? null :
-                            <Roomview
-                                isVerified={state[currentView].isVerified}
-                                id={state[currentView]._id}
-                                title={state[currentView].title}
-                                description={state[currentView].description}
-                                street={state[currentView].address.street}
-                                floor={state[currentView].address.floor}
-                                flat={state[currentView].address.flat}
-                                building={state[currentView].address.building}
-                                region={state[currentView].address.region}
-                                imgurl={state[currentView].imageUrl}
-                                imgkey={state[currentView].imageKey}
-                                openingTime={state[currentView].openingTime}
-                                closingTime={state[currentView].closingTime}
-                                openWeekday={state[currentView].openWeekday}
-                                services={state[currentView].services}
-                            />
-                        }
-                    </Paper>
-                </Grid>
-            </Grid>
+            </Router>
         </Container>
     )
 }

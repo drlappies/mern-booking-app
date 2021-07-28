@@ -42,7 +42,7 @@ function Login() {
 
     return (
         <Container>
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
                 <Grid item>
                     <Paper className={classes.form} elevation={3} >
                         <form>

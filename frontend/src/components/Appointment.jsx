@@ -30,7 +30,7 @@ function Appointment() {
     const history = useHistory();
     const { roomId, serviceId } = useParams();
     const { selectedTimeslots } = useContext(AppointmentContext);
-    const { checkValidity } = useContext(AuthenticationContext);
+    const { checkPermission } = useContext(AuthenticationContext);
     const [openingTime, setOpeningTime] = useState();
     const [closingTime, setClosingTime] = useState();
     const [availableWeekday, setAvailableWeekday] = useState([]);
@@ -41,9 +41,9 @@ function Appointment() {
             const room = await axios.get(`/room/${roomId}`);
             const appointments = await axios.get(`/room/${roomId}/service/${serviceId}/appointment`)
             setAppointments(appointments.data)
-            setOpeningTime(room.data.availability.operatingTime.openingTime);
-            setClosingTime(room.data.availability.operatingTime.closingTime);
-            setAvailableWeekday(room.data.availability.weekday);
+            setOpeningTime(room.data.openingTime);
+            setClosingTime(room.data.closingTime);
+            setAvailableWeekday(room.data.openWeekday);
         } catch (err) {
             enqueueSnackbar(`${err}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
             console.log(err)
@@ -52,9 +52,9 @@ function Appointment() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        checkValidity();
+        checkPermission();
         fetchData();
-    }, [checkValidity, fetchData])
+    }, [checkPermission, fetchData])
 
     const availability = useMemo(() => checkIsDayOpen(availableWeekday), [availableWeekday])
 
