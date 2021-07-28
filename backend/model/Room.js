@@ -106,11 +106,7 @@ const roomSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Review'
         }
-    ],
-    isVerified: {
-        type: Boolean,
-        default: false
-    }
+    ]
 }, { timestamps: true })
 
 roomSchema.post('findOneAndDelete', async function (data) {
