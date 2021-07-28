@@ -6,6 +6,8 @@ module.exports.getRooms = async (req, res) => {
     try {
         const allRooms = await Room.find()
             .populate('owner')
+            .where('imageUrl.4').exists()
+            .where('services.0').exists()
         res.json(allRooms)
     } catch {
         res.status(404)
@@ -73,44 +75,29 @@ module.exports.createRoom = async (req, res, next) => {
 
 module.exports.editRoom = async (req, res, next) => {
     try {
-        const { monday, tuesday, wednesday, thursday, friday, saturday, sunday, title, description, street, floor, flat, building, region, openingTime, closingTime, deletedImages } = req.body
+        const { title, description, address, openWeekday, openingTime, closingTime, deletedImage } = req.body
         const { id } = req.params
         const updateRoom = await Room.findByIdAndUpdate(id, {
             owner: req.user.id,
             title: title,
             description: description,
-            address: {
-                street: street,
-                floor: floor,
-                flat: flat,
-                building: building,
-                region: region,
-            },
-            openWeekday: {
-                monday: monday,
-                tuesday: tuesday,
-                wednesday: wednesday,
-                thursday: thursday,
-                friday: friday,
-                saturday: saturday,
-                sunday: sunday
-            },
+            address: address,
+            openWeekday: openWeekday,
             openingTime: openingTime,
             closingTime: closingTime
-        }, { new: true })
-        if (req.files) {
-            req.files.forEach(el => {
-                updateRoom.imageUrl.push(el.location);
-                updateRoom.imageKey.push(el.key)
-            })
+        }, { new: true, omitUndefined: true })
+        if (req.file) {
+            updateRoom.imageUrl.push(req.file.location);
+            updateRoom.imageKey.push(req.file.key)
         }
-        if (deletedImages) {
-            const deletekeys = JSON.parse(deletedImages).map(el => ({ Key: el.key }));
-            const urls = JSON.parse(deletedImages).map(el => el.url);
-            const keys = JSON.parse(deletedImages).map(el => el.key);
-            imageDestroy(deletekeys);
-            await updateRoom.updateOne({ $pull: { imageKey: { $in: keys } } })
-            await updateRoom.updateOne({ $pull: { imageUrl: { $in: urls } } })
+        await updateRoom.save();
+        if (deletedImage) {
+            const image = JSON.parse(deletedImage);
+            const key = image.imageKey;
+            const url = image.imageUrl;
+            imageDestroy(key);
+            await updateRoom.updateOne({ $pull: { imageKey: { $in: key } } })
+            await updateRoom.updateOne({ $pull: { imageUrl: { $in: url } } })
         }
         res.json(updateRoom)
     } catch (err) {
