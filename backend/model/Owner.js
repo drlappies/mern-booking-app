@@ -2,17 +2,26 @@ const User = require('../model/User');
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
-const Owner = User.discriminator('Finder', new Schema({
+const Owner = User.discriminator('Owner', new Schema({
     title: {
         type: String,
         required: true
     },
-    room: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Room'
-        }
-    ]
+    number: {
+        type: String,
+        min: 0,
+        max: 8
+    },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    merchant_id: {
+        type: String,
+    },
+    tracking_id: {
+        type: String
+    }
 }))
 
 module.exports = Owner
