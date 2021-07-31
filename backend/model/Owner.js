@@ -12,15 +12,9 @@ const Owner = User.discriminator('Owner', new Schema({
         min: 0,
         max: 8
     },
-    isVerified: {
-        type: Boolean,
-        default: false,
-    },
-    merchant_id: {
+    stripe_id: {
         type: String,
-    },
-    tracking_id: {
-        type: String
+        required: true
     }
 }))
 
