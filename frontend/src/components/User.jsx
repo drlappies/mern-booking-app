@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom'
 import Container from '@material-ui/core/Container';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -89,10 +87,6 @@ function User() {
         fetchUser()
         fetchOnboardStatus()
     }, [fetchOnboardStatus, fetchUser])
-
-    if (state.url) {
-        window.location.href = state.url
-    }
 
     return (
         <Container>
