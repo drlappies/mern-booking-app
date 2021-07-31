@@ -3,9 +3,14 @@ const { Schema } = mongoose;
 const Room = require('../model/Room');
 
 const serviceSchema = new Schema({
+    owner: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
     name: {
         type: String,
-        required: [true, '請至少提供一項服務！']
+        required: true
     },
     room: {
         type: Schema.Types.ObjectId,
@@ -14,13 +19,13 @@ const serviceSchema = new Schema({
     },
     pricing: {
         type: Number,
-        min: [0, '價錢不能低於零！'],
-        required: [true, '價錢不能留空！']
+        min: 0,
+        required: true
     },
     capacity: {
         type: Number,
-        min: [0, '人頭數目不能低於零！'],
-        required: [true, '請提供可容人數']
+        min: 0,
+        required: true
     },
     remark: {
         type: String,
