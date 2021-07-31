@@ -29,8 +29,8 @@ module.exports.getUser = async (req, res, next) => {
 
 module.exports.registerUser = async (req, res, next) => {
     try {
-        const { email, username, password, permission, title } = req.body;
-        if (!email || !username || !password || !permission) {
+        const { username, password, permission, title } = req.body;
+        if (!username || !password || !permission || !title) {
             return res.status(400).send('用戶名稱或密碼不能留空！')
         }
         if (regExpCheck(username)) {
@@ -43,7 +43,6 @@ module.exports.registerUser = async (req, res, next) => {
         const hash = await hashingPassword(password);
         if (permission === 'finder') {
             const user = new User({
-                email: email,
                 username: username,
                 hash: hash,
             })
@@ -58,10 +57,8 @@ module.exports.registerUser = async (req, res, next) => {
         } else if (permission === 'owner') {
             const stripeAccount = await stripe.accounts.create({
                 type: 'standard',
-                email: email,
             })
             const user = new Owner({
-                email: email,
                 username: username,
                 hash: hash,
                 title: title,

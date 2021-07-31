@@ -8,8 +8,8 @@ module.exports.onboard = async (req, res, next) => {
         const owner = await Owner.findById(id)
         const accountLinks = await stripe.accountLinks.create({
             account: owner.stripe_id,
-            refresh_url: 'http://localhost:3000',
-            return_url: 'http://localhost:3000',
+            refresh_url: 'http://localhost:3000/user',
+            return_url: 'http://localhost:3000/user',
             type: 'account_onboarding'
         })
         res.json({
@@ -26,6 +26,7 @@ module.exports.getOnboardStatus = async (req, res, next) => {
         const owner = await Owner.findById(id)
         const account = await stripe.accounts.retrieve(owner.stripe_id);
         res.json({
+            email: account.email,
             isOnboarded: account.charges_enabled && account.details_submitted ? true : false
         })
     } catch (err) {

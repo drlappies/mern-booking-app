@@ -30,12 +30,9 @@ function RegisterRoomowner() {
         password: '',
         confirmPassword: '',
         title: '',
-        email: '',
     })
 
     const [error, setError] = useState({
-        emailIsError: false,
-        emailError: '',
         usernameIsError: false,
         usernameError: '',
         passwordIsError: false,
@@ -53,13 +50,6 @@ function RegisterRoomowner() {
                 ...error,
                 usernameIsError: true,
                 usernameError: '用戶名稱不能留空'
-            }))
-        }
-        if (!form.email) {
-            setError(error => ({
-                ...error,
-                emailIsError: true,
-                emailError: '電郵地址不能留空'
             }))
         }
         if (format.test(form.username)) {
@@ -114,7 +104,7 @@ function RegisterRoomowner() {
         e.preventDefault();
         const isFormValid = handleValidate();
         if (isFormValid) {
-            handleRegister(form.email, form.username, form.password, form.title, 'owner')
+            handleRegister(form.username, form.password, form.title, 'owner')
         }
     }
 
@@ -124,19 +114,6 @@ function RegisterRoomowner() {
                 <Paper className={classes.form} elevation={4} >
                     <Typography variant="h6">建立店家用戶帳號</Typography>
                     <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            className={classes.input}
-                            error={error.emailIsError}
-                            helperText={error.emailError}
-                            name="email"
-                            size="small"
-                            type="email"
-                            label="電郵地址"
-                            variant="outlined"
-                            value={form.email}
-                            onChange={handleChange}
-                        />
                         <TextField
                             fullWidth
                             className={classes.input}
