@@ -5,13 +5,13 @@ const app = express();
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const cors = require('cors')
-const Stripe = require('stripe');
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const roomRoute = require('./routes/roomRoute');
 const userRoute = require('./routes/userRoute');
 const reviewRoute = require('./routes/reviewRoute');
 const appointmentRoute = require('./routes/appointmentRoute');
-const port = 5000;
+const serviceRoute = require('./routes/serviceRoute');
+const transactionRoute = require('./routes/transactionRoute');
+const port = 8080;
 const ip = '127.0.0.1';
 
 const mongoose = require('mongoose');
@@ -51,6 +51,8 @@ app.use(session({
 
 app.use('/room', roomRoute);
 app.use('/user', userRoute);
+app.use('/service', serviceRoute);
+app.use('/transaction', transactionRoute);
 app.use('/room/:id/review', reviewRoute);
 app.use('/room/:roomId/service/:serviceId/appointment', appointmentRoute);
 
