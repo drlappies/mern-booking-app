@@ -5,49 +5,49 @@ const Review = require('../model/Review');
 const roomSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,
-        required: [true, '這是誰的房？'],
+        required: true,
         ref: 'User'
     },
     title: {
         type: String,
-        required: [true, '房間名稱不能留空！']
+        required: true
     },
     description: {
         type: String,
-        required: [true, '房間簡介不能留空!']
+        required: true
     },
     imageUrl: [
         {
             type: String,
-            required: [true, '請至少提供一張照片']
+            required: true
         }
     ],
     imageKey: [
         {
             type: String,
-            required: [true, 'image key undefined']
+            required: true
         }
     ],
     address: {
         street: {
             type: String,
-            required: [true, '街道名稱不能留空！']
+            required: true
         },
         floor: {
             type: String,
-            required: [true, '樓層不能留空！']
+            required: true
         },
         flat: {
             type: String,
-            required: [true, '單位/房號不能留空！']
+            required: true
         },
         building: {
             type: String,
-            required: [true, '大廈名稱不能留空！']
+            required: true
         },
         region: {
             type: String,
-            required: [true, '區域不能留空！']
+            required: true
         },
     },
     services: [
