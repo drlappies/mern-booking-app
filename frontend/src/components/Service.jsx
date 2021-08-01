@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionActions from '@material-ui/core/AccordionActions';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -18,55 +17,58 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles({
-    accordion: {
-        margin: "10px 0"
+    card: {
+        margin: '10px 0px 10px 0px'
     },
-    accordionDetails: {
-        padding: "0 16px"
-    },
+    button: {
+        margin: '0px 0px 0px 500px'
+    }
 })
 
 function Service(props) {
     const classes = useStyles()
     const { id } = useParams()
     return (
-        <Accordion classes={{ root: classes.accordion }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>{props.serviceName}</Typography>
-            </AccordionSummary>
-            <AccordionDetails classes={{ root: classes.accordionDetails }}>
+        <Card raised className={classes.card}>
+            <CardContent>
                 <List>
-                    <ListItem dense={true}>
-                        <ListItemIcon>
-                            <AttachMoneyIcon />
-                        </ListItemIcon>
-                        <ListItemText>
-                            <Typography>租金：{props.servicePricing} / 每小時</Typography>
-                        </ListItemText>
+                    <ListItem>
+                        <ListItemText
+                            primary={'服務'}
+                            secondary={props.serviceName}
+                        />
                     </ListItem>
-                    <ListItem dense={true}>
-                        <ListItemIcon>
-                            <GroupIcon />
-                        </ListItemIcon>
-                        <ListItemText>
-                            <Typography>最高人數：{props.serviceCapacity}</Typography>
-                        </ListItemText>
+                    <ListItem>
+                        <ListItemText
+                            primary={'備註'}
+                            secondary={props.serviceRemark}
+                        />
                     </ListItem>
-                    {props.serviceRemark ?
-                        <ListItem dense={true}>
-                            <ListItemIcon>
-                                <AnnouncementIcon />
-                            </ListItemIcon>
-                            <ListItemText>
-                                <Typography>備註：{props.serviceRemark}</Typography>
-                            </ListItemText>
-                        </ListItem> : null}
+                    <ListItem>
+                        <ListItemText
+                            primary={'適合人數'}
+                            secondary={`${props.serviceCapacity} 人`}
+                        />
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText
+                            primary={'每小時收費'}
+                            secondary={`$ ${props.servicePricing}`}
+                        />
+                    </ListItem>
                 </List>
-            </AccordionDetails>
-            <AccordionActions disableSpacing={true}>
-                <Button component={Link} to={`/room/${id}/service/${props.serviceId}/appointment`} endIcon={<KeyboardArrowRightIcon />}>租借</Button>
-            </AccordionActions>
-        </Accordion >
+            </CardContent>
+            <CardActions disableSpacing={true}>
+                <Button
+                    className={classes.button}
+                    variant="contained"
+                    component={Link}
+                    to={`/room/${id}/service/${props.serviceId}/appointment`}
+                >
+                    租借
+                </Button>
+            </CardActions>
+        </Card>
     )
 }
 
