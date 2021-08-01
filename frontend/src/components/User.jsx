@@ -58,7 +58,6 @@ function User() {
                     stripe_id: res.data.stripe_id
                 }
             })
-            console.log(res)
         } catch (err) {
             console.log(err)
         }
@@ -90,7 +89,7 @@ function User() {
 
     return (
         <Container>
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
                 <Paper className={classes.form}>
                     <List>
                         <ListItem>
@@ -111,24 +110,30 @@ function User() {
                                 secondary={state.permission === 'Owner' ? '商家' : '普通用戶'}
                             />
                         </ListItem>
-                        <ListItem>
-                            <ListItemText
-                                primary={'Stripe 連結狀態'}
-                                secondary={state.isOnboarded ? '已連結' : '未連結'}
-                            />
-                            {state.isOnboarded ? null :
-                                <ListItemSecondaryAction>
-                                    <Button variant="contained" onClick={() => handleOnboard()}>與Stripe連結</Button>
-                                </ListItemSecondaryAction>
-                            }
-                        </ListItem>
-                        {!state.isOnboarded ? null :
-                            <ListItem>
-                                <ListItemText
-                                    primary={'Stripe 連結電郵'}
-                                    secondary={state.email}
-                                />
-                            </ListItem>
+                        {state.permission === 'Finder' ?
+                            null
+                            :
+                            <React.Fragment>
+                                <ListItem>
+                                    <ListItemText
+                                        primary={'Stripe 連結狀態'}
+                                        secondary={state.isOnboarded ? '已連結' : '未連結'}
+                                    />
+                                    {state.isOnboarded ? null :
+                                        <ListItemSecondaryAction>
+                                            <Button variant="contained" onClick={() => handleOnboard()}>與Stripe連結</Button>
+                                        </ListItemSecondaryAction>
+                                    }
+                                </ListItem>
+                                {!state.isOnboarded ? null :
+                                    <ListItem>
+                                        <ListItemText
+                                            primary={'Stripe 連結電郵'}
+                                            secondary={state.email}
+                                        />
+                                    </ListItem>
+                                }
+                            </React.Fragment>
                         }
                     </List>
                 </Paper>
