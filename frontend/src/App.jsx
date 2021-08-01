@@ -19,6 +19,7 @@ import RoomManagement from './components/RoomManagement'
 import RegisterRoomfinder from './components/RegisterRoomfinder';
 import Confirmation from './components/Confirmation';
 import Payment from './components/Payment';
+import User from './components/User';
 import './App.css'
 
 function App() {
@@ -26,26 +27,27 @@ function App() {
     <Router>
       <SnackbarProvider>
         <AuthenticationProvider>
-          <Navbar />
-          <ThemeProvider theme={theme}>
-            <Switch>
-              <Route exact path="/" component={Homepage} />
-              <Route exact path="/about" component={About} />
-              <Route exact path="/room" component={Catalog} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/room/create" component={CreateRoom} />
-              <Route exact path="/room/management" component={RoomManagement} />
-              <Route exact path="/room/:id" component={RoomInfoPage} />
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/register/roomfinder" component={RegisterRoomfinder} />
-              <Route exact path="/register/roomowner" component={RegisterRoomowner} />
-              <AppointmentProvider>
+          <AppointmentProvider>
+            <Navbar />
+            <ThemeProvider theme={theme}>
+              <Switch>
+                <Route exact path="/" component={Homepage} />
+                <Route exact path="/about" component={About} />
+                <Route exact path="/room" component={Catalog} />
+                <Route exact path="/user" component={User} />
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/room/create" component={CreateRoom} />
+                <Route exact path="/room/management" component={RoomManagement} />
+                <Route exact path="/room/:id" component={RoomInfoPage} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment" component={Appointment} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment/confirmation" component={Confirmation} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment/payment" component={Payment} />
-              </AppointmentProvider>
-            </Switch>
-          </ThemeProvider>
+                <Route exact path="/register" component={Register} />
+                <Route exact path="/register/roomfinder" component={RegisterRoomfinder} />
+                <Route exact path="/register/roomowner" component={RegisterRoomowner} />
+              </Switch>
+            </ThemeProvider>
+          </AppointmentProvider>
         </AuthenticationProvider>
       </SnackbarProvider>
     </Router>
