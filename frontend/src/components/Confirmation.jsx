@@ -28,7 +28,7 @@ function Confirmation() {
 
     return (
         <Container>
-            <Grid container direction="row" justify="space-between" alignItems="center">
+            <Grid container direction="row" justifyContent="space-between" alignItems="center">
                 <Grid item>
                     <Button startIcon={<ArrowBackIosIcon />} onClick={() => history.goBack()}>返回</Button>
                 </Grid>

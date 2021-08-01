@@ -100,7 +100,7 @@ function RegisterRoomfinder() {
 
     return (
         <Container>
-            <Grid container justify='center'>
+            <Grid container justifyContent="center">
                 <Paper className={classes.form} elevation={4} >
                     <Typography variant="h6">建立普通用戶帳號</Typography>
                     <form noValidate autoComplete="off" onSubmit={handleSubmit}>

@@ -164,7 +164,7 @@ function CreateRoom() {
 
     return (
         <Container>
-            <Grid container justify="center">
+            <Grid container justifyContent="center">
                 <Paper className={classes.form} elevation={4}>
                     <form onSubmit={handleSubmit}>
                         <Grid container direction="row" spacing={2} alignContent="space-around">

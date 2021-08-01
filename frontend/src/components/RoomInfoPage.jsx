@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import Typography from '@material-ui/core/Typography';
@@ -9,15 +9,11 @@ import Hidden from '@material-ui/core/Hidden'
 import Grid from '@material-ui/core/Grid'
 import Service from './Service';
 import Review from './Review';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(({
-    sort: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between"
+    text: {
+        margin: '5px 0px 5px 0px'
     }
 }))
 
@@ -47,59 +43,73 @@ function checkIsDayOpen(availableWeekday) {
 function RoomInfoPage() {
     const classes = useStyles()
     const { id } = useParams();
-    const [header, setHeader] = useState({});
-    const [review, setReview] = useState([]);
-    const [img, setImg] = useState([]);
-    const [service, setService] = useState([]);
-    const [availableWeekday, setAvailableWeekday] = useState([]);
-    const [openingTime, setOpeningTime] = useState(9);
-    const [closingTime, setClosingTime] = useState(23);
-    const [sort, setSort] = useState('earliest');
+    const [state, setState] = useState({
+        title: '',
+        description: '',
+        owner: '',
+        street: '',
+        floor: '',
+        flat: '',
+        building: '',
+        region: '',
+        openingTime: 0,
+        closingTime: 0,
+        availabileWeekday: [],
+        image: [],
+        service: [],
+        review: [],
+    });
+
+    const fetchRoom = useCallback(async () => {
+        const res = await axios.get(`/room/${id}`)
+        setState({
+            title: res.data.title,
+            description: res.data.description,
+            owner: res.data.owner.title,
+            street: res.data.address.street,
+            floor: res.data.address.floor,
+            flat: res.data.address.flat,
+            building: res.data.address.building,
+            region: res.data.address.region,
+            openingTime: res.data.openingTime,
+            closingTime: res.data.closingTime,
+            availableWeekday: res.data.openWeekday,
+            image: res.data.imageUrl,
+            service: res.data.services,
+            review: res.data.reviews,
+        })
+    }, [id])
 
     useEffect(() => {
         fetchRoom()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [fetchRoom]);
 
-    const fetchRoom = async () => {
-        const res = await axios.get(`/room/${id}`)
-        setHeader(res.data)
-        setReview(res.data.reviews)
-        setImg(res.data.imageUrl)
-        setService(res.data.services)
-        setAvailableWeekday(res.data.openWeekday);
-        setOpeningTime(res.data.openingTime);
-        setClosingTime(res.data.closingTime);
-    }
-
-    const handleChange = (event) => {
-        setSort(event.target.value)
-        setReview(review.reverse())
-    }
-    const availability = useMemo(() => checkIsDayOpen(availableWeekday), [availableWeekday])
+    const availability = useMemo(() => checkIsDayOpen(state.availableWeekday), [state.availableWeekday])
 
     return (
         <Container>
-            <Typography variant="h3">{header.title}</Typography>
-            <Typography variant="h6">{header.description}</Typography>
-            <Typography variant="subtitle1">營業時間：{openingTime}:00 - {closingTime}:00</Typography>
-            <Typography variant="subtitle1">營業日子：逢星期{availability.map((el, i) => <span key={i}>&nbsp;{weekday[el]}&nbsp;</span>)}</Typography>
+            <Typography className={classes.text} variant="h3">{state.title}</Typography>
+            <Typography className={classes.text} variant="h6">{state.description}</Typography>
+            <Typography className={classes.text} variant="subtitle1">提供者：{state.owner}</Typography>
+            <Typography className={classes.text} variant="suttitle1">地址：{state.flat} 室 {state.floor} 樓 {state.building} {state.street} {state.region}</Typography>
+            <Typography className={classes.text} variant="subtitle1">營業時間： {state.openingTime}:00 - {state.closingTime}:00</Typography>
+            <Typography className={classes.text} variant="subtitle1">營業日子：逢星期{availability.map((el, i) => <span key={i}>&nbsp;{weekday[el]}&nbsp;</span>)}</Typography>
             <Hidden only={['xl', 'lg', 'md']}>
-                <ImageSlide imgArr={img} />
+                <ImageSlide imgArr={state.image} />
             </Hidden>
             <Hidden only={['xs', 'sm']}>
                 <ImageGrid
-                    img0={img[0]}
-                    img1={img[1]}
-                    img2={img[2]}
-                    img3={img[3]}
-                    img4={img[4]}
+                    img0={state.image[0]}
+                    img1={state.image[1]}
+                    img2={state.image[2]}
+                    img3={state.image[3]}
+                    img4={state.image[4]}
                 />
             </Hidden>
             <Grid container spacing={7}>
                 <Grid item md={6} sm={12} xs={12}>
-                    <Typography variant="h6">服務資訊：</Typography>
-                    {service.map(el =>
+                    <Typography className={classes.text} variant="h6">服務資訊</Typography>
+                    {state.service.map(el =>
                         <Service
                             key={el._id}
                             serviceId={el._id}
@@ -112,15 +122,11 @@ function RoomInfoPage() {
                 </Grid>
                 <Grid item md={6} sm={12} xs={12}>
                     <div className={classes.sort}>
-                        <Typography variant="h6">用家評價：</Typography>
-                        <Select value={sort} onChange={handleChange}>
-                            <MenuItem value={'latest'}>顯示最新</MenuItem>
-                            <MenuItem value={'earliest'}>顯示最舊</MenuItem>
-                        </Select>
+                        <Typography className={classes.text} variant="h6">用家評價</Typography>
                     </div>
-                    {!review ?
+                    {!state.review ?
                         <div>
-                            {review.map(el =>
+                            {state.review.map(el =>
                                 <Review
                                     key={el._id}
                                     author={el.author.username}
@@ -129,8 +135,9 @@ function RoomInfoPage() {
                                     createdAt={el.createdAt}
                                 />
                             )}
-                        </div> : <Typography>暫時沒有留言</Typography>}
-
+                        </div> :
+                        <Typography variant="subtitle2">暫時沒有留言</Typography>
+                    }
                 </Grid>
             </Grid>
         </Container>
