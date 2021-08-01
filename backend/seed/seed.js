@@ -13,6 +13,7 @@ db.once('open', function () {
 
 const Room = require('../model/Room');
 const Owner = require('../model/Owner');
+const Finder = require('../model/Finder');
 const User = require('../model/User')
 const Review = require('../model/Review');
 const Service = require('../model/Service');
@@ -30,19 +31,27 @@ async function Seeding() {
     await Appointment.deleteMany();
     for (let i = 0; i < userHelper.length; i++) {
         const hash = await hashingPassword(userHelper[i].password);
-        if (i === 0) {
-            const owner = new Owner({
-                ...userHelper[i],
-                hash: hash
-            })
-            await owner.save();
-            continue;
+        switch (userHelper[i].permission) {
+            case 'owner':
+                const owner = new Owner({
+                    username: userHelper[i].username,
+                    title: userHelper[i].title,
+                    number: userHelper[i].number,
+                    stripe_id: userHelper[i].stripe_id,
+                    hash: hash
+                })
+                await owner.save();
+                break;
+
+            case 'finder':
+                const finder = new Finder({
+                    username: userHelper[i].username,
+                    password: userHelper[i].password,
+                    hash: hash
+                })
+                await finder.save()
+                break;
         }
-        const user = new User({
-            ...userHelper[i],
-            hash: hash,
-        })
-        await user.save();
     }
 
     const [roomOwner] = await User.find({ username: 'roomowner' });
@@ -55,6 +64,7 @@ async function Seeding() {
         serviceHelper[i].forEach(async (service) => {
             const seedService = new Service({
                 ...service,
+                owner: roomOwner,
                 room: seedRoom._id
             })
             seedRoom.services.push(seedService);
