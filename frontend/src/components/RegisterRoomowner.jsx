@@ -32,66 +32,6 @@ function RegisterRoomowner() {
         title: '',
     })
 
-    const [error, setError] = useState({
-        usernameIsError: false,
-        usernameError: '',
-        passwordIsError: false,
-        passwordError: '',
-        confirmPasswordIsError: false,
-        confirmPasswordError: '',
-        titleIsError: false,
-        titleError: ''
-    });
-
-    const handleValidate = () => {
-        const format = new RegExp(/[ !@#$%^&*()_+\-=\\[\]{};':"\\|,.<>\\/?]/g);
-        if (!form.username) {
-            setError(error => ({
-                ...error,
-                usernameIsError: true,
-                usernameError: '用戶名稱不能留空'
-            }))
-        }
-        if (format.test(form.username)) {
-            setError(error => ({
-                ...error,
-                usernameIsError: true,
-                usernameError: '用戶名稱不能有特殊符號'
-            }))
-        }
-        if (!form.password) {
-            setError(error => ({
-                ...error,
-                passwordIsError: true,
-                passwordError: '密碼不能留空'
-            }))
-        }
-        if (!form.title) {
-            setError(error => ({
-                ...error,
-                titleIsError: true,
-                titleError: '店家名稱不能留空'
-            }))
-        }
-        if (!form.confirmPassword) {
-            setError(error => ({
-                ...error,
-                confirmPasswordIsError: true,
-                confirmPasswordError: '確認密碼不能留空'
-            }))
-            return false
-        }
-        if (form.confirmPassword !== form.password) {
-            setError({
-                ...error,
-                confirmPasswordIsError: true,
-                confirmPasswordError: '確認密碼與密碼不相同'
-            })
-            return false
-        }
-        return true;
-    }
-
     const handleChange = (e) => {
         const { name, value } = e.target
         setForm({
@@ -102,10 +42,7 @@ function RegisterRoomowner() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const isFormValid = handleValidate();
-        if (isFormValid) {
-            handleRegister(form.username, form.password, form.title, 'owner')
-        }
+        handleRegister(form.username, form.password, 'owner', form.title)
     }
 
     return (
@@ -117,8 +54,6 @@ function RegisterRoomowner() {
                         <TextField
                             fullWidth
                             className={classes.input}
-                            error={error.usernameIsError}
-                            helperText={error.usernameError}
                             name="username"
                             type="text"
                             size="small"
@@ -130,8 +65,6 @@ function RegisterRoomowner() {
                         <TextField
                             fullWidth
                             className={classes.input}
-                            error={error.passwordIsError}
-                            helperText={error.passwordError}
                             name="password"
                             size="small"
                             label="密碼"
@@ -143,8 +76,6 @@ function RegisterRoomowner() {
                         <TextField
                             fullWidth
                             className={classes.input}
-                            error={error.confirmPasswordIsError}
-                            helperText={error.confirmPasswordError}
                             name="confirmPassword"
                             size="small"
                             label="確認密碼"
@@ -156,8 +87,6 @@ function RegisterRoomowner() {
                         <TextField
                             fullWidth
                             className={classes.input}
-                            error={error.titleIsError}
-                            helperText={error.titleError}
                             name="title"
                             size="small"
                             label="店家名稱"

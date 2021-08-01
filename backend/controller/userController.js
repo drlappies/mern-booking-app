@@ -1,5 +1,6 @@
-const User = require('../model/User');
 const Owner = require('../model/Owner')
+const Finder = require('../model/Finder')
+const User = require('../model/User')
 const jwt = require('jsonwebtoken');
 const hashingPassword = require('../utils/hashingPassword');
 const verifyPassword = require('../utils/verifyPassword');
@@ -30,7 +31,7 @@ module.exports.getUser = async (req, res, next) => {
 module.exports.registerUser = async (req, res, next) => {
     try {
         const { username, password, permission, title } = req.body;
-        if (!username || !password || !permission || !title) {
+        if (!username || !password || !permission) {
             return res.status(400).send('用戶名稱或密碼不能留空！')
         }
         if (regExpCheck(username)) {
@@ -41,39 +42,40 @@ module.exports.registerUser = async (req, res, next) => {
             return res.status(400).send('用戶名稱已經被取')
         }
         const hash = await hashingPassword(password);
-        if (permission === 'finder') {
-            const user = new User({
-                username: username,
-                hash: hash,
-            })
-            await user.save();
-            jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, (err, token) => {
-                if (err) throw new Error(err);
-                res.json({
-                    token: token,
-                    username: user.username,
-                });
-            })
-        } else if (permission === 'owner') {
-            const stripeAccount = await stripe.accounts.create({
-                type: 'standard',
-            })
-            const user = new Owner({
-                username: username,
-                hash: hash,
-                title: title,
-                stripe_id: stripeAccount.id
-            })
-            await user.save();
-
-            jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, (err, token) => {
-                if (err) throw new Error(err);
-                res.json({
-                    token: token,
-                    username: user.username,
-                    permission: user.permission,
-                });
-            })
+        switch (permission) {
+            case 'finder':
+                const finder = new Finder({
+                    username: username,
+                    hash: hash
+                })
+                await finder.save();
+                jwt.sign({ id: finder._id }, process.env.JWT_SECRET_KEY, (err, token) => {
+                    if (err) throw new Error(err);
+                    res.json({
+                        token: token,
+                        username: finder.username,
+                    });
+                })
+                break;
+            case 'owner':
+                const stripeAccount = await stripe.accounts.create({
+                    type: 'standard',
+                })
+                const owner = new Owner({
+                    username: username,
+                    hash: hash,
+                    title: title,
+                    stripe_id: stripeAccount.id
+                })
+                await owner.save();
+                jwt.sign({ id: owner._id }, process.env.JWT_SECRET_KEY, (err, token) => {
+                    if (err) throw new Error(err);
+                    res.json({
+                        token: token,
+                        username: owner.username,
+                        permission: owner.permission,
+                    });
+                })
         }
     } catch (err) {
         next(err)

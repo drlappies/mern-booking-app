@@ -17,19 +17,17 @@ export function AuthenticationProvider(props) {
 
     const handleLogout = () => {
         window.localStorage.removeItem('token')
-        setState(prevState => {
-            return {
-                uid: '',
-                username: '',
-                permission: '',
-                isAuthenticated: false
-            }
+        setState({
+            uid: '',
+            username: '',
+            permission: '',
+            isAuthenticated: false
         })
         enqueueSnackbar(`再見！`, { variant: 'success', autoHideDuration: 1500 })
         history.push('/')
     }
 
-    const handleRegister = async (username, password, title, permission) => {
+    const handleRegister = async (username, password, permission, title) => {
         try {
             const payload = {
                 username: username,

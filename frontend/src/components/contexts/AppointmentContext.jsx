@@ -33,19 +33,17 @@ export function AppointmentProvider(props) {
         setSelectedTimeslots([]);
     }
 
-    const bookTimeslot = async (roomId, serviceId, timeslots) => {
+    const bookTimeslot = async (roomId, serviceId) => {
         try {
             const payload = {
-                appointments: timeslots.map(el => ({
-                    service: serviceId,
-                    room: roomId,
-                    year: el.year,
-                    month: el.month,
-                    date: el.date,
-                    hour: el.hour
-                }))
+                appointments: selectedTimeslots,
             }
-            await axios.post(`/room/${roomId}/service/${serviceId}/appointment`, payload);
+            await axios.post(`/room/${roomId}/service/${serviceId}/appointment`, payload, {
+                headers: {
+                    'x-auth-token': window.localStorage.getItem('token')
+                }
+            });
+            setSelectedTimeslots([]);
         } catch (err) {
             console.log(err)
         }
