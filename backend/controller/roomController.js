@@ -28,6 +28,9 @@ module.exports.getOneRoom = async (req, res, next) => {
                 path: 'services',
                 model: Service
             })
+            .populate({
+                path: 'owner'
+            })
         if (!room) throw new Error('查無此房間，可能已被作者或管理員刪除');
         res.json(room);
     } catch (err) {
