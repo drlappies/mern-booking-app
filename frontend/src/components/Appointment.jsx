@@ -25,25 +25,27 @@ function checkIsDayOpen(availableWeekday) {
 }
 
 function Appointment() {
-    console.log('appointment rerenders')
     const { enqueueSnackbar } = useSnackbar();
     const history = useHistory();
     const { roomId, serviceId } = useParams();
     const { selectedTimeslots } = useContext(AppointmentContext);
-    const { checkPermission } = useContext(AuthenticationContext);
-    const [openingTime, setOpeningTime] = useState();
-    const [closingTime, setClosingTime] = useState();
-    const [availableWeekday, setAvailableWeekday] = useState([]);
-    const [appointments, setAppointments] = useState([]);
+    const [state, setState] = useState({
+        openingTime: 0,
+        closingTime: 0,
+        appointments: [],
+        availableWeekday: [],
+    })
 
     const fetchData = useCallback(async () => {
         try {
             const room = await axios.get(`/room/${roomId}`);
-            const appointments = await axios.get(`/room/${roomId}/service/${serviceId}/appointment`)
-            setAppointments(appointments.data)
-            setOpeningTime(room.data.openingTime);
-            setClosingTime(room.data.closingTime);
-            setAvailableWeekday(room.data.openWeekday);
+            const appointments = await axios.get(`/room/${roomId}/service/${serviceId}/appointment`);
+            setState({
+                openingTime: room.data.openingTime,
+                closingTime: room.data.closingTime,
+                appointments: appointments.data,
+                availableWeekday: room.data.openWeekday
+            })
         } catch (err) {
             enqueueSnackbar(`${err}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
             console.log(err)
@@ -52,15 +54,14 @@ function Appointment() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        checkPermission();
         fetchData();
-    }, [checkPermission, fetchData])
+    }, [fetchData])
 
-    const availability = useMemo(() => checkIsDayOpen(availableWeekday), [availableWeekday])
+    const availability = useMemo(() => checkIsDayOpen(state.availableWeekday), [state.availableWeekday])
 
     return (
         <Container>
-            <Grid container direction="row" justify="space-between" alignItems="center" spacing={1}>
+            <Grid container direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
                 <Grid item>
                     <Button startIcon={<ArrowBackIosIcon />} onClick={() => history.goBack()}>返回</Button>
                 </Grid>
@@ -68,11 +69,11 @@ function Appointment() {
                     <Button disabled={selectedTimeslots <= 0} component={Link} to={`/room/${roomId}/service/${serviceId}/appointment/confirmation`} endIcon={<ArrowForwardIosIcon />}>繼續</Button>
                 </Grid>
                 <Grid item xs={12}>
-                    {openingTime && closingTime && appointments && availability ?
+                    {state.openingTime && state.closingTime && state.appointments && availability ?
                         <Calendar
-                            openingTime={openingTime}
-                            closingTime={closingTime}
-                            appointments={appointments}
+                            openingTime={state.openingTime}
+                            closingTime={state.closingTime}
+                            appointments={state.appointments}
                             availableWeekday={availability}
                         />
                         :
