@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import { AppointmentContext } from './contexts/AppointmentContext'
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useSnackbar } from 'notistack';
 import Button from '@material-ui/core/Button'
@@ -14,6 +16,9 @@ const useStyles = makeStyles(() => ({
 }))
 
 function Checkout(props) {
+    const { bookTimeslot } = useContext(AppointmentContext);
+    const { roomId, serviceId } = useParams();
+    const history = useHistory();
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
     const stripe = useStripe();
@@ -34,9 +39,10 @@ function Checkout(props) {
         } else {
             if (res.paymentIntent.status === 'succeeded') {
                 enqueueSnackbar('付款成功', { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+                bookTimeslot(roomId, serviceId);
+                history.push('/')
             }
         }
-
     }
 
     return (
