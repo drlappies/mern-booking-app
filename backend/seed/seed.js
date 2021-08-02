@@ -63,6 +63,7 @@ async function Seeding() {
             ...roomHelper[i],
             owner: roomOwner
         })
+        roomOwner.room.push(seedRoom._id);
         serviceHelper[i].forEach(async (service) => {
             const seedService = new Service({
                 ...service,

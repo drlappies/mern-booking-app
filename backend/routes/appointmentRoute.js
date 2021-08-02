@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const appointmentController = require('../controller/appointmentController');
+const { getAppointment, makeAppointment, getInvoices } = require('../controller/appointmentController');
 const { isAuthorised } = require('../utils/middleware')
 
-router.get('/', appointmentController.getAppointment);
+router.get('/', getAppointment);
 
-router.post('/', isAuthorised, appointmentController.makeAppointment);
+router.post('/', isAuthorised, makeAppointment);
 
 module.exports = router;

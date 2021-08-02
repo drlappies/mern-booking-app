@@ -11,7 +11,7 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-}, { timeStamps: true, discriminatorKey: 'permission' })
+}, { timestamps: true, discriminatorKey: 'permission' })
 
 
 

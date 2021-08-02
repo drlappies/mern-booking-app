@@ -6,14 +6,8 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
-import GroupIcon from '@material-ui/icons/Group';
-import AnnouncementIcon from '@material-ui/icons/Announcement';
 import Button from '@material-ui/core/Button';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles({

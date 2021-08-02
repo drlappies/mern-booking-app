@@ -35,7 +35,6 @@ module.exports.makeAppointment = async (req, res, next) => {
             date: el.date,
             hour: el.hour
         }))
-
         const newAppointments = await Appointment.insertMany(bookings);
         const service = await Service.findById(serviceId).populate('owner');
         const owner = service.owner._id
