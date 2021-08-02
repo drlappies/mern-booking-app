@@ -59,7 +59,8 @@ function Navbar() {
                             <div>
                                 {state.isAuthenticated ?
                                     <div>
-                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/appointment" size="large" startIcon={<AccessTimeIcon />}>預訂管理</Button> : null}
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/appointment/search" size="large" startIcon={<AccessTimeIcon />}>尋找預訂</Button> : null}
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/appointment" size="large" startIcon={<AccessTimeIcon />}>管理預訂</Button> : null}
                                         {state.permission === 'Owner' ? <Button component={NavLink} to="/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
                                         {state.permission === 'Owner' ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
                                         {state.permission === 'Owner' ? null : <Button component={NavLink} to="/user/record" size='large' startIcon={<ReceiptIcon />}>紀錄</Button>}

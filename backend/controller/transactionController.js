@@ -80,3 +80,29 @@ module.exports.getInvoices = async (req, res, next) => {
         next(err)
     }
 }
+
+module.exports.getOneInvoice = async (req, res, next) => {
+    try {
+        const { invoiceId } = req.body;
+        const { id } = req.user;
+        const invoice = await Invoice.findById(invoiceId)
+            .where('owner').equals(id)
+            .populate('service')
+            .populate('appointment')
+            .populate('finder')
+            .populate({
+                path: 'service',
+                populate: 'room'
+            })
+        res.json({
+            id: invoice._id,
+            owner: invoice.owner,
+            finder: invoice.finder,
+            service: invoice.service,
+            amount: invoice.amount,
+            appointment: invoice.appointment
+        })
+    } catch (err) {
+        next(err)
+    }
+}

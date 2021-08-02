@@ -22,6 +22,7 @@ import Payment from './components/Payment';
 import User from './components/User';
 import Transaction from './components/Transaction'
 import Record from './components/Record'
+import RecordSearch from './components/RecordSearch'
 import './App.css'
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
                 <Route exact path="/user/register/roomowner" component={RegisterRoomowner} />
                 <Route exact path="/management" component={RoomManagement} />
                 <Route exact path="/appointment" component={Record} />
+                <Route exact path="/appointment/search" component={RecordSearch} />
                 <Route exact path="/room/create" component={CreateRoom} />
                 <Route exact path="/room/:id" component={RoomInfoPage} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment" component={Appointment} />
