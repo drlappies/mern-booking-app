@@ -1,10 +1,8 @@
 const Appointment = require('../model/Appointment');
 const Service = require('../model/Service');
-const Owner = require('../model/Owner');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Invoice = require('../model/Invoice');
 const isServiceAvailable = require('../utils/isServiceAvailable');
 const isTimeslotAvailable = require('../utils/isTimeslotAvailable');
-const verifyPricing = require('../utils/verifyPricing');
 
 module.exports.getAppointment = async (req, res, next) => {
     try {
@@ -22,7 +20,7 @@ module.exports.getAppointment = async (req, res, next) => {
 
 module.exports.makeAppointment = async (req, res, next) => {
     try {
-        const { appointments, pricing } = req.body;
+        const { appointments } = req.body;
         const { id } = req.user;
         const { roomId, serviceId } = req.params;
         if (appointments.length > 5) throw new Error('Exceeded booking limited')
@@ -37,8 +35,18 @@ module.exports.makeAppointment = async (req, res, next) => {
             date: el.date,
             hour: el.hour
         }))
-        
+
         const newAppointments = await Appointment.insertMany(bookings);
+        const service = await Service.findById(serviceId).populate('owner');
+        const owner = service.owner._id
+        const invoice = await new Invoice({
+            finder: id,
+            owner: owner,
+            service: service,
+            amount: bookings.length * service.pricing,
+            appointment: newAppointments.map(el => el._id)
+        })
+        await invoice.save()
         res.json(newAppointments)
     } catch (err) {
         next(err)

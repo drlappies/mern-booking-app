@@ -18,6 +18,7 @@ const User = require('../model/User')
 const Review = require('../model/Review');
 const Service = require('../model/Service');
 const Appointment = require('../model/Appointment');
+const Invoice = require('../model/Invoice');
 const roomHelper = require('../seed/seedRoomHelper');
 const userHelper = require('../seed/seedUserHelper');
 const serviceHelper = require('../seed/seedServiceHelper');
@@ -29,6 +30,7 @@ async function Seeding() {
     await Review.deleteMany();
     await Service.deleteMany();
     await Appointment.deleteMany();
+    await Invoice.deleteMany();
     for (let i = 0; i < userHelper.length; i++) {
         const hash = await hashingPassword(userHelper[i].password);
         switch (userHelper[i].permission) {
@@ -47,7 +49,7 @@ async function Seeding() {
                 const finder = new Finder({
                     username: userHelper[i].username,
                     password: userHelper[i].password,
-                    hash: hash
+                    hash: hash,
                 })
                 await finder.save()
                 break;

@@ -2,6 +2,16 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 const invoiceSchema = new Schema({
+    finder: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     service: {
         type: Schema.Types.ObjectId,
         ref: 'Service',
