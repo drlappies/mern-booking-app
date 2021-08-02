@@ -15,7 +15,13 @@ const Owner = User.discriminator('Owner', new Schema({
     stripe_id: {
         type: String,
         required: true
-    }
+    },
+    room: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Room'
+        }
+    ]
 }))
 
 module.exports = Owner
