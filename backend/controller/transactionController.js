@@ -1,6 +1,7 @@
 const Owner = require('../model/Owner');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Service = require('../model/Service')
+const Invoice = require('../model/Invoice');
 
 module.exports.onboard = async (req, res, next) => {
     try {
@@ -52,6 +53,28 @@ module.exports.getPaymentIntent = async (req, res, next) => {
             client_secret: paymentIntent.client_secret,
             connected_stripe_account_id: service.owner.stripe_id,
             pricing: pricing
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+module.exports.getInvoices = async (req, res, next) => {
+    try {
+        const { id } = req.user;
+        const invoices = await Invoice.find({})
+            .where('finder')
+            .equals(id)
+            .sort({ 'createdAt': 'descending' })
+            .populate('owner')
+            .populate('appointment')
+            .populate('service')
+            .populate({
+                path: 'service',
+                populate: 'room'
+            })
+        res.json({
+            invoices: invoices
         })
     } catch (err) {
         next(err)
