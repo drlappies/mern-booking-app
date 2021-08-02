@@ -20,6 +20,8 @@ import RegisterRoomfinder from './components/RegisterRoomfinder';
 import Confirmation from './components/Confirmation';
 import Payment from './components/Payment';
 import User from './components/User';
+import Transaction from './components/Transaction'
+import Record from './components/Record'
 import './App.css'
 
 function App() {
@@ -36,11 +38,13 @@ function App() {
                 <Route exact path="/room" component={Catalog} />
                 <Route exact path="/user" component={User} />
                 <Route exact path="/user/login" component={Login} />
+                <Route exact path="/user/record" component={Transaction} />
                 <Route exact path="/user/register" component={Register} />
                 <Route exact path="/user/register/roomfinder" component={RegisterRoomfinder} />
                 <Route exact path="/user/register/roomowner" component={RegisterRoomowner} />
+                <Route exact path="/management" component={RoomManagement} />
+                <Route exact path="/appointment" component={Record} />
                 <Route exact path="/room/create" component={CreateRoom} />
-                <Route exact path="/room/management" component={RoomManagement} />
                 <Route exact path="/room/:id" component={RoomInfoPage} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment" component={Appointment} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment/confirmation" component={Confirmation} />

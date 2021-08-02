@@ -4,12 +4,13 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
     root: {
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
     },
     calendar: {
         display: "flex",
@@ -27,6 +28,11 @@ const useStyles = makeStyles({
         border: "1px solid grey",
         width: "48px",
         height: "50px",
+    },
+    view: {
+        height: '75vh',
+        overflowY: 'scroll',
+        overflowX: 'hidden'
     }
 })
 
@@ -151,7 +157,7 @@ function Calendar(props) {
 
     return (
         <Container>
-            <Grid container direction="row" justify="space-between" alignItems="center" spacing={1}>
+            <Grid container direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
                 <Grid item>
                     <Button disabled={!currentWeek} onClick={prevWeek}>上星期</Button>
                     <Button onClick={thisWeek}>重設</Button>
@@ -172,41 +178,44 @@ function Calendar(props) {
                     <Button disabled={currentWeek === timeslots.length - 1} onClick={nextWeek}>下星期</Button>
                 </Grid>
                 <Grid item xs={12}>
-                    <div className={classes.root}>
-                        <div>
-                            <Typography>&nbsp;</Typography>
-                            <Typography>&nbsp;</Typography>
-                            {operatingTime.map((el, i) =>
-                                <div className={classes.slot} key={i}>
-                                    <Typography>{el}:00</Typography>
-                                </div>
-                            )}
-                        </div>
-                        <div className={classes.calendar}>
-                            {timeslots.map((week, i) =>
-                                week.map((day, j) =>
-                                    <div ref={timeslotsRef.current[i][j]} key={j} >
-                                        <div>
-                                            <Typography>星期{weekday[weekdates[i][j].getDay()]}</Typography>
-                                            <Typography>{weekdates[i][j].getFullYear()}年{weekdates[i][j].getMonth() + 1}月{weekdates[i][j].getDate()}日</Typography>
-                                        </div>
-                                        {day.map((slot, k) =>
-                                            <Timeslot
-                                                key={k}
-                                                hour={slot.time}
-                                                year={slot.date.getFullYear()}
-                                                month={slot.date.getMonth() + 1}
-                                                date={slot.date.getDate()}
-                                                day={slot.date.getDay()}
-                                                isOpen={props.availableWeekday.includes(slot.date.getDay())}
-                                                isTaken={checkIsTimeslotTaken(props.appointments, slot.date.getFullYear(), slot.date.getMonth() + 1, slot.date.getDate(), slot.time)}
-                                            />
-                                        )}
+                    <Paper className={classes.view}>
+                        <div className={classes.root}>
+                            <div>
+                                <Typography>&nbsp;</Typography>
+                                <Typography>&nbsp;</Typography>
+                                {operatingTime.map((el, i) =>
+                                    <div className={classes.slot} key={i}>
+                                        <Typography>{el}:00</Typography>
                                     </div>
-                                )
-                            )}
+                                )}
+                            </div>
+                            <div className={classes.calendar}>
+                                {timeslots.map((week, i) =>
+                                    week.map((day, j) =>
+                                        <div ref={timeslotsRef.current[i][j]} key={j} >
+                                            <div>
+                                                <Typography>星期{weekday[weekdates[i][j].getDay()]}</Typography>
+                                                <Typography>{weekdates[i][j].getFullYear()}年{weekdates[i][j].getMonth() + 1}月{weekdates[i][j].getDate()}日</Typography>
+                                            </div>
+                                            {day.map((slot, k) =>
+                                                <Timeslot
+                                                    key={k}
+                                                    hour={slot.time}
+                                                    year={slot.date.getFullYear()}
+                                                    month={slot.date.getMonth() + 1}
+                                                    date={slot.date.getDate()}
+                                                    day={slot.date.getDay()}
+                                                    isOpen={props.availableWeekday.includes(slot.date.getDay())}
+                                                    isTaken={checkIsTimeslotTaken(props.appointments, slot.date.getFullYear(), slot.date.getMonth() + 1, slot.date.getDate(), slot.time)}
+                                                    view={props.view}
+                                                />
+                                            )}
+                                        </div>
+                                    )
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </Paper>
                 </Grid>
             </Grid>
         </Container >

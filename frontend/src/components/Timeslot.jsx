@@ -18,6 +18,7 @@ function Timeslot(props) {
     const [selected, setSelected] = useState(false);
 
     const handleClick = () => {
+        if (props.view === 'record') return;
         if (!props.isOpen) return;
         if (props.isTaken) return;
         setSelected(!selected);
@@ -44,7 +45,7 @@ function Timeslot(props) {
         <div className={classes.slot} onClick={handleClick}
             style={{
                 backgroundColor: props.isOpen ? (props.isTaken ? '#808080' : (selected ? '#C5C5C5' : null)) : '#3B3B3B',
-                cursor: props.isOpen ? (props.isTaken ? null : 'pointer') : null,
+                cursor: props.isOpen ? (props.isTaken || props.view === 'record' ? null : 'pointer') : null,
             }}>
         </div>
     )

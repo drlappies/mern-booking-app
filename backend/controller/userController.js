@@ -14,12 +14,18 @@ module.exports.getUser = async (req, res, next) => {
             if (err) {
                 return res.status(401).send('請先登入');
             } else {
-                const user = await User.findById(decoded.id);
+                const user = await User.findById(decoded.id)
+                    .populate('room')
+                    .populate({
+                        path: 'room',
+                        populate: 'services'
+                    });
                 res.json({
                     userid: user._id,
                     username: user.username,
                     permission: user.permission,
-                    stripe_id: user.stripe_id || null
+                    stripe_id: user.stripe_id,
+                    room: user.room
                 })
             }
         });
