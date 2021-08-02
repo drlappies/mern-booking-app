@@ -36,22 +36,22 @@ module.exports.getOnboardStatus = async (req, res, next) => {
 
 module.exports.getPaymentIntent = async (req, res, next) => {
     try {
-        const { roomId, serviceId, appointments, pricing } = req.body;
+        const { serviceId, appointments } = req.body;
         const service = await Service.findById(serviceId)
             .populate('owner');
-        if (service.pricing !== pricing) return res.json('price has been manipulated')
-        const { stripe_id } = service.owner
+        const { pricing } = service
         const paymentIntent = await stripe.paymentIntents.create({
             payment_method_types: ['card'],
             amount: appointments.length * pricing * 100,
             currency: 'hkd',
             application_fee_amount: Math.round(appointments.length * pricing * 0.05)
         }, {
-            stripeAccount: stripe_id
+            stripeAccount: service.owner.stripe_id
         });
         res.json({
             client_secret: paymentIntent.client_secret,
-            connected_stripe_account_id: stripe_id
+            connected_stripe_account_id: service.owner.stripe_id,
+            pricing: pricing
         })
     } catch (err) {
         next(err)
