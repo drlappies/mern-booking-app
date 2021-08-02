@@ -71,7 +71,7 @@ function Login() {
                             />
                             <Button className={classes.input} onClick={handleSubmit} fullWidth variant="contained" color="primary">登入</Button>
                             <Typography>沒有帳號？</Typography>
-                            <Button component={Link} to="/register" className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
+                            <Button component={Link} to="/user/register" className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
                         </form>
                     </Paper>
                 </Grid>

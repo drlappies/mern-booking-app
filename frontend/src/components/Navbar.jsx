@@ -10,13 +10,13 @@ import HomeIcon from '@material-ui/icons/Home';
 import InfoIcon from '@material-ui/icons/Info';
 import RoomIcon from '@material-ui/icons/Room';
 import PersonIcon from '@material-ui/icons/Person';
-import Dropdown from '../components/Dropdown';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Hidden from '@material-ui/core/Hidden';
 import Slide from '@material-ui/core/Slide';
 import CreateIcon from '@material-ui/icons/Create';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SettingsIcon from '@material-ui/icons/Settings';
+import Sidebar from './Sidebar'
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function Navbar() {
-    const { isOwner, isAuthenticated, handleLogout } = useContext(AuthenticationContext);
+    const { state, handleLogout } = useContext(AuthenticationContext);
     const classes = useStyles()
     const isScrolled = useScrollTrigger();
 
@@ -46,7 +46,7 @@ function Navbar() {
                     <Toolbar className={classes.nav}>
                         <Typography variant="h6">自助琴房租務平台</Typography>
                         <Hidden only={['xl', 'lg', 'md']}>
-                            <Dropdown />
+                            <Sidebar />
                         </Hidden>
                         <Hidden only={['xs', 'sm']}>
                             <div>
@@ -55,14 +55,15 @@ function Navbar() {
                                 <Button component={NavLink} to="/room" size="large" startIcon={<RoomIcon />}>找琴房</Button>
                             </div>
                             <div>
-                                {isAuthenticated ?
+                                {state.isAuthenticated ?
                                     <div>
-                                        {isOwner ? <Button component={NavLink} to="/room/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
-                                        {isOwner ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
+                                        <Button component={NavLink} to="/user" size="large" startIcon={<PersonIcon />}>帳號管理</Button>
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/room/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
                                         <Button size="large" startIcon={<ExitToAppIcon />} onClick={handleClick}>登出</Button>
                                     </div>
                                     :
-                                    <Button component={NavLink} to="/login" size="large" startIcon={<PersonIcon />}>註冊 / 登入</Button>}
+                                    <Button component={NavLink} to="/user/login" size="large" startIcon={<PersonIcon />}>註冊 / 登入</Button>}
                             </div>
                         </Hidden>
                     </Toolbar>

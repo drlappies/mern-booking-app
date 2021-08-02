@@ -35,16 +35,16 @@ function App() {
                 <Route exact path="/about" component={About} />
                 <Route exact path="/room" component={Catalog} />
                 <Route exact path="/user" component={User} />
-                <Route exact path="/login" component={Login} />
+                <Route exact path="/user/login" component={Login} />
+                <Route exact path="/user/register" component={Register} />
+                <Route exact path="/user/register/roomfinder" component={RegisterRoomfinder} />
+                <Route exact path="/user/register/roomowner" component={RegisterRoomowner} />
                 <Route exact path="/room/create" component={CreateRoom} />
                 <Route exact path="/room/management" component={RoomManagement} />
                 <Route exact path="/room/:id" component={RoomInfoPage} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment" component={Appointment} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment/confirmation" component={Confirmation} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment/payment" component={Payment} />
-                <Route exact path="/register" component={Register} />
-                <Route exact path="/register/roomfinder" component={RegisterRoomfinder} />
-                <Route exact path="/register/roomowner" component={RegisterRoomowner} />
               </Switch>
             </ThemeProvider>
           </AppointmentProvider>

@@ -85,7 +85,7 @@ function Sidebar() {
                     </List>
                     :
                     <List>
-                        <ListItem button component={Link} to="/login">
+                        <ListItem button component={Link} to="/user/login">
                             <ListItemIcon>
                                 <LockOpenIcon />
                             </ListItemIcon>

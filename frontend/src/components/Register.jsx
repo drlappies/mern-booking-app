@@ -23,7 +23,7 @@ function Register() {
                         feature3icon={<PaymentIcon />}
                         feature3={'在這裏處理所有有關房間預約的收款'}
                         buttonText={'註冊成為店家用戶'}
-                        buttonGoto={'/register/roomowner'}
+                        buttonGoto={'/user/register/roomowner'}
                     />
                 </Grid>
                 <Grid item xs={6}>
@@ -37,7 +37,7 @@ function Register() {
                         feature3icon={<DateRangeIcon />}
                         feature3={'查詢不同房間服務的有效預約時段'}
                         buttonText={'註冊成為普通用戶'}
-                        buttonGoto={'/register/roomfinder'}
+                        buttonGoto={'/user/register/roomfinder'}
                     />
                 </Grid>
             </Grid>
