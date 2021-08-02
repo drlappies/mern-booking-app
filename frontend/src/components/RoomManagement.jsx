@@ -15,7 +15,6 @@ const useStyles = makeStyles(() => ({
     }
 }))
 
-
 function RoomManagement() {
     const [state, setState] = useState([])
     const classes = useStyles();
@@ -40,9 +39,8 @@ function RoomManagement() {
                     <Grid item xs={4}>
                         <Paper elevation={3} className={classes.view}>
                             {state.map((el, i) =>
-                                <NavLink key={i} to={`/room/management/${el._id}`} style={{ textDecoration: 'none' }} >
+                                <NavLink key={i} to={`/management/${el._id}`} style={{ textDecoration: 'none' }} >
                                     <Roomnav
-                                        key={i}
                                         id={el._id}
                                         title={el.title}
                                         createdAt={el.createdAt}
@@ -56,7 +54,7 @@ function RoomManagement() {
                         <Paper elevation={3} className={classes.view}>
                             <Switch>
                                 {state.map((el, i) =>
-                                    <Route exact path={`/room/management/${el._id}`} key={i}>
+                                    <Route exact path={`/management/${el._id}`} key={i}>
                                         <Roomview
                                             id={el._id}
                                         />
