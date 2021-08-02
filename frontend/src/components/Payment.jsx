@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { AppointmentContext } from './contexts/AppointmentContext';
 import { useParams } from 'react-router-dom';
 import Container from '@material-ui/core/Container'
@@ -23,21 +23,20 @@ const useStyles = makeStyles(() => ({
 
 function Payment() {
     const classes = useStyles();
-    const { roomId, serviceId } = useParams();
-    const { selectedTimeslots, pricing, bookTimeslot } = useContext(AppointmentContext);
+    const { serviceId } = useParams();
+    const { selectedTimeslots } = useContext(AppointmentContext);
     const [state, setState] = useState({
         client_secret: '',
         connected_stripe_account_id: '',
-        stripeObject: null
+        stripeObject: null,
+        pricing: 0
     })
 
     const fetchPaymentIntent = useCallback(async () => {
         try {
             const payload = {
-                roomId: roomId,
                 serviceId: serviceId,
                 appointments: selectedTimeslots,
-                pricing: pricing
             }
             const res = await axios.post('/transaction/intent', payload, {
                 headers: {
@@ -48,14 +47,14 @@ function Payment() {
                 return {
                     ...prevState,
                     client_secret: res.data.client_secret,
-                    connected_stripe_account_id: res.data.connected_stripe_account_id
+                    connected_stripe_account_id: res.data.connected_stripe_account_id,
+                    pricing: res.data.pricing
                 }
             })
-            console.log(res)
         } catch (err) {
             console.log(err)
         }
-    }, [pricing, roomId, selectedTimeslots, serviceId])
+    }, [selectedTimeslots, serviceId])
 
     const fetchStripeObject = useCallback(async () => {
         if (state.connected_stripe_account_id) {
@@ -88,12 +87,12 @@ function Payment() {
                                     <Typography variant="body1">{`${el.year}年 ${el.month}月 ${el.date}日 ${el.hour}：00 星期 ${el.day}`}</Typography>
                                 </Grid>
                                 <Grid item xs={3}>
-                                    <Typography>$ {pricing}</Typography>
+                                    <Typography>$ {state.pricing}</Typography>
                                 </Grid>
                             </React.Fragment>
                         )}
                         <Grid item xs={9}>總共</Grid>
-                        <Grid item xs={3}>$ {pricing * selectedTimeslots.length}</Grid>
+                        <Grid item xs={3}>$ {selectedTimeslots.length * state.pricing}</Grid>
                     </Grid>
                     <div className={classes.cardSection}>
                         {state.stripeObject ?

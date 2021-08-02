@@ -16,6 +16,8 @@ import Slide from '@material-ui/core/Slide';
 import CreateIcon from '@material-ui/icons/Create';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SettingsIcon from '@material-ui/icons/Settings';
+import ReceiptIcon from '@material-ui/icons/Receipt';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import Sidebar from './Sidebar'
 
 const useStyles = makeStyles(() => ({
@@ -57,9 +59,11 @@ function Navbar() {
                             <div>
                                 {state.isAuthenticated ?
                                     <div>
-                                        <Button component={NavLink} to="/user" size="large" startIcon={<PersonIcon />}>帳號管理</Button>
-                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/room/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/appointment" size="large" startIcon={<AccessTimeIcon />}>預訂管理</Button> : null}
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
                                         {state.permission === 'Owner' ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
+                                        {state.permission === 'Owner' ? null : <Button component={NavLink} to="/user/record" size='large' startIcon={<ReceiptIcon />}>紀錄</Button>}
+                                        <Button component={NavLink} to="/user" size="large" startIcon={<PersonIcon />}>帳號管理</Button>
                                         <Button size="large" startIcon={<ExitToAppIcon />} onClick={handleClick}>登出</Button>
                                     </div>
                                     :
