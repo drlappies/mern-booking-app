@@ -73,30 +73,62 @@ function generateTimeslotArr(openingTime, closingTime, timeRange) {
     }
 
     let dateIncrement = 0;
-
-    for (let i = 0; i < timeslots.length; i++) {
-        for (let j = 0; j < 7; j++) {
-            let hours = [];
-            for (let k = openingTime; k <= closingTime; k++) {
-                const currentDate = new Date();
-                hours.push({
-                    date: new Date(currentDate.setDate(currentDate.getDate() + dateIncrement)),
-                    time: k
-                })
+    if (closingTime > openingTime) {
+        for (let i = 0; i < timeslots.length; i++) {
+            for (let j = 0; j < 7; j++) {
+                let hours = [];
+                for (let k = openingTime; k <= closingTime; k++) {
+                    const currentDate = new Date();
+                    hours.push({
+                        date: new Date(currentDate.setDate(currentDate.getDate() + dateIncrement)),
+                        time: k
+                    })
+                }
+                timeslots[i].push(hours);
+                dateIncrement = dateIncrement + 1
             }
-            timeslots[i].push(hours);
-            dateIncrement = dateIncrement + 1
+        }
+    } else {
+        for (let i = 0; i < timeslots.length; i++) {
+            for (let j = 0; j < 7; j++) {
+                let hours = [];
+                for (let k = openingTime; k <= 23; k++) {
+                    const currentDate = new Date();
+                    hours.push({
+                        date: new Date(currentDate.setDate(currentDate.getDate() + dateIncrement)),
+                        time: k
+                    })
+                }
+                for (let k = 0; k < closingTime; k++) {
+                    const currentDate = new Date();
+                    hours.push({
+                        date: new Date(currentDate.setDate(currentDate.getDate() + dateIncrement)),
+                        time: k
+                    })
+                }
+                timeslots[i].push(hours);
+                dateIncrement = dateIncrement + 1;
+            }
         }
     }
-
     return timeslots;
 }
 
 function generateOperatingTimeArr(openingTime, closingTime) {
     const operatingTime = [];
-    for (let i = openingTime; i <= closingTime; i++) {
-        operatingTime.push(i)
+    if (closingTime > openingTime) {
+        for (let i = openingTime; i <= closingTime; i++) {
+            operatingTime.push(i)
+        }
+    } else {
+        for (let i = openingTime; i <= 23; i++) {
+            operatingTime.push(i);
+        }
+        for (let i = 0; i < closingTime; i++) {
+            operatingTime.push(i)
+        }
     }
+
     return operatingTime;
 }
 
