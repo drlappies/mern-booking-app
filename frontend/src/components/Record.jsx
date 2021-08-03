@@ -143,13 +143,18 @@ function Record() {
                     }
                 </Grid>
                 <Grid item xs={12}>
-                    <Calendar
-                        openingTime={state.openingTime}
-                        closingTime={state.closingTime}
-                        appointments={state.appointments}
-                        availableWeekday={availability}
-                        view={'record'}
-                    />
+                    {state.appointments ?
+                        <Calendar
+                            openingTime={state.openingTime}
+                            closingTime={state.closingTime}
+                            appointments={state.appointments}
+                            availableWeekday={availability}
+                            view={'record'}
+                        />
+                        :
+                        <div></div>
+                    }
+
                 </Grid>
             </Grid>
         </Container>

@@ -69,7 +69,7 @@ function Appointment() {
                     <Button disabled={selectedTimeslots <= 0} component={Link} to={`/room/${roomId}/service/${serviceId}/appointment/confirmation`} endIcon={<ArrowForwardIosIcon />}>繼續</Button>
                 </Grid>
                 <Grid item xs={12}>
-                    {state.openingTime && state.closingTime && state.appointments && availability ?
+                    {state.closingTime && state.appointments && availability ?
                         <Calendar
                             openingTime={state.openingTime}
                             closingTime={state.closingTime}
