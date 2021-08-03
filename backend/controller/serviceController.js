@@ -8,6 +8,7 @@ module.exports.createService = async (req, res, next) => {
             return res.status(400).send('資料不足')
         }
         const service = new Service({
+            owner: req.user.id,
             room: room,
             name: name,
             pricing: pricing,
