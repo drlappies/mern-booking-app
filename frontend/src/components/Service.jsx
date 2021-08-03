@@ -54,7 +54,8 @@ function Service(props) {
             </CardContent>
             <CardActions disableSpacing={true}>
                 <Button
-                    className={classes.button}
+                    fullWidth
+                    color="primary"
                     variant="contained"
                     component={Link}
                     to={`/room/${id}/service/${props.serviceId}/appointment`}

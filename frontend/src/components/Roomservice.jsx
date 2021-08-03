@@ -163,7 +163,7 @@ function Roomservice(props) {
         <div>
             <List dense={true} subheader={<Typography>{'服務'}</Typography>}>
                 {state.services.map((el, i) =>
-                    <ListItem>
+                    <ListItem key={i}>
                         {!state.isEditing[i] ?
                             <>
                                 <ListItemText primary={'名稱'} secondary={el.name} />

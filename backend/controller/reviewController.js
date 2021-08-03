@@ -4,19 +4,18 @@ const User = require('../model/User');
 
 module.exports.createReview = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user.id);
-        const room = await Room.findById(req.params.id);
+        const room = await Room.findById(req.params.id)
         const { reviewBody, rating } = req.body;
         const newReview = new Review({
-            author: user,
-            room: room,
+            author: req.user.id,
+            room: req.params.id,
             reviewBody: reviewBody,
             rating: rating
         });
         room.reviews.push(newReview);
         await room.save();
         await newReview.save();
-        res.redirect(`/room/${room._id}`);
+        res.json(newReview)
     } catch (err) {
         next(err)
     }

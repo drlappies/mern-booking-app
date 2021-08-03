@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react';
+import { AuthenticationContext } from './contexts/AuthenticationContext';
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import Typography from '@material-ui/core/Typography';
@@ -7,13 +8,20 @@ import ImageGrid from './ImageGrid';
 import ImageSlide from './ImageSlide'
 import Hidden from '@material-ui/core/Hidden'
 import Grid from '@material-ui/core/Grid'
+import Button from '@material-ui/core/Button'
 import Service from './Service';
 import Review from './Review';
+import CreateReview from './CreateReview'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(({
     text: {
         margin: '5px 0px 5px 0px'
+    },
+    comment: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     }
 }))
 
@@ -41,6 +49,7 @@ function checkIsDayOpen(availableWeekday) {
 }
 
 function RoomInfoPage() {
+    const context = useContext(AuthenticationContext)
     const classes = useStyles()
     const { id } = useParams();
     const [state, setState] = useState({
@@ -58,6 +67,7 @@ function RoomInfoPage() {
         image: [],
         service: [],
         review: [],
+        isReviewing: false
     });
 
     const fetchRoom = useCallback(async () => {
@@ -77,8 +87,19 @@ function RoomInfoPage() {
             image: res.data.imageUrl,
             service: res.data.services,
             review: res.data.reviews,
+            isReviewing: false
         })
+        console.log(res.data.reviews)
     }, [id])
+
+    const handleReview = () => {
+        setState(prevState => {
+            return {
+                ...prevState,
+                isReviewing: !prevState.isReviewing
+            }
+        })
+    }
 
     useEffect(() => {
         fetchRoom()
@@ -91,7 +112,7 @@ function RoomInfoPage() {
             <Typography className={classes.text} variant="h3">{state.title}</Typography>
             <Typography className={classes.text} variant="h6">{state.description}</Typography>
             <Typography className={classes.text} variant="subtitle1">提供者：{state.owner}</Typography>
-            <Typography className={classes.text} variant="suttitle1">地址：{state.flat} 室 {state.floor} 樓 {state.building} {state.street} {state.region}</Typography>
+            <Typography className={classes.text} variant="subtitle1">地址：{state.flat} 室 {state.floor} 樓 {state.building} {state.street} {state.region}</Typography>
             <Typography className={classes.text} variant="subtitle1">營業時間： {state.openingTime}:00 - {state.closingTime}:00</Typography>
             <Typography className={classes.text} variant="subtitle1">營業日子：逢星期{availability.map((el, i) => <span key={i}>&nbsp;{weekday[el]}&nbsp;</span>)}</Typography>
             <Hidden only={['xl', 'lg', 'md']}>
@@ -121,22 +142,29 @@ function RoomInfoPage() {
                     )}
                 </Grid>
                 <Grid item md={6} sm={12} xs={12}>
-                    <div className={classes.sort}>
+                    <div className={classes.comment}>
                         <Typography className={classes.text} variant="h6">用家評價</Typography>
+                        <Button onClick={() => handleReview()}>建立評價</Button>
                     </div>
-                    {!state.review ?
+
+                    {state.review.length ?
                         <div>
-                            {state.review.map(el =>
-                                <Review
-                                    key={el._id}
-                                    author={el.author.username}
-                                    reviewBody={el.reviewBody}
-                                    rating={el.rating}
-                                    createdAt={el.createdAt}
-                                />
-                            )}
-                        </div> :
-                        <Typography variant="subtitle2">暫時沒有留言</Typography>
+                            {state.isReviewing ?
+                                <CreateReview />
+                                :
+                                state.review.map(el =>
+                                    <Review
+                                        key={el._id}
+                                        author={el.author.username}
+                                        reviewBody={el.reviewBody}
+                                        rating={el.rating}
+                                        createdAt={el.createdAt}
+                                    />
+                                )
+                            }
+                        </div>
+                        :
+                        <Typography variant="subtitle2" align="center">暫時沒有留言</Typography>
                     }
                 </Grid>
             </Grid>

@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const reviewController = require('../controller/reviewController');
+const { createReview, getOneReview, deleteOneReview } = require('../controller/reviewController');
+const { isAuthorised } = require('../utils/middleware')
 
-router.post('/', reviewController.createReview);
+router.post('/', isAuthorised, createReview);
 
-router.get('/:reviewId', reviewController.getOneReview);
+router.get('/:reviewId', getOneReview);
 
-router.delete('/:reviewId', reviewController.deleteOneReview);
+router.delete('/:reviewId', deleteOneReview);
 
 module.exports = router;
