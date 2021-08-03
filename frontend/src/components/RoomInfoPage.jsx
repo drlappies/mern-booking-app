@@ -147,25 +147,20 @@ function RoomInfoPage() {
                         <Button onClick={() => handleReview()}>建立評價</Button>
                     </div>
 
-                    {state.review.length ?
-                        <div>
-                            {state.isReviewing ?
-                                <CreateReview />
-                                :
-                                state.review.map(el =>
-                                    <Review
-                                        key={el._id}
-                                        author={el.author.username}
-                                        reviewBody={el.reviewBody}
-                                        rating={el.rating}
-                                        createdAt={el.createdAt}
-                                    />
-                                )
-                            }
-                        </div>
+                    {state.isReviewing ?
+                        <CreateReview />
                         :
-                        <Typography variant="subtitle2" align="center">暫時沒有留言</Typography>
+                        state.review.map(el =>
+                            <Review
+                                key={el._id}
+                                author={el.author.username}
+                                reviewBody={el.reviewBody}
+                                rating={el.rating}
+                                createdAt={el.createdAt}
+                            />
+                        )
                     }
+                    {state.review.length ? null : <Typography variant="subtitle2" align="center">暫時沒有留言</Typography>}
                 </Grid>
             </Grid>
         </Container>

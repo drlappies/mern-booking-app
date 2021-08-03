@@ -10,11 +10,10 @@ import Slider from '@material-ui/core/Slider';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
-import { TimePicker } from "@material-ui/pickers";
+import MenuItem from '@material-ui/core/MenuItem';
 import { DropzoneArea } from 'material-ui-dropzone';
-import moment from 'moment';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import axios from 'axios';
 
 const weekdayMarks = [
@@ -57,6 +56,25 @@ const convertWeekdays = (startDay, endDay) => {
     return weekdays
 }
 
+const convertMilitaryTime = (openingTime, closingTime, openingAMPM, closingAMPM, isNonstop) => {
+    if (isNonstop) {
+        return { openingTime: 0, closingTime: 23 }
+    }
+    if (openingAMPM === 'AM' && closingAMPM === 'AM') {
+        return { openingTime: openingTime, closingTime: closingTime }
+    } else if (openingAMPM === 'AM' && closingAMPM === 'PM') {
+        closingTime = closingTime + 12
+        return { openingTime: openingTime, closingTime: closingTime }
+    } else if (openingAMPM === 'PM' && closingAMPM === 'AM') {
+        openingTime = openingTime + 12
+        return { openingTime: openingTime, closingTime: closingTime }
+    } else {
+        openingTime = openingTime + 12
+        closingTime = closingTime + 12
+        return { openingTime: openingTime, closingTime: closingTime }
+    }
+}
+
 const useStyles = makeStyles({
     form: {
         padding: '25px',
@@ -67,6 +85,12 @@ const useStyles = makeStyles({
     },
     button: {
         margin: "15px 0 15px 0"
+    },
+    timepick: {
+        width: '150px'
+    },
+    time: {
+        width: '60px'
     }
 })
 
@@ -75,7 +99,7 @@ function CreateRoom() {
     const { enqueueSnackbar } = useSnackbar();
     const { checkPermission, isOwner } = useContext(AuthenticationContext);
     const classes = useStyles()
-    const [form, setForm] = useState({
+    const [state, setState] = useState({
         title: '',
         description: '',
         street: '',
@@ -84,9 +108,12 @@ function CreateRoom() {
         building: '',
         region: '',
         weekday: [0, 6],
+        openingTime: 12,
+        closingTime: 12,
+        openingAMPM: 'AM',
+        closingAMPM: 'AM',
+        isNonstop: false
     })
-    const [openingTime, setOpeningTime] = useState(moment().clone().startOf('hour'));
-    const [closingTime, setClosingTime] = useState(moment().clone().startOf('hour'));
     const [image, setImage] = useState();
 
     useEffect(() => {
@@ -94,22 +121,27 @@ function CreateRoom() {
     }, [checkPermission, isOwner])
 
     const handleChange = (e) => {
-        const { name, value } = e.target
-        setForm({
-            ...form,
-            [name]: value
+        const name = e.target.name
+        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
+        setState(prevState => {
+            return {
+                ...prevState,
+                [name]: value
+            }
         })
     }
 
     const handleDaySlide = (e, value) => {
-        setForm({
-            ...form,
-            weekday: value
+        setState(prevState => {
+            return {
+                ...prevState,
+                weekday: value
+            }
         })
     }
 
     const handleReset = () => {
-        setForm({
+        setState({
             title: '',
             description: '',
             street: '',
@@ -118,27 +150,31 @@ function CreateRoom() {
             building: '',
             region: '',
             weekday: [0, 6],
+            openingTime: 12,
+            closingTime: 12,
+            openingAMPM: 'AM',
+            closingAMPM: 'AM',
+            isNonstop: false
         })
-        setOpeningTime(moment().clone().startOf('hour'));
-        setClosingTime(moment().clone().startOf('hour'));
     }
 
     const handleSubmit = async (e) => {
         try {
             e.preventDefault();
-            const [startDay, endDay] = form.weekday
+            const [startDay, endDay] = state.weekday
             const weekdays = convertWeekdays(startDay, endDay)
+            const { openingTime, closingTime } = convertMilitaryTime(state.openingTime, state.closingTime, state.openingAMPM, state.closingAMPM, state.isNonstop)
             const payload = {
                 ...weekdays,
-                title: form.title,
-                description: form.description,
-                street: form.street,
-                floor: form.floor,
-                flat: form.flat,
-                building: form.building,
-                region: form.region,
-                openingTime: openingTime._d.getHours().toString(),
-                closingTime: closingTime._d.getHours().toString(),
+                title: state.title,
+                description: state.description,
+                street: state.street,
+                floor: state.floor,
+                flat: state.flat,
+                building: state.building,
+                region: state.region,
+                openingTime: openingTime,
+                closingTime: closingTime
             }
             let formData = new FormData();
             for (let key in payload) {
@@ -154,6 +190,7 @@ function CreateRoom() {
                     'x-auth-token': window.localStorage.getItem('token')
                 }
             })
+            console.log(res)
             history.push(`/room/${res.data._id}/management`);
             enqueueSnackbar(`已成功建立房間 ${res.data.title}`, { variant: 'success', autoHideDuration: 3000 })
         } catch (err) {
@@ -181,7 +218,7 @@ function CreateRoom() {
                                     name="title"
                                     label="琴房名稱"
                                     variant="outlined"
-                                    value={form.title}
+                                    value={state.title}
                                     onChange={handleChange}
                                     size="small"
                                 />
@@ -193,7 +230,7 @@ function CreateRoom() {
                                     name="description"
                                     label="琴房介紹"
                                     variant="outlined"
-                                    value={form.description}
+                                    value={state.description}
                                     onChange={handleChange}
                                     size="small"
                                 />
@@ -208,7 +245,7 @@ function CreateRoom() {
                                     name="floor"
                                     label="樓層"
                                     variant="outlined"
-                                    value={form.floor}
+                                    value={state.floor}
                                     onChange={handleChange}
                                     size="small"
                                 />
@@ -220,7 +257,7 @@ function CreateRoom() {
                                     name="flat"
                                     label="單位"
                                     variant="outlined"
-                                    value={form.flat}
+                                    value={state.flat}
                                     onChange={handleChange}
                                     size="small"
                                 />
@@ -232,7 +269,7 @@ function CreateRoom() {
                                     name="building"
                                     label="大廈"
                                     variant="outlined"
-                                    value={form.building}
+                                    value={state.building}
                                     onChange={handleChange}
                                     size="small"
                                 />
@@ -244,7 +281,7 @@ function CreateRoom() {
                                     name="street"
                                     label="街道"
                                     variant="outlined"
-                                    value={form.street}
+                                    value={state.street}
                                     onChange={handleChange}
                                     size="small"
                                 />
@@ -255,7 +292,7 @@ function CreateRoom() {
                                     name="region"
                                     label="區域"
                                     variant="outlined"
-                                    value={form.region}
+                                    value={state.region}
                                     onChange={handleChange}
                                     size="small"
                                 />
@@ -269,33 +306,100 @@ function CreateRoom() {
                                     steps={6}
                                     min={0}
                                     max={6}
-                                    value={form.weekday}
+                                    value={state.weekday}
                                     onChange={handleDaySlide}
                                     size="small"
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <Typography variant="body1">日期</Typography>
+                            <Grid item>
+                                <TextField
+                                    disabled={state.isNonstop}
+                                    className={classes.timepick}
+                                    select
+                                    label="開門時間"
+                                    name="openingTime"
+                                    value={state.openingTime}
+                                    onChange={(e) => handleChange(e)}
+                                >
+                                    <MenuItem value={12}>12:00</MenuItem>
+                                    <MenuItem value={11}>11:00</MenuItem>
+                                    <MenuItem value={10}>10:00</MenuItem>
+                                    <MenuItem value={9}>9:00</MenuItem>
+                                    <MenuItem value={8}>8:00</MenuItem>
+                                    <MenuItem value={7}>7:00</MenuItem>
+                                    <MenuItem value={6}>6:00</MenuItem>
+                                    <MenuItem value={5}>5:00</MenuItem>
+                                    <MenuItem value={4}>4:00</MenuItem>
+                                    <MenuItem value={3}>3:00</MenuItem>
+                                    <MenuItem value={2}>2:00</MenuItem>
+                                    <MenuItem value={1}>1:00</MenuItem>
+                                </TextField>
                             </Grid>
                             <Grid item>
-                                <MuiPickersUtilsProvider utils={MomentUtils}>
-                                    <TimePicker
-                                        label="開門時間"
-                                        value={openingTime}
-                                        minutesStep={60}
-                                        onChange={setOpeningTime}
-                                    />
-                                </MuiPickersUtilsProvider>
+                                <TextField
+                                    disabled={state.isNonstop}
+                                    className={classes.time}
+                                    select
+                                    label="AM/PM"
+                                    name="openingAMPM"
+                                    value={state.openingAMPM}
+                                    onChange={(e) => handleChange(e)}
+                                >
+                                    <MenuItem value={'AM'}>AM</MenuItem>
+                                    <MenuItem value={'PM'}>PM</MenuItem>
+                                </TextField>
                             </Grid>
                             <Grid item>
-                                <MuiPickersUtilsProvider utils={MomentUtils}>
-                                    <TimePicker
-                                        label="開門時間"
-                                        value={closingTime}
-                                        minutesStep={60}
-                                        onChange={setClosingTime}
-                                    />
-                                </MuiPickersUtilsProvider>
+                                <TextField
+                                    disabled={state.isNonstop}
+                                    className={classes.timepick}
+                                    select
+                                    label="關門時間"
+                                    name="closingTime"
+                                    value={state.closingTime}
+                                    onChange={(e) => handleChange(e)}
+                                >
+                                    <MenuItem value={12}>12:00</MenuItem>
+                                    <MenuItem value={11}>11:00</MenuItem>
+                                    <MenuItem value={10}>10:00</MenuItem>
+                                    <MenuItem value={9}>9:00</MenuItem>
+                                    <MenuItem value={8}>8:00</MenuItem>
+                                    <MenuItem value={7}>7:00</MenuItem>
+                                    <MenuItem value={6}>6:00</MenuItem>
+                                    <MenuItem value={5}>5:00</MenuItem>
+                                    <MenuItem value={4}>4:00</MenuItem>
+                                    <MenuItem value={3}>3:00</MenuItem>
+                                    <MenuItem value={2}>2:00</MenuItem>
+                                    <MenuItem value={1}>1:00</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid item>
+                                <TextField
+                                    disabled={state.isNonstop}
+                                    className={classes.time}
+                                    select
+                                    label="AM/PM"
+                                    name="closingAMPM"
+                                    value={state.closingAMPM}
+                                    onChange={(e) => handleChange(e)}
+                                >
+                                    <MenuItem value={'AM'}>AM</MenuItem>
+                                    <MenuItem value={'PM'}>PM</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid item>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            value={state.isNonstop}
+                                            onChange={(e) => handleChange(e)}
+                                            name="isNonstop"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="24小時"
+                                />
+
                             </Grid>
                             <Grid item xs={12}>
                                 <Typography variant="body1">圖片上傳</Typography>

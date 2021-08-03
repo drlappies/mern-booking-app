@@ -36,12 +36,11 @@ function RoomManagement() {
         <Container>
             <Router>
                 <Grid container spacing={1}>
-                    <Grid item xs={4}>
+                    <Grid item xs={2}>
                         <Paper elevation={3} className={classes.view}>
                             {state.map((el, i) =>
                                 <NavLink key={i} to={`/management/${el._id}`} style={{ textDecoration: 'none' }} >
                                     <Roomnav
-                                        id={el._id}
                                         title={el.title}
                                         createdAt={el.createdAt}
                                         updatedAt={el.updatedAt}
@@ -50,7 +49,7 @@ function RoomManagement() {
                             )}
                         </Paper>
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={10}>
                         <Paper elevation={3} className={classes.view}>
                             <Switch>
                                 {state.map((el, i) =>

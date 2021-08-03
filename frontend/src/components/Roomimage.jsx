@@ -92,7 +92,6 @@ function Roomimage(props) {
                                     onChange={(e) => handleUpload(e, el.imageUrl, el.imageKey)}
                                 />
                             </Button>
-                            <Button>刪除</Button>
                         </ListItemSecondaryAction>
                     </ListItem>
                 )}
