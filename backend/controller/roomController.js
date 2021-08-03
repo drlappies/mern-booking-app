@@ -1,12 +1,12 @@
 const Room = require('../model/Room');
 const Service = require('../model/Service');
+const User = require('../model/User');
 const { imageDestroy } = require('../utils/s3');
 
 module.exports.getRooms = async (req, res) => {
     try {
         const allRooms = await Room.find()
             .populate('owner')
-            .where('imageUrl.4').exists()
             .where('services.0').exists()
         res.json(allRooms)
     } catch {
@@ -41,6 +41,7 @@ module.exports.getOneRoom = async (req, res, next) => {
 
 module.exports.createRoom = async (req, res, next) => {
     try {
+        const user = await User.findById(req.user.id)
         const { monday, tuesday, wednesday, thursday, friday, saturday, sunday, title, description, street, floor, flat, building, region, openingTime, closingTime } = req.body
         const newRoom = new Room({
             owner: req.user.id,
@@ -69,6 +70,8 @@ module.exports.createRoom = async (req, res, next) => {
             newRoom.imageUrl.push(el.location);
             newRoom.imageKey.push(el.key)
         })
+        user.room.push(newRoom);
+        await user.save()
         await newRoom.save()
         res.json(newRoom)
     } catch (err) {
