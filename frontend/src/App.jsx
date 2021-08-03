@@ -23,6 +23,9 @@ import User from './components/User';
 import Transaction from './components/Transaction'
 import Record from './components/Record'
 import RecordSearch from './components/RecordSearch'
+import OwnerRoute from './components/OwnerRoute'
+import FinderRoute from './components/FinderRoute';
+import Notfound from './components/Notfound';
 import './App.css'
 
 function App() {
@@ -39,18 +42,19 @@ function App() {
                 <Route exact path="/room" component={Catalog} />
                 <Route exact path="/user" component={User} />
                 <Route exact path="/user/login" component={Login} />
-                <Route exact path="/user/record" component={Transaction} />
+                <FinderRoute exact path="/user/record" component={Transaction} />
                 <Route exact path="/user/register" component={Register} />
                 <Route exact path="/user/register/roomfinder" component={RegisterRoomfinder} />
                 <Route exact path="/user/register/roomowner" component={RegisterRoomowner} />
-                <Route exact path="/management" component={RoomManagement} />
-                <Route exact path="/appointment" component={Record} />
-                <Route exact path="/appointment/search" component={RecordSearch} />
-                <Route exact path="/room/create" component={CreateRoom} />
+                <OwnerRoute exact path="/management" component={RoomManagement} />
+                <FinderRoute exact path="/appointment" component={Record} />
+                <FinderRoute exact path="/appointment/search" component={RecordSearch} />
+                <OwnerRoute exact path="/room/create" component={CreateRoom} />
                 <Route exact path="/room/:id" component={RoomInfoPage} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment" component={Appointment} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment/confirmation" component={Confirmation} />
                 <Route exact path="/room/:roomId/service/:serviceId/appointment/payment" component={Payment} />
+                <Route exact path="*" component={Notfound} />
               </Switch>
             </ThemeProvider>
           </AppointmentProvider>
