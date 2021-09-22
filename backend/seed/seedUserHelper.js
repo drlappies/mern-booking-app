@@ -11,6 +11,7 @@ const userHelper = [
         permission: 'finder',
         username: 'roomfinder',
         password: 'roomfinder',
+        name: "finder"
     }
 ]
 

@@ -14,7 +14,7 @@ function ImageSlide(props) {
     const items = props.imgArr
     return (
         <Carousel animation="slide" swipe={true} autoPlay={false}>
-            {items.map((item, i) => <img className={classes.img} key={i} src={item} alt="" />)}
+            {items.map((item, i) => <img className={classes.img} key={i} src={item.url} alt="" />)}
         </Carousel>
     )
 }

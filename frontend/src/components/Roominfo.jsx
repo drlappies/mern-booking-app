@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -21,19 +21,6 @@ function Roominfo(props) {
         descriptionEdit: false
     });
 
-    const fetchData = useCallback(async () => {
-        const res = await axios.get(`/room/${props.id}`)
-        setState({
-            title: res.data.title,
-            description: res.data.description,
-            isEditing: false
-        })
-    }, [props.id])
-
-    useEffect(() => {
-        fetchData()
-    }, [fetchData])
-
     const handleEdit = (action) => {
         setState(prevState => ({
             title: prevState.title,
@@ -52,7 +39,7 @@ function Roominfo(props) {
             await axios.put(`/room/${props.id}`, payload, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
-            fetchData();
+
             enqueueSnackbar('更新成功', { variant: 'success', autoHideDuration: 1500 })
         } catch (err) {
             enqueueSnackbar(`失敗：${err}`, { variant: 'success', autoHideDuration: 1500 })
@@ -61,7 +48,7 @@ function Roominfo(props) {
     }
 
     const handleDiscard = () => {
-        fetchData();
+
     }
 
     const handleChange = (e) => {
@@ -75,11 +62,11 @@ function Roominfo(props) {
 
     return (
         <div>
-            <List dense={true} subheader={<Typography>房間資訊</Typography>}>
+            <List dense={true}>
                 <ListItem>
                     {!state.titleEdit ?
                         <>
-                            <ListItemText primary={'房間名稱'} secondary={state.title} />
+                            <ListItemText primary={'房間名稱'} secondary={props.title} />
                             <ListItemSecondaryAction>
                                 <IconButton onClick={() => handleEdit('TITLE')} >
                                     <EditIcon />
@@ -94,7 +81,7 @@ function Roominfo(props) {
                                     margin="none"
                                     name="title"
                                     type="text"
-                                    value={state.title}
+
                                     onChange={(e) => handleChange(e)}
                                 />
                             } />

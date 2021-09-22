@@ -7,19 +7,11 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
-const day = [
-    '星期日',
-    '星期一',
-    '星期二',
-    '星期三',
-    '星期四',
-    '星期五',
-    '星期六',
-]
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableRow from '@material-ui/core/TableRow';
 
 function Confirmation() {
     const history = useHistory();
@@ -41,13 +33,17 @@ function Confirmation() {
                     <Typography variant="h5">確定已選擇時段</Typography>
                 </Grid>
                 <Grid item>
-                    <List>
-                        {selectedTimeslots.map((el, i) =>
-                            <ListItem key={i}>
-                                <ListItemText>{el.year}年{el.month}月{el.date}日 {day[el.day]} {el.hour}:00 到 {el.hour + 1}:00</ListItemText>
-                            </ListItem>
-                        )}
-                    </List>
+                    <TableContainer>
+                        <Table>
+                            <TableBody>
+                                {selectedTimeslots.map((el, i) =>
+                                    <TableRow key={i}>
+                                        <TableCell>{el.year}年{el.month}月{el.date}日 {el.hour}:00 - {el.hour + 1}:00</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Grid>
             </Grid>
         </Container>

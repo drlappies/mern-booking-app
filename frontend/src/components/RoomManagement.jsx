@@ -1,32 +1,31 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Switch, Route, NavLink } from 'react-router-dom'
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Roomnav from './Roomnav'
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { AuthenticationContext } from './contexts/AuthenticationContext'
+import { TabPanel, a11yProps } from './Tabpanel'
 import Roomview from './Roomview';
-import { makeStyles } from '@material-ui/core/styles';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import axios from 'axios'
-
-const useStyles = makeStyles(() => ({
-    view: {
-        height: '85vh',
-        overflowY: 'scroll',
-    }
-}))
+import Container from '@material-ui/core/Container'
 
 function RoomManagement() {
-    const [state, setState] = useState([])
-    const classes = useStyles();
+    const auth = useContext(AuthenticationContext)
+    const [state, setState] = useState({
+        room: [],
+        tab: 0,
+    })
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await axios.get('/room/management', { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
-            setState(res.data);
+            const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
+            setState(prevState => { return { ...prevState, room: res.data.room } })
         } catch (err) {
             console.log(err)
         }
-    }, [])
+    }, [auth.state.uid])
+
+    const handleSwitch = (event, newValue) => {
+        setState(prevState => { return { ...prevState, tab: newValue } })
+    };
 
     useEffect(() => {
         fetchData()
@@ -34,36 +33,33 @@ function RoomManagement() {
 
     return (
         <Container>
-            <Router>
-                <Grid container spacing={1}>
-                    <Grid item xs={2}>
-                        <Paper elevation={3} className={classes.view}>
-                            {state.map((el, i) =>
-                                <NavLink key={i} to={`/management/${el._id}`} style={{ textDecoration: 'none' }} >
-                                    <Roomnav
-                                        title={el.title}
-                                        createdAt={el.createdAt}
-                                        updatedAt={el.updatedAt}
-                                    />
-                                </NavLink>
-                            )}
-                        </Paper>
-                    </Grid>
-                    <Grid item xs={10}>
-                        <Paper elevation={3} className={classes.view}>
-                            <Switch>
-                                {state.map((el, i) =>
-                                    <Route exact path={`/management/${el._id}`} key={i}>
-                                        <Roomview
-                                            id={el._id}
-                                        />
-                                    </Route>
-                                )}
-                            </Switch>
-                        </Paper>
-                    </Grid>
-                </Grid>
-            </Router>
+            <Tabs
+                variant="scrollable"
+                value={state.tab}
+                name="tab"
+                onChange={handleSwitch}
+            >
+                {state.room.map((el, i) =>
+                    <Tab label={el.title} key={i}  {...a11yProps(i)} />
+                )}
+            </Tabs>
+            {state.room.map((el, i) =>
+                <TabPanel value={state.tab} index={i} key={i}>
+                    <Roomview
+                        id={el._id}
+                        address={el.address}
+                        openWeekday={el.openWeekday}
+                        images={el.images}
+                        title={el.title}
+                        description={el.description}
+                        openingTime={el.openingTime}
+                        closingTime={el.closingTime}
+                        createdAt={el.createdAt}
+                        updatedAt={el.updatedAt}
+                        fetch={fetchData}
+                    />
+                </TabPanel>
+            )}
         </Container>
     )
 }

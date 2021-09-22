@@ -23,21 +23,6 @@ function Roomaddress(props) {
         isEditing: false
     })
 
-    const fetchData = useCallback(async () => {
-        const res = await axios.get(`/room/${props.id}`);
-        setState({
-            flat: res.data.address.flat,
-            floor: res.data.address.floor,
-            building: res.data.address.building,
-            street: res.data.address.street,
-            region: res.data.address.region,
-            isEditing: false
-        })
-    }, [props.id])
-
-    useEffect(() => {
-        fetchData()
-    }, [fetchData])
 
     const handleEdit = () => {
         setState(prevState => ({
@@ -47,7 +32,7 @@ function Roomaddress(props) {
     }
 
     const handleDiscard = () => {
-        fetchData();
+
     }
 
     const handleSave = async () => {
@@ -66,7 +51,7 @@ function Roomaddress(props) {
                     'x-auth-token': window.localStorage.getItem('token')
                 }
             })
-            fetchData()
+    
             enqueueSnackbar('更新成功', { variant: 'success', autoHideDuration: 1500 })
         } catch (err) {
             enqueueSnackbar(`錯誤：${err}`, { variant: 'success', autoHideDuration: 1500 })

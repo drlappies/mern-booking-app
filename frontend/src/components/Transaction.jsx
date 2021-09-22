@@ -1,38 +1,80 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
+import CardActions from '@material-ui/core/CardActions';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios'
-
-const useStyles = makeStyles(() => ({
-    view: {
-        height: '85vh',
-        overflowY: 'scroll',
-    }
-}))
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 function Transaction() {
-    const classes = useStyles()
     const [state, setState] = useState({
-        invoices: []
+        isExpanded: [],
+        invoices: [],
+        appointments: [],
+        amount: 0,
+        serviceName: "",
+        servicePricing: 0,
+        serviceProvider: "",
+        invoiceid: ""
     })
 
     const fetchData = useCallback(async () => {
-        const res = await axios.get('/transaction/invoices', {
-            headers: {
-                'x-auth-token': window.localStorage.getItem('token')
-            }
-        })
-        setState({
-            invoices: res.data.invoices
-        })
+        try {
+            const res = await axios.get('/api/invoice', {
+                headers: { 'x-auth-token': window.localStorage.getItem('token') }
+            })
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    invoices: res.data.invoice,
+                    isExpanded: Array(res.data.invoice.length).fill(false)
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
     }, [])
+
+    const fetchInvoice = async (id, index) => {
+        try {
+            if (state.isExpanded[index]) {
+                return setState(prevState => {
+                    return {
+                        ...prevState,
+                        isExpanded: prevState.isExpanded.map((el, i) => i === index ? !el : false)
+                    }
+                })
+            }
+
+            const res = await axios.get(`/api/invoice/${id}`, {
+                headers: { 'x-auth-token': window.localStorage.getItem('token') }
+            })
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    isOpen: true,
+                    appointments: res.data.invoice.appointment,
+                    amount: res.data.invoice.amount,
+                    serviceName: res.data.invoice.service.name,
+                    servicePricing: res.data.invoice.service.pricing,
+                    serviceProvider: res.data.invoice.owner.title,
+                    invoiceid: res.data.invoice._id,
+                    isExpanded: prevState.isExpanded.map((el, i) => i === index ? !el : false)
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     useEffect(() => {
         fetchData()
@@ -40,61 +82,69 @@ function Transaction() {
 
     return (
         <Container>
-            <Grid container justifyContent="center">
-                <Paper className={classes.view}>
-                    <List>
-                        {state.invoices.map((el, i) =>
-                            <ListItem>
-                                <Card>
+            <Grid container spacing={1} justifyContent="center">
+                {state.invoices.map((el, i) =>
+                    <Grid item key={i} xs={12} sm={12} md={12} lg={10} xl={10}>
+                        <Card raised>
+                            <Grid container justifyContent="space-between" alignItems="center">
+                                <Grid item xs={12} sm={11} md={11}>
                                     <CardContent>
-                                        <Grid container spacing={10}>
-                                            <Grid item>
-                                                <ListItemText
-                                                    primary={'id'}
-                                                    secondary={el._id}
-                                                />
-                                                <ListItemText
-                                                    primary={'時間'}
-                                                    secondary={`${new Date(el.createdAt).getFullYear()}年${new Date(el.createdAt).getMonth() + 1}月${new Date(el.createdAt).getDate()}日 ${new Date(el.createdAt).getHours()}時${new Date(el.createdAt).getMinutes()}分${new Date(el.createdAt).getSeconds()}秒`}
-                                                />
-                                                <ListItemText
-                                                    primary={'服務'}
-                                                    secondary={el.service.name}
-                                                />
-                                                <ListItemText
-                                                    primary={'店家'}
-                                                    secondary={el.owner.title}
-                                                />
-                                                <ListItemText
-                                                    primary={'總計'}
-                                                    secondary={`$${el.amount}`}
-                                                />
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} sm={12} md={3}>
+                                                <Typography variant="subtitle1" color="textPrimary">訂單號碼</Typography>
+                                                <Typography variant="subtitle2" color="textSecondary">{el._id}</Typography>
                                             </Grid>
-                                            <Grid item>
-                                                <ListItemText
-                                                    primary={'預訂時段'}
-                                                    secondary={
-                                                        <List>
-                                                            {el.appointment.map((n, i) =>
-                                                                <ListItem key={i}>
-                                                                    <ListItemText
-                                                                        primary={`${n.year}年${n.month}月${n.date}日 ${n.hour}:00 - ${n.hour + 1}:00`}
-                                                                    />
-                                                                </ListItem>
-                                                            )}
-                                                        </List>
-                                                    }
-                                                />
+                                            <Grid item xs={12} sm={4} md={3} >
+                                                <Typography variant="subtitle1" color="textPrimary">預訂服務</Typography>
+                                                <Typography variant="subtitle2" color="textSecondary">{el.service.name}</Typography>
+                                            </Grid>
+                                            <Grid item xs={12} sm={4} md={3}>
+                                                <Typography variant="subtitle1" color="textPrimary">店家</Typography>
+                                                <Typography variant="subtitle2" color="textSecondary">{el.owner.title}</Typography>
+                                            </Grid>
+                                            <Grid item xs={12} sm={4} md={3}>
+                                                <Typography variant="subtitle1" color="textPrimary">總計</Typography>
+                                                <Typography variant="subtitle2" color="textSecondary">{el.amount}</Typography>
                                             </Grid>
                                         </Grid>
                                     </CardContent>
-                                </Card>
-                            </ListItem>
-                        )}
-                    </List>
-                </Paper>
+                                </Grid>
+                                <Grid item xs={12} sm={1} md={1}>
+                                    <CardActions>
+                                        <IconButton onClick={() => fetchInvoice(el._id, i)}>
+                                            <ExpandMoreIcon />
+                                        </IconButton>
+                                    </CardActions>
+                                </Grid>
+                            </Grid>
+                            <Collapse in={state.isExpanded[i]} timeout="auto" unmountOnExit>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>預訂時間</TableCell>
+                                            <TableCell>小計</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {state.appointments.map((el, i) =>
+                                            <TableRow key={i}>
+                                                <TableCell>{el.year}年{el.month}月{el.date}日{el.hour}:00-{el.hour + 1}:00</TableCell>
+                                                <TableCell>{state.servicePricing}</TableCell>
+                                            </TableRow>
+                                        )}
+                                        <TableRow>
+                                            <TableCell>總共</TableCell>
+                                            <TableCell>{state.amount}</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </Collapse>
+                        </Card>
+
+                    </Grid>
+                )}
             </Grid>
-        </Container>
+        </Container >
     )
 }
 

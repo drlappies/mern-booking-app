@@ -47,7 +47,6 @@ function RecordSearch() {
                     'x-auth-token': window.localStorage.getItem('token')
                 }
             })
-            console.log(res.data)
             if (res.data.id) {
                 setState(prevState => {
                     return {

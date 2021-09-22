@@ -32,7 +32,7 @@ function Roomservice(props) {
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await axios.get(`/room/${props.id}`)
+            const res = await axios.get(`/api/room/${props.id}`)
             setState(prevState => ({
                 isAdding: false,
                 services: res.data.services,

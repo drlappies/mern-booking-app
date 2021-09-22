@@ -1,52 +1,65 @@
-const Appointment = require('../model/Appointment');
-const Service = require('../model/Service');
-const Invoice = require('../model/Invoice');
-const isServiceAvailable = require('../utils/isServiceAvailable');
-const isTimeslotAvailable = require('../utils/isTimeslotAvailable');
+const { fetchAppointments, createAppointment, checkTimeslotAvailability, checkServiceAvailability, fetchAppointment } = require('../service/appointmentService')
+const { obtainUserById } = require('../service/userService')
 
-module.exports.getAppointment = async (req, res, next) => {
+module.exports.getAppointments = async (req, res, next) => {
     try {
-        const appointments = await Appointment.find({
-            $and: [
-                { service: req.params.serviceId },
-                { room: req.params.roomId },
-            ]
-        })
-        res.json(appointments)
+        const { roomid, serviceid } = req.params;
+        const appointments = await fetchAppointments(roomid, serviceid)
+        return res.status(200).json(appointments)
     } catch (err) {
         next(err);
     }
 }
 
+module.exports.getAppointment = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const appointment = await fetchAppointment(id)
+        return res.status(200).json(appointment)
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports.makeAppointment = async (req, res, next) => {
     try {
-        const { appointments } = req.body;
+        const { appointments, roomId, serviceId } = req.body;
         const { id } = req.user;
-        const { roomId, serviceId } = req.params;
-        if (appointments.length > 5) throw new Error('Exceeded booking limited')
-        await isTimeslotAvailable(appointments);
-        await isServiceAvailable(appointments, roomId);
-        const bookings = appointments.map(el => ({
-            user: id,
-            service: serviceId,
-            room: roomId,
-            year: el.year,
-            month: el.month,
-            date: el.date,
-            hour: el.hour
-        }))
-        const newAppointments = await Appointment.insertMany(bookings);
-        const service = await Service.findById(serviceId).populate('owner');
-        const owner = service.owner._id
-        const invoice = await new Invoice({
-            finder: id,
-            owner: owner,
-            service: service,
-            amount: bookings.length * service.pricing,
-            appointment: newAppointments.map(el => el._id)
+
+        const user = await obtainUserById(id)
+        if (user.permission !== 'Finder') {
+            return res.status(400).json({
+                error: 'Owner not allowed to make appointments.'
+            })
+        }
+        if (appointments.length > 5) {
+            return res.status(400).json({
+                error: 'Exceeded booking limit'
+            })
+        }
+        const currentTime = new Date();
+        appointments.forEach(el => {
+            if (currentTime.getFullYear() >= el.year && currentTime.getMonth() + 1 >= el.month && currentTime.getDate() >= el.date && currentTime.getHours() >= el.hour) {
+                return res.status(400).json({
+                    error: 'Cannot time travel.'
+                })
+            }
         })
-        await invoice.save()
-        res.json(newAppointments)
+        const timeslots = await checkTimeslotAvailability(appointments)
+        if (timeslots.length > 0) {
+            return res.status(400).json({
+                error: 'Timeslot taken'
+            })
+        }
+        if (await checkServiceAvailability(appointments, roomId)) {
+            return res.status(400).json({
+                error: 'Room not open yet.'
+            })
+        }
+        const newAppointments = await createAppointment(id, roomId, serviceId, appointments)
+        return res.status(200).json({
+            success: '預訂成功！'
+        })
     } catch (err) {
         next(err)
     }

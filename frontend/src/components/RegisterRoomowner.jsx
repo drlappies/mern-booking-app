@@ -10,12 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
     form: {
-        width: "300px",
-        height: "auto",
         padding: "30px"
-    },
-    input: {
-        margin: '15px 0px 15px 0px'
     },
     button: {
         margin: "15px 0 15px 0"
@@ -24,7 +19,7 @@ const useStyles = makeStyles(() => ({
 
 function RegisterRoomowner() {
     const classes = useStyles();
-    const { handleRegister } = useContext(AuthenticationContext);
+    const { handleRegisterOwner } = useContext(AuthenticationContext);
     const [form, setForm] = useState({
         username: '',
         password: '',
@@ -42,64 +37,26 @@ function RegisterRoomowner() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleRegister(form.username, form.password, 'owner', form.title)
+        handleRegisterOwner(form.username, form.password, form.confirmPassword, form.title)
     }
 
     return (
         <Container>
             <Grid container justifyContent="center">
-                <Paper className={classes.form} elevation={4} >
-                    <Typography variant="h6">建立店家用戶帳號</Typography>
-                    <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            className={classes.input}
-                            name="username"
-                            type="text"
-                            size="small"
-                            label="帳號"
-                            variant="outlined"
-                            value={form.username}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            fullWidth
-                            className={classes.input}
-                            name="password"
-                            size="small"
-                            label="密碼"
-                            type="password"
-                            variant="outlined"
-                            value={form.password}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            fullWidth
-                            className={classes.input}
-                            name="confirmPassword"
-                            size="small"
-                            label="確認密碼"
-                            type="password"
-                            variant="outlined"
-                            value={form.confirmPassword}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            fullWidth
-                            className={classes.input}
-                            name="title"
-                            size="small"
-                            label="店家名稱"
-                            type="text"
-                            variant="outlined"
-                            value={form.title}
-                            onChange={handleChange}
-                        />
-                        <div className={classes.input}>
-                            <Button fullWidth variant="contained" color="primary" type="submit">註冊</Button>
-                        </div>
-                    </form>
-                </Paper>
+                <Grid item xl={5} lg={5} md={6} sm={7} xs={12}>
+                    <Paper className={classes.form} elevation={4} >
+                        <Typography variant="h6">建立店家用戶帳號</Typography>
+                        <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+                            <TextField fullWidth margin="normal" name="username" type="text" size="small" label="帳號" variant="outlined" value={form.username} onChange={handleChange} />
+                            <TextField fullWidth margin="normal" name="password" size="small" label="密碼" type="password" variant="outlined" value={form.password} onChange={handleChange} />
+                            <TextField fullWidth margin="normal" name="confirmPassword" size="small" label="確認密碼" type="password" variant="outlined" value={form.confirmPassword} onChange={handleChange} />
+                            <TextField fullWidth margin="normal" name="title" size="small" label="店家名稱" type="text" variant="outlined" alue={form.title} onChange={handleChange} />
+                            <div className={classes.button}>
+                                <Button fullWidth variant="contained" color="primary" type="submit">註冊</Button>
+                            </div>
+                        </form>
+                    </Paper>
+                </Grid>
             </Grid>
         </Container>
     )

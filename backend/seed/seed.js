@@ -49,6 +49,7 @@ async function Seeding() {
                 const finder = new Finder({
                     username: userHelper[i].username,
                     password: userHelper[i].password,
+                    name: userHelper[i].name,
                     hash: hash,
                 })
                 await finder.save()
@@ -57,7 +58,6 @@ async function Seeding() {
     }
 
     const [roomOwner] = await User.find({ username: 'roomowner' });
-
     for (let i = 0; i < roomHelper.length; i++) {
         const seedRoom = new Room({
             ...roomHelper[i],

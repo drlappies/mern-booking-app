@@ -12,7 +12,7 @@ function Register() {
     return (
         <Container>
             <Grid container spacing={10}>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <RegisterType
                         title={'建立店家帳號'}
                         subtitle={'成為店家用戶 你可以...'}
@@ -26,7 +26,7 @@ function Register() {
                         buttonGoto={'/user/register/roomowner'}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <RegisterType
                         title={'建立普通帳號'}
                         subtitle={'成為普通用戶 你可以...'}

@@ -29,7 +29,6 @@ module.exports.upload = multer({
         }
     }),
     limits: {
-        fileSize: 1024 * 1024 * 200,
         files: 5
     },
     fileFilter: function (req, file, cb) {
@@ -44,13 +43,20 @@ module.exports.upload = multer({
     }
 })
 
-module.exports.imageDestroy = async (key) => {
+module.exports.remove = async (objects) => {
     try {
+        if (!Array.isArray(objects)) {
+            objects = [{ Key: objects }]
+        } else {
+            objects = objects.map(el => { return { Key: el } })
+        }
         const params = {
             Bucket: bucketName,
-            Key: key
+            Delete: {
+                Objects: objects
+            }
         }
-        s3.deleteObject(params, (err, data) => {
+        s3.deleteObjects(params, (err, data) => {
             if (err)
                 throw new Error(err);
             else

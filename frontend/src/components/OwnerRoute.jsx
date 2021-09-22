@@ -1,9 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { AuthenticationContext } from './contexts/AuthenticationContext';
 import { Route, Redirect } from 'react-router-dom'
 
 function OwnerRoute({ component: Component, ...rest }) {
-    const { state } = useContext(AuthenticationContext);
+    const { state, fetchUser } = useContext(AuthenticationContext);
+
+    useEffect(() => {
+        fetchUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     return (
         <Route
             {...rest}

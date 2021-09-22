@@ -1,79 +1,39 @@
-const Room = require('../model/Room');
-const Service = require('../model/Service');
-const User = require('../model/User');
-const { imageDestroy } = require('../utils/s3');
+const { remove } = require('../utils/s3');
+const { fetchRooms, fetchOneRoom, insertRoom, updateRoom, removeRoom } = require('../service/roomService')
 
-module.exports.getRooms = async (req, res) => {
+module.exports.getRooms = async (req, res, next) => {
     try {
-        const allRooms = await Room.find()
-            .populate('owner')
-            .where('services.0').exists()
-        res.json(allRooms)
-    } catch {
-        res.status(404)
-        const error = new Error('查無此房間，可能已被作者或管理員刪除')
-        next(error)
+        const rooms = await fetchRooms()
+        return res.status(200).json(rooms)
+    } catch (err) {
+        next(err)
     }
 }
 
 module.exports.getOneRoom = async (req, res, next) => {
     try {
-        const room = await Room.findById(req.params.id)
-            .populate('reviews')
-            .populate({
-                path: 'reviews',
-                populate: 'author'
-            })
-            .populate({
-                path: 'services',
-                model: Service
-            })
-            .populate({
-                path: 'owner'
-            })
+        const { id } = req.params
+        const room = await fetchOneRoom(id)
         if (!room) throw new Error('查無此房間，可能已被作者或管理員刪除');
-        res.json(room);
+        return res.status(200).json(room)
     } catch (err) {
-        res.status(404)
         next(err)
     }
 }
 
 module.exports.createRoom = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user.id)
-        const { monday, tuesday, wednesday, thursday, friday, saturday, sunday, title, description, street, floor, flat, building, region, openingTime, closingTime } = req.body
-        const newRoom = new Room({
-            owner: req.user.id,
-            title: title,
-            description: description,
-            address: {
-                street: street,
-                floor: floor,
-                flat: flat,
-                building: building,
-                region: region,
-            },
-            openWeekday: {
-                monday: monday,
-                tuesday: tuesday,
-                wednesday: wednesday,
-                thursday: thursday,
-                friday: friday,
-                saturday: saturday,
-                sunday: sunday
-            },
-            openingTime: openingTime,
-            closingTime: closingTime
-        });
-        req.files.forEach(el => {
-            newRoom.imageUrl.push(el.location);
-            newRoom.imageKey.push(el.key)
+        const { id } = req.user
+        const { title, description, room, floor, building, street, region, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen } = req.body
+        if (!id || !title || !description || !room || !floor || !building || !street || !region || !openingTime || !closingTime) {
+            return res.status(400).json({
+                error: '房間資料不足！'
+            })
+        }
+        const insertedRoom = await insertRoom(id, title, description, room, floor, building, street, region, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen, req.files)
+        return res.status(200).json({
+            success: `成功建立房間 ${insertedRoom.title}`
         })
-        user.room.push(newRoom);
-        await user.save()
-        await newRoom.save()
-        res.json(newRoom)
     } catch (err) {
         next(err)
     }
@@ -81,43 +41,13 @@ module.exports.createRoom = async (req, res, next) => {
 
 module.exports.editRoom = async (req, res, next) => {
     try {
-        const { title, description, address, openWeekday, openingTime, closingTime, deletedImage } = req.body
         const { id } = req.params
-        const updateRoom = await Room.findByIdAndUpdate(id, {
-            owner: req.user.id,
-            title: title,
-            description: description,
-            address: address,
-            openWeekday: openWeekday,
-            openingTime: openingTime,
-            closingTime: closingTime
-        }, { new: true, omitUndefined: true })
-        if (req.file) {
-            updateRoom.imageUrl.push(req.file.location);
-            updateRoom.imageKey.push(req.file.key)
-        }
-        await updateRoom.save();
-        if (deletedImage) {
-            const image = JSON.parse(deletedImage);
-            const key = image.imageKey;
-            const url = image.imageUrl;
-            imageDestroy(key);
-            await updateRoom.updateOne({ $pull: { imageKey: { $in: key } } })
-            await updateRoom.updateOne({ $pull: { imageUrl: { $in: url } } })
-        }
-        res.json(updateRoom)
-    } catch (err) {
-        next(err)
-    }
-}
-
-module.exports.roomManagement = async (req, res, next) => {
-    try {
-        const { id } = req.user;
-        const rooms = await Room.find({})
-            .populate('services')
-            .where('owner').equals(id)
-        res.json(rooms)
+        const { title, description, addressStreet, addressBuilding, addressRegion, addressFlat, addressFloor, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen, deletedKeys, deletedImages } = req.body
+        if (deletedKeys) remove(deletedKeys)
+        const room = await updateRoom(id, title, description, addressStreet, addressBuilding, addressRegion, addressFlat, addressFloor, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen, req.files, deletedImages)
+        return res.status(200).json({
+            success: `成功更新房間 ${room.title}`
+        })
     } catch (err) {
         next(err)
     }
@@ -125,12 +55,13 @@ module.exports.roomManagement = async (req, res, next) => {
 
 module.exports.deleteRoom = async (req, res, next) => {
     try {
-        const deletedRoom = await Room.findByIdAndDelete(req.params.id)
+        const { id } = req.params;
+        const room = await removeRoom(id)
         const imageKey = deletedRoom.image.imageKey[0];
-        imageDestroy(imageKey);
-        res.json(deletedRoom)
+        return res.json(200).json({
+            success: `成功移除房間 ${room.title}`
+        })
     } catch (err) {
-        res.status(404)
         next(err)
     }
 }

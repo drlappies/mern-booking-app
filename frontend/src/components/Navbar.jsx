@@ -18,12 +18,10 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import RoomServiceIcon from '@material-ui/icons/RoomService';
 import Sidebar from './Sidebar'
 
 const useStyles = makeStyles(() => ({
-    root: {
-        marginBottom: 80
-    },
     nav: {
         display: "flex",
         flexDirection: "row",
@@ -36,13 +34,8 @@ function Navbar() {
     const classes = useStyles()
     const isScrolled = useScrollTrigger();
 
-    const handleClick = (e => {
-        handleLogout();
-
-    })
-
     return (
-        <div className={classes.root}>
+        <div style={{ marginBottom: 100 }}>
             <Slide appear={false} direction="down" in={!isScrolled}>
                 <AppBar color="transparent" elevation={0}>
                     <Toolbar className={classes.nav}>
@@ -59,13 +52,13 @@ function Navbar() {
                             <div>
                                 {state.isAuthenticated ?
                                     <div>
-                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/appointment/search" size="large" startIcon={<AccessTimeIcon />}>尋找預訂</Button> : null}
-                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/appointment" size="large" startIcon={<AccessTimeIcon />}>管理預訂</Button> : null}
-                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/appointment/management" size="large" startIcon={<AccessTimeIcon />}>預訂管理</Button> : null}
+                                        {state.permission === 'Owner' ? <Button component={NavLink} to="/room/management" size="large" startIcon={<SettingsIcon />}>房間管理</Button> : null}
+                                        {state.permission === "Owner" ? <Button component={NavLink} to="/service/management" size="large" startIcon={<RoomServiceIcon />}>服務管理</Button> : null}
                                         {state.permission === 'Owner' ? <Button component={NavLink} to="/room/create" size="large" startIcon={<CreateIcon />}>建立新房間</Button> : null}
-                                        {state.permission === 'Owner' ? null : <Button component={NavLink} to="/user/record" size='large' startIcon={<ReceiptIcon />}>紀錄</Button>}
+                                        {state.permission === 'Owner' ? null : <Button component={NavLink} to="/user/invoice" size='large' startIcon={<ReceiptIcon />}>紀錄</Button>}
                                         <Button component={NavLink} to="/user" size="large" startIcon={<PersonIcon />}>帳號管理</Button>
-                                        <Button size="large" startIcon={<ExitToAppIcon />} onClick={handleClick}>登出</Button>
+                                        <Button size="large" startIcon={<ExitToAppIcon />} onClick={() => handleLogout()}>登出</Button>
                                     </div>
                                     :
                                     <Button component={NavLink} to="/user/login" size="large" startIcon={<PersonIcon />}>註冊 / 登入</Button>}

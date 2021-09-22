@@ -2,11 +2,63 @@ import React, { createContext, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 
+function checkIsDayOpen(availableWeekday) {
+    const availability = [];
+    let increment = 0;
+    for (let key in availableWeekday) {
+        if (availableWeekday[key]) {
+            availability.push(increment);
+        }
+        increment = increment + 1;
+    }
+
+    return availability;
+}
+
 export const AppointmentContext = createContext();
 
 export function AppointmentProvider(props) {
-    const [selectedTimeslots, setSelectedTimeslots] = useState([]);
     const { enqueueSnackbar } = useSnackbar();
+    const [selectedTimeslots, setSelectedTimeslots] = useState([]);
+    const [currentRoom, setCurrentRoom] = useState({
+        title: "",
+        description: "",
+        owner: "",
+        street: "",
+        floor: "",
+        flat: "",
+        building: "",
+        region: "",
+        openingTime: 0,
+        closingTime: 0,
+        availabileWeekday: [0, 1, 2, 3, 4, 5, 6],
+        image: [],
+        service: [],
+    })
+
+    const fetchRoom = async (id) => {
+        try {
+            const res = await axios.get(`/api/room/${id}`)
+            setCurrentRoom({
+                title: res.data.title,
+                description: res.data.description,
+                owner: res.data.owner.title,
+                street: res.data.address.street,
+                floor: res.data.address.floor,
+                flat: res.data.address.flat,
+                building: res.data.address.building,
+                region: res.data.address.region,
+                openingTime: res.data.openingTime,
+                closingTime: res.data.closingTime,
+                availableWeekday: checkIsDayOpen(res.data.openWeekday),
+                image: res.data.images,
+                service: res.data.services,
+            })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
 
     const addTimeslot = (year, month, date, hour, day) => {
         enqueueSnackbar(`已加入時段 ${year}年${month}月${date}日 ${hour}:00 - ${hour + 1}:00`, { variant: 'success', autoHideDuration: 3000 })
@@ -37,11 +89,11 @@ export function AppointmentProvider(props) {
         try {
             const payload = {
                 appointments: selectedTimeslots,
+                roomId: roomId,
+                serviceId: serviceId,
             }
-            await axios.post(`/room/${roomId}/service/${serviceId}/appointment`, payload, {
-                headers: {
-                    'x-auth-token': window.localStorage.getItem('token')
-                }
+            await axios.post('/api/appointment', payload, {
+                headers: { 'x-auth-token': window.localStorage.getItem('token') }
             });
             setSelectedTimeslots([]);
         } catch (err) {
@@ -50,7 +102,7 @@ export function AppointmentProvider(props) {
     }
 
     return (
-        <AppointmentContext.Provider value={{ selectedTimeslots, addTimeslot, removeTimeslot, bookTimeslot, resetTimeslot }}>
+        <AppointmentContext.Provider value={{ currentRoom, fetchRoom, selectedTimeslots, addTimeslot, removeTimeslot, bookTimeslot, resetTimeslot }}>
             {props.children}
         </AppointmentContext.Provider>
     )

@@ -1,21 +1,31 @@
 const Review = require('../model/Review');
 const Room = require('../model/Room');
-const User = require('../model/User');
+const { getReviewsByRoom, insertReview } = require('../service/reviewService')
+
+module.exports.fetchReviewsByRoom = async (req, res, next) => {
+    try {
+        const { roomid } = req.params;
+        const reviews = await getReviewsByRoom(roomid)
+        return res.status(200).json(reviews)
+    } catch (err) {
+        next(err)
+    }
+}
 
 module.exports.createReview = async (req, res, next) => {
     try {
-        const room = await Room.findById(req.params.id)
-        const { reviewBody, rating } = req.body;
-        const newReview = new Review({
-            author: req.user.id,
-            room: req.params.id,
-            reviewBody: reviewBody,
-            rating: rating
-        });
-        room.reviews.push(newReview);
-        await room.save();
-        await newReview.save();
-        res.json(newReview)
+        const { roomid } = req.params;
+        const { id } = req.user;
+        const { body } = req.body;
+        if (!body) {
+            return res.status(400).json({
+                error: '留言不能留空！'
+            })
+        }
+        const review = await insertReview(id, roomid, body)
+        return res.status(200).json({
+            success: '成功留言！'
+        })
     } catch (err) {
         next(err)
     }

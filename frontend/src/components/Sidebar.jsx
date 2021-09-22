@@ -17,6 +17,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import CreateIcon from '@material-ui/icons/Create';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import RoomServiceIcon from '@material-ui/icons/RoomService';
 
 function Sidebar() {
     const { state, handleLogout } = useContext(AuthenticationContext)
@@ -29,6 +30,14 @@ function Sidebar() {
         setIsOpen(!isOpen)
     }
 
+    const toggleLogout = (e) => {
+        if (e.type === 'keydown' && (e.key === 'Tab' || e.key === 'shift')) {
+            return;
+        }
+        handleLogout()
+        setIsOpen(!isOpen)
+    }
+
     return (
         <div>
             <IconButton onClick={(e) => toggleDrawer(e)}>
@@ -36,19 +45,19 @@ function Sidebar() {
             </IconButton>
             <Drawer open={isOpen} onClose={(e) => toggleDrawer(e)}>
                 <List>
-                    <ListItem button component={Link} to='/'>
+                    <ListItem button component={Link} to='/' onClick={(e) => toggleDrawer(e)}>
                         <ListItemIcon>
                             <AppsIcon />
                         </ListItemIcon>
                         <ListItemText primary={'主頁'} />
                     </ListItem>
-                    <ListItem button component={Link} to='/about'>
+                    <ListItem button component={Link} to='/about' onClick={(e) => toggleDrawer(e)}>
                         <ListItemIcon>
                             <InfoIcon />
                         </ListItemIcon>
                         <ListItemText primary={'關於我們'} />
                     </ListItem>
-                    <ListItem button component={Link} to='/room'>
+                    <ListItem button component={Link} to='/room' onClick={(e) => toggleDrawer(e)}>
                         <ListItemIcon>
                             <RoomIcon />
                         </ListItemIcon>
@@ -58,25 +67,31 @@ function Sidebar() {
                 <Divider />
                 {state.isAuthenticated ?
                     <List>
-                        <ListItem button component={Link} to="/user">
+                        <ListItem button component={Link} to="/user" onClick={(e) => toggleDrawer(e)}>
                             <ListItemIcon>
                                 <PersonIcon />
                             </ListItemIcon>
                             <ListItemText primary={'帳號管理'} />
                         </ListItem>
-                        <ListItem button component={Link} to="/room/management">
+                        {state.permission === 'Owner' ? <ListItem button component={Link} to="/room/management" onClick={(e) => toggleDrawer(e)}>
                             <ListItemIcon>
                                 <SettingsIcon />
                             </ListItemIcon>
                             <ListItemText primary={'房間管理'} />
-                        </ListItem>
-                        <ListItem button component={Link} to="/room/create">
+                        </ListItem> : null}
+                        {state.permission === 'Owner' ? <ListItem button component={Link} to="/service/management" onClick={(e) => toggleDrawer(e)}>
+                            <ListItemIcon>
+                                <RoomServiceIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'服務管理'} />
+                        </ListItem> : null}
+                        {state.permission === 'Owner' ? <ListItem button component={Link} to="/room/create" onClick={(e) => toggleDrawer(e)}>
                             <ListItemIcon>
                                 <CreateIcon />
                             </ListItemIcon>
                             <ListItemText primary={'建立新房間'} />
-                        </ListItem>
-                        <ListItem button onClick={() => handleLogout()}>
+                        </ListItem> : null}
+                        <ListItem button onClick={(e) => toggleLogout(e)}>
                             <ListItemIcon>
                                 <ExitToAppIcon />
                             </ListItemIcon>
@@ -85,7 +100,7 @@ function Sidebar() {
                     </List>
                     :
                     <List>
-                        <ListItem button component={Link} to="/user/login">
+                        <ListItem button component={Link} to="/user/login" onClick={(e) => toggleDrawer(e)}>
                             <ListItemIcon>
                                 <LockOpenIcon />
                             </ListItemIcon>

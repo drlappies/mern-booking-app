@@ -1,69 +1,40 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AppointmentContext } from './contexts/AppointmentContext';
+import { AuthenticationContext } from './contexts/AuthenticationContext';
 import { Link, useParams } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 
-const useStyles = makeStyles({
-    card: {
-        margin: '10px 0px 10px 0px'
-    },
-    button: {
-        margin: '0px 0px 0px 500px'
-    }
-})
-
-function Service(props) {
-    const classes = useStyles()
+function Service() {
+    const { currentRoom } = useContext(AppointmentContext)
+    const { state } = useContext(AuthenticationContext)
     const { id } = useParams()
+
     return (
-        <Card raised className={classes.card}>
-            <CardContent>
-                <List>
-                    <ListItem>
-                        <ListItemText
-                            primary={'服務'}
-                            secondary={props.serviceName}
-                        />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText
-                            primary={'備註'}
-                            secondary={props.serviceRemark}
-                        />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText
-                            primary={'適合人數'}
-                            secondary={`${props.serviceCapacity} 人`}
-                        />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText
-                            primary={'每小時收費'}
-                            secondary={`$ ${props.servicePricing}`}
-                        />
-                    </ListItem>
-                </List>
-            </CardContent>
-            <CardActions disableSpacing={true}>
-                <Button
-                    fullWidth
-                    color="primary"
-                    variant="contained"
-                    component={Link}
-                    to={`/room/${id}/service/${props.serviceId}/appointment`}
-                >
-                    租借
-                </Button>
-            </CardActions>
-        </Card>
+        <Grid container spacing={1}>
+            <Grid item xs={12}>
+                <Typography paragraph variant="h6">服務選項</Typography>
+            </Grid>
+            {currentRoom.service.map((el, i) =>
+                <Grid item key={i} xs={12}>
+                    <Card raised>
+                        <CardHeader title={el.name} subheader={el.remark} />
+                        <CardContent>
+                            <Typography variant="subtitle2">${el.pricing} / 小時</Typography>
+                            <Typography variant="subtitle2">適合{el.capacity}人使用</Typography>
+                        </CardContent>
+                        <CardActions>
+                            {state.permission === 'Finder' ? <Button color="primary" variant="contained" component={Link} to={`/room/${id}/service/${el._id}/appointment`}>租借</Button> : null}
+                        </CardActions>
+                    </Card>
+                </Grid>
+            )}
+        </Grid>
     )
 }
 

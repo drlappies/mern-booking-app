@@ -9,6 +9,13 @@ import Grid from '@material-ui/core/Grid';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Checkout from './Checkout';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import axios from 'axios'
 
 const useStyles = makeStyles(() => ({
@@ -17,7 +24,8 @@ const useStyles = makeStyles(() => ({
         width: '400px'
     },
     cardSection: {
-        marginTop: '30px'
+        display: "flex",
+        justifyContent: "center"
     }
 }))
 
@@ -29,7 +37,7 @@ function Payment() {
         client_secret: '',
         connected_stripe_account_id: '',
         stripeObject: null,
-        pricing: 0
+        pricing: 0,
     })
 
     const fetchPaymentIntent = useCallback(async () => {
@@ -38,10 +46,8 @@ function Payment() {
                 serviceId: serviceId,
                 appointments: selectedTimeslots,
             }
-            const res = await axios.post('/transaction/intent', payload, {
-                headers: {
-                    'x-auth-token': window.localStorage.getItem('token')
-                }
+            const res = await axios.post('/api/transaction', payload, {
+                headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             setState(prevState => {
                 return {
@@ -57,17 +63,16 @@ function Payment() {
     }, [selectedTimeslots, serviceId])
 
     const fetchStripeObject = useCallback(async () => {
-        if (state.connected_stripe_account_id) {
-            const res = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY, {
-                stripeAccount: state.connected_stripe_account_id
-            })
-            setState(prevState => {
-                return {
-                    ...prevState,
-                    stripeObject: res
-                }
-            })
-        };
+        try {
+            if (state.connected_stripe_account_id) {
+                const res = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY, {
+                    stripeAccount: state.connected_stripe_account_id
+                })
+                setState(prevState => { return { ...prevState, stripeObject: res } })
+            };
+        } catch (err) {
+            console.log(err)
+        }
     }, [state.connected_stripe_account_id])
 
     useEffect(() => {
@@ -79,32 +84,43 @@ function Payment() {
         <Container>
             <Grid container justifyContent="center">
                 <Paper className={classes.form}>
-                    <Typography variant="h6">詳細</Typography>
-                    <Grid container spacing={3}>
-                        {selectedTimeslots.map((el, i) =>
-                            <React.Fragment key={i}>
-                                <Grid item xs={9}>
-                                    <Typography variant="body1">{`${el.year}年 ${el.month}月 ${el.date}日 ${el.hour}：00 星期 ${el.day}`}</Typography>
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <Typography>$ {state.pricing}</Typography>
-                                </Grid>
-                            </React.Fragment>
-                        )}
-                        <Grid item xs={9}>總共</Grid>
-                        <Grid item xs={3}>$ {selectedTimeslots.length * state.pricing}</Grid>
+                    <Grid item xs={12}>
+                        <TableContainer>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>詳細</TableCell>
+                                        <TableCell>價錢</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {selectedTimeslots.map((el, i) =>
+                                        <TableRow key={i}>
+                                            <TableCell><Typography variant="button">{`${el.year}年 ${el.month}月 ${el.date}日 ${el.hour}:00 - ${el.hour + 1}:00`}</Typography></TableCell>
+                                            <TableCell><Typography variant="button">$ {state.pricing}</Typography></TableCell>
+                                        </TableRow>
+                                    )}
+                                    <TableRow>
+                                        <TableCell><Typography variant="button">總共</Typography></TableCell>
+                                        <TableCell><Typography variant="button">$ {state.pricing * selectedTimeslots.length}</Typography></TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </Grid>
-                    <div className={classes.cardSection}>
-                        {state.stripeObject ?
-                            <Elements stripe={state.stripeObject}>
-                                <Checkout
-                                    client_secret={state.client_secret}
-                                />
-                            </Elements>
-                            :
-                            null
-                        }
-                    </div>
+                    <Grid item xs={12}>
+                        <div className={classes.cardSection}>
+                            {state.stripeObject ?
+                                <Elements stripe={state.stripeObject}>
+                                    <Checkout
+                                        client_secret={state.client_secret}
+                                    />
+                                </Elements>
+                                :
+                                <CircularProgress />
+                            }
+                        </div>
+                    </Grid>
                 </Paper>
             </Grid>
         </Container>

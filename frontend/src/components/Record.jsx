@@ -45,10 +45,8 @@ function Record() {
     })
 
     const fetchData = useCallback(async () => {
-        const res = await axios.get('/user', {
-            headers: {
-                'x-auth-token': window.localStorage.getItem('token')
-            }
+        const res = await axios.get('/api/user', {
+            headers: { 'x-auth-token': window.localStorage.getItem('token') }
         })
         setState(prevState => {
             return {
@@ -60,8 +58,8 @@ function Record() {
 
     const handleSubmit = async () => {
         try {
-            const room = await axios.get(`/room/${state.selectedRoom}`);
-            const appointments = await axios.get(`/room/${state.selectedRoom}/service/${state.selectedService}/appointment`)
+            const room = await axios.get(`/api/room/${state.selectedRoom}`);
+            const appointments = await axios.get(`/api/room/${state.selectedRoom}/service/${state.selectedService}/appointment`)
             setState(prevState => {
                 return {
                     ...prevState,

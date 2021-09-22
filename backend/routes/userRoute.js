@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { isAuthorised } = require('../utils/middleware');
-const { getUser, registerUser, loginUser } = require('../controller/userController');
+const { isAuthorised } = require('../utils/middleware')
+const { registerFinder, registerOwner, getUserById, getRoomsByUser, getServicesByUser } = require('../controller/userController')
 
-router.get('/', getUser)
-
-router.post('/register', registerUser)
-
-router.post('/login', loginUser)
+router.get('/', isAuthorised, getUserById)
+router.get('/:id/room', isAuthorised, getRoomsByUser)
+router.get('/:id/service', isAuthorised, getServicesByUser)
+router.post('/finder', registerFinder)
+router.post('/owner', registerOwner)
 
 module.exports = router

@@ -4,24 +4,12 @@ import { AuthenticationContext } from './contexts/AuthenticationContext';
 import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import CardActions from '@material-ui/core/CardActions'
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-    form: {
-        width: "300px",
-        height: "auto",
-        padding: "30px"
-    },
-    input: {
-        margin: "15px 0 15px 0"
-    },
-})
 
 function Login() {
-    const classes = useStyles();
     const { handleLogin } = useContext(AuthenticationContext);
     const [form, setForm] = useState({
         username: '',
@@ -43,11 +31,11 @@ function Login() {
     return (
         <Container>
             <Grid container justifyContent="center">
-                <Grid item>
-                    <Paper className={classes.form} elevation={3} >
-                        <form>
+                <Grid item xl={3} lg={3} md={4} sm={5} xs={12}>
+                    <Card>
+                        <CardContent>
                             <TextField
-                                className={classes.input}
+                                margin="normal"
                                 fullWidth
                                 size="small"
                                 id="username"
@@ -58,7 +46,7 @@ function Login() {
                                 onChange={handleChange}
                             />
                             <TextField
-                                className={classes.input}
+                                margin="normal"
                                 fullWidth
                                 size="small"
                                 id="password"
@@ -69,11 +57,12 @@ function Login() {
                                 value={form.password}
                                 onChange={handleChange}
                             />
-                            <Button className={classes.input} onClick={handleSubmit} fullWidth variant="contained" color="primary">登入</Button>
-                            <Typography>沒有帳號？</Typography>
-                            <Button component={Link} to="/user/register" className={classes.button} fullWidth variant="contained" color="primary">註冊</Button>
-                        </form>
-                    </Paper>
+                        </CardContent>
+                        <CardActions>
+                            <Button onClick={handleSubmit} fullWidth variant="contained" color="primary">登入</Button>
+                            <Button component={Link} to="/user/register" fullWidth variant="contained" color="primary">註冊</Button>
+                        </CardActions>
+                    </Card>
                 </Grid>
             </Grid>
         </Container>

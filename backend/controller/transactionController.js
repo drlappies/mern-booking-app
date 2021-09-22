@@ -1,14 +1,18 @@
-const Owner = require('../model/Owner');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Service = require('../model/Service')
-const Invoice = require('../model/Invoice');
+const { obtainUser } = require('../service/userService')
+const { getPricing } = require('../service/transactionService')
 
 module.exports.onboard = async (req, res, next) => {
     try {
         const { id } = req.user
-        const owner = await Owner.findById(id)
+        const user = await obtainUser(id)
+        if (user.permission !== 'Owner') {
+            return res.status(400).json({
+                error: 'Finder cannot make onboarding.'
+            })
+        }
         const accountLinks = await stripe.accountLinks.create({
-            account: owner.stripe_id,
+            account: user.stripe_id,
             refresh_url: 'http://localhost:3000/user',
             return_url: 'http://localhost:3000/user',
             type: 'account_onboarding'
@@ -23,8 +27,9 @@ module.exports.onboard = async (req, res, next) => {
 
 module.exports.getOnboardStatus = async (req, res, next) => {
     try {
+        if (req.user.id !== req.params.id) throw new Error('Unauthorised')
         const { id } = req.user;
-        const owner = await Owner.findById(id)
+        const owner = await obtainUser(id)
         const account = await stripe.accounts.retrieve(owner.stripe_id);
         res.json({
             email: account.email,
@@ -37,70 +42,27 @@ module.exports.getOnboardStatus = async (req, res, next) => {
 
 module.exports.getPaymentIntent = async (req, res, next) => {
     try {
+        const { id } = req.user;
+        const user = await obtainUser(id)
+        if (user.permission !== 'Finder') {
+            return res.status(400).json({
+                error: 'Owner not allowed to make appointments.'
+            })
+        }
         const { serviceId, appointments } = req.body;
-        const service = await Service.findById(serviceId)
-            .populate('owner');
-        const { pricing } = service
+        const { pricing, ownerStripeId } = await getPricing(serviceId)
         const paymentIntent = await stripe.paymentIntents.create({
             payment_method_types: ['card'],
             amount: appointments.length * pricing * 100,
             currency: 'hkd',
             application_fee_amount: Math.round(appointments.length * pricing * 0.05)
         }, {
-            stripeAccount: service.owner.stripe_id
+            stripeAccount: ownerStripeId
         });
-        res.json({
+        return res.status(200).json({
             client_secret: paymentIntent.client_secret,
-            connected_stripe_account_id: service.owner.stripe_id,
+            connected_stripe_account_id: ownerStripeId,
             pricing: pricing
-        })
-    } catch (err) {
-        next(err)
-    }
-}
-
-module.exports.getInvoices = async (req, res, next) => {
-    try {
-        const { id } = req.user;
-        const invoices = await Invoice.find({})
-            .where('finder')
-            .equals(id)
-            .sort({ 'createdAt': 'descending' })
-            .populate('owner')
-            .populate('appointment')
-            .populate('service')
-            .populate({
-                path: 'service',
-                populate: 'room'
-            })
-        res.json({
-            invoices: invoices
-        })
-    } catch (err) {
-        next(err)
-    }
-}
-
-module.exports.getOneInvoice = async (req, res, next) => {
-    try {
-        const { invoiceId } = req.body;
-        const { id } = req.user;
-        const invoice = await Invoice.findById(invoiceId)
-            .where('owner').equals(id)
-            .populate('service')
-            .populate('appointment')
-            .populate('finder')
-            .populate({
-                path: 'service',
-                populate: 'room'
-            })
-        res.json({
-            id: invoice._id,
-            owner: invoice.owner,
-            finder: invoice.finder,
-            service: invoice.service,
-            amount: invoice.amount,
-            appointment: invoice.appointment
         })
     } catch (err) {
         next(err)

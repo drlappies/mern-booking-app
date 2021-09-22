@@ -27,26 +27,35 @@ export function AuthenticationProvider(props) {
         history.push('/')
     }
 
-    const handleRegister = async (username, password, permission, title) => {
+    const handleRegisterFinder = async (username, password, confirmPassword, name) => {
         try {
             const payload = {
                 username: username,
                 password: password,
-                permission: permission,
+                confirmPassword: confirmPassword,
+                name: name
+            }
+            const res = await axios.post('/api/user/finder', payload)
+            enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+            history.push('/user/login')
+        } catch (err) {
+            enqueueSnackbar(`${err.response.data.error}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+        }
+    }
+
+    const handleRegisterOwner = async (username, password, confirmPassword, title) => {
+        try {
+            const payload = {
+                username: username,
+                password: password,
+                confirmPassword: confirmPassword,
                 title: title
             }
-            const register = await axios.post('/user/register', payload);
-            const res = await axios.post('/user/login', payload, { withCredentials: true });
-            window.localStorage.setItem('token', res.data.token);
-            setState({
-                uid: res.data.userid,
-                username: res.data.username,
-                permission: res.data.permission,
-                isAuthenticated: true
-            })
-            history.push('/')
+            const res = await axios.post('/api/user/owner', payload)
+            enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+            history.push('/user/login')
         } catch (err) {
-            enqueueSnackbar(`${err.response.data}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+            enqueueSnackbar(`${err.response.data.error}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }
 
@@ -56,7 +65,7 @@ export function AuthenticationProvider(props) {
                 username: username,
                 password: password,
             }
-            const res = await axios.post('/user/login', payload, { withCredentials: true });
+            const res = await axios.post('/api/auth', payload, { withCredentials: true });
             window.localStorage.setItem('token', res.data.token);
             setState({
                 uid: res.data.userid,
@@ -67,30 +76,15 @@ export function AuthenticationProvider(props) {
             enqueueSnackbar(`你好！${res.data.username}`, { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
             history.goBack();
         } catch (err) {
-            enqueueSnackbar(`${err.response.data}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
-        }
-    }
-
-    const checkPermission = async (permission) => {
-        try {
-            const res = await axios.get('/user', { headers: { 'x-auth-token': window.localStorage.getItem('token') } });
-            if (!res.data.permission) {
-                history.push('/')
-                enqueueSnackbar('權限不足', { variant: 'warning', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
-            }
-        } catch (err) {
-            enqueueSnackbar(`${err.response.data}`, { variant: 'warning', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
-            history.push('/')
+            enqueueSnackbar(`${err.response.data.error}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }
 
     const fetchUser = async () => {
         try {
             if (window.localStorage.getItem('token')) {
-                const res = await axios.get('/user', {
-                    headers: {
-                        'x-auth-token': window.localStorage.getItem('token')
-                    }
+                const res = await axios.get('/api/auth', {
+                    headers: { 'x-auth-token': window.localStorage.getItem('token') }
                 })
                 setState({
                     uid: res.data.userid,
@@ -116,7 +110,7 @@ export function AuthenticationProvider(props) {
     }, [])
 
     return (
-        <AuthenticationContext.Provider value={{ state, handleLogout, handleLogin, handleRegister, checkPermission, fetchUser }}>
+        <AuthenticationContext.Provider value={{ state, handleLogout, handleLogin, fetchUser, handleRegisterFinder, handleRegisterOwner }}>
             {props.children}
         </AuthenticationContext.Provider>
     )
