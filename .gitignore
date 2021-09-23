@@ -5,3 +5,4 @@ Dockerfile.prod
 docker-compose.yml
 Dockerfile.dev
 nginx.conf
+Dockerfile
