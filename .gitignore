@@ -1,2 +1,7 @@
 .env
 node_modules
+Dockerfile.prod
+.dockerignore
+docker-compose.yml
+Dockerfile.dev
+nginx.conf
