@@ -1,5 +1,8 @@
+require('dotenv').config()
+
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/practice-room-rental', {
+mongoose.connect(process.env.MONGO_URI, {
+    dbName: process.env.DB_NAME,
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true

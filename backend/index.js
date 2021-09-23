@@ -12,10 +12,11 @@ const transactionRoute = require('./routes/transactionRoute');
 const authRoute = require('./routes/authRoute');
 const invoiceRoute = require('./routes/invoiceRoute')
 const port = 8080;
-const ip = '127.0.0.1';
+const ip = '0.0.0.0';
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/practice-room-rental', {
+mongoose.connect(process.env.MONGO_URI, {
+    dbName: process.env.DB_NAME,
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
