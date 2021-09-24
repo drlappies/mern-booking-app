@@ -13,6 +13,7 @@ function AppointmentManagement() {
     const auth = useContext(AuthenticationContext)
     const { enqueueSnackbar } = useSnackbar();
     const [state, setState] = useState({
+        isFetching: true,
         room: "",
         rooms: [],
         tab: 0
@@ -25,21 +26,23 @@ function AppointmentManagement() {
     const fetchData = useCallback(async () => {
         try {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
-            setState(prevState => { return { ...prevState, rooms: res.data.room } })
-            if (res.data.room.length <= 0) {
-                return <Noroom block={"預訂管理"} />
-            }
+            setState(prevState => { return { ...prevState, rooms: res.data.room, isFetching: false } })
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }, [auth.state.uid, enqueueSnackbar])
 
-
-
-
     useEffect(() => {
         fetchData()
     }, [fetchData])
+
+    if (state.isFetching) {
+        return null
+    }
+
+    if (state.rooms.length <= 0) {
+        return <Noroom block={"預訂管理"} />
+    }
 
     return (
         <Container>

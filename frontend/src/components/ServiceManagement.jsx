@@ -13,6 +13,7 @@ function ServiceManagement() {
     const { enqueueSnackbar } = useSnackbar();
     const auth = useContext(AuthenticationContext)
     const [state, setState] = useState({
+        isFetching: true,
         room: [],
         tab: 0,
     })
@@ -20,10 +21,7 @@ function ServiceManagement() {
     const fetchData = useCallback(async () => {
         try {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
-            setState(prevState => { return { ...prevState, room: res.data.room } })
-            if (res.data.room.length <= 0) {
-                return <Noroom block={"服務管理"} />
-            }
+            setState(prevState => { return { ...prevState, room: res.data.room, isFetching: false } })
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
@@ -36,6 +34,14 @@ function ServiceManagement() {
     useEffect(() => {
         fetchData()
     }, [fetchData])
+
+    if (state.isFetching) {
+        return null
+    }
+
+    if (state.room.length <= 0) {
+        return <Noroom block={"服務管理"} />
+    }
 
     return (
         <Container>
