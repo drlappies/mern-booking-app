@@ -12,6 +12,6 @@ router.get('/:id', roomController.getOneRoom)
 
 router.put('/:id', isAuthorised, upload.array('image', 5), roomController.editRoom);
 
-router.delete('/:id', roomController.deleteRoom);
+router.delete('/:id', isAuthorised, roomController.deleteRoom);
 
 module.exports = router
