@@ -6,20 +6,8 @@ import { useSnackbar } from 'notistack';
 import Button from '@material-ui/core/Button'
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles'
-
-const useStyles = makeStyles(() => ({
-    card: {
-        marginTop: '30px'
-    },
-    button: {
-        margin: '30px 0px 0px 350px'
-    },
-    backdrop: {
-        color: '#fff',
-        zIndex: 999
-    },
-}))
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import Grid from '@material-ui/core/Grid'
 
 function Checkout(props) {
     const [isHandling, setHandling] = useState(false)
@@ -27,7 +15,6 @@ function Checkout(props) {
     const { roomId, serviceId } = useParams();
     const history = useHistory();
     const { enqueueSnackbar } = useSnackbar();
-    const classes = useStyles();
     const stripe = useStripe();
     const elements = useElements();
 
@@ -56,12 +43,18 @@ function Checkout(props) {
     }
 
     return (
-        <div>
+        <div style={{ width: "100%" }}>
             <form onSubmit={(e) => handleSubmit(e)}>
-                <CardElement className={classes.card} options={{ hidePostalCode: true }} />
-                <Button variant="contained" color="primary" className={classes.button} type="submit">付款</Button>
+                <Grid container spacing={4}>
+                    <Grid item xs={12}>
+                        <CardElement options={{ hidePostalCode: true }} />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button variant="contained" color="primary" type="submit" startIcon={<ShoppingCartIcon />}>付款</Button>
+                    </Grid>
+                </Grid>
             </form>
-            <Backdrop className={classes.backdrop} open={isHandling}>
+            <Backdrop open={isHandling} style={{color: "#fff", zIndex: "999"}}>
                 <CircularProgress color="inherit" />
             </Backdrop>
         </div >
