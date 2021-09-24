@@ -80,7 +80,7 @@ function Timeslot(props) {
                 bookedAt: res.data.invoice.createdAt
             })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }
 

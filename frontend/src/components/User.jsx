@@ -9,9 +9,11 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import Button from '@material-ui/core/Button';
+import { useSnackbar } from 'notistack';
 import axios from 'axios'
 
 function User() {
+    const { enqueueSnackbar } = useSnackbar();
     const auth = useContext(AuthenticationContext)
     const [state, setState] = useState({
         isLoading: true,
@@ -28,7 +30,7 @@ function User() {
             });
             window.location = res.data.url
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }
 
@@ -45,9 +47,9 @@ function User() {
                 }
             })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
-    }, [auth.state.uid])
+    }, [auth.state.uid, enqueueSnackbar])
 
     useEffect(() => {
         fetchOnboardStatus()

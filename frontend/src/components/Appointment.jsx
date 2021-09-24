@@ -24,8 +24,7 @@ function Appointment(props) {
             const appointments = await axios.get(`/api/appointment/${roomId}/room/${serviceId}/service`);
             setState({ appointments: appointments.data })
         } catch (err) {
-            enqueueSnackbar(`${err}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }, [enqueueSnackbar, roomId, serviceId])
 

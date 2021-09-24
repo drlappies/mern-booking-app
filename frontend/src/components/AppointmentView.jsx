@@ -4,8 +4,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Calendar from './Calendar'
 import Grid from '@material-ui/core/Grid';
 import axios from 'axios'
+import { useSnackbar } from 'notistack';
 
 function AppointmentView(props) {
+    const { enqueueSnackbar } = useSnackbar();
     const { roomId, openingTime, closingTime, openWeekday, services } = props
     const [state, setState] = useState({
         serviceId: "",
@@ -18,10 +20,10 @@ function AppointmentView(props) {
             const res = await axios.get(`/api/appointment/${roomId}/room/${state.serviceId}/service`)
             setState(prevState => { return { ...prevState, appointments: res.data } })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
 
-    }, [roomId, state.serviceId])
+    }, [enqueueSnackbar, roomId, state.serviceId])
 
     useEffect(() => {
         fetchData()

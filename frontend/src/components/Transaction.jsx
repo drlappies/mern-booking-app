@@ -14,8 +14,10 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { useSnackbar } from 'notistack';
 
 function Transaction() {
+    const { enqueueSnackbar } = useSnackbar();
     const [state, setState] = useState({
         isExpanded: [],
         invoices: [],
@@ -40,9 +42,9 @@ function Transaction() {
                 }
             })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
-    }, [])
+    }, [enqueueSnackbar])
 
     const fetchInvoice = async (id, index) => {
         try {
@@ -72,7 +74,7 @@ function Transaction() {
                 }
             })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }
 

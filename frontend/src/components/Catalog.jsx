@@ -14,7 +14,7 @@ function Catalog() {
             const res = await axios.get('/api/room');
             setState(res.data)
         } catch (err) {
-            enqueueSnackbar(`${err}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
     }, [enqueueSnackbar])
 

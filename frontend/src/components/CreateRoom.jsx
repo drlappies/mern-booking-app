@@ -82,7 +82,6 @@ function CreateRoom() {
 
     const addImagePreview = (e) => {
         const { name, files } = e.target
-        console.log(e.target.files)
         setState(prevState => {
             return {
                 ...prevState,
@@ -142,7 +141,6 @@ function CreateRoom() {
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 3000 })
             setState(prevState => { return { ...prevState, isCreating: false } })
-            console.log(err)
         }
     }
 

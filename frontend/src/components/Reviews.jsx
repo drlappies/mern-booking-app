@@ -5,9 +5,11 @@ import CreateReview from './CreateReview'
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
+import { useSnackbar } from 'notistack';
 import axios from 'axios'
 
 function Reviews(props) {
+    const { enqueueSnackbar } = useSnackbar();
     const auth = useContext(AuthenticationContext);
     const { roomId } = props;
     const [state, setState] = useState({
@@ -20,9 +22,9 @@ function Reviews(props) {
             const res = await axios.get(`/api/room/${roomId}/review`)
             setState(prevState => { return { ...prevState, reviews: res.data, isReviewing: false } })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
-    }, [roomId])
+    }, [enqueueSnackbar, roomId])
 
     const toggleReviewing = () => {
         setState(prevState => { return { ...prevState, isReviewing: !prevState.isReviewing } })

@@ -110,9 +110,8 @@ function ServiceView(props) {
             enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500 })
             setState(prevState => { return { ...prevState, isLoading: !prevState.isLoading, isEditing: [false, false, false] } })
         } catch (err) {
-            enqueueSnackbar(`錯誤: ${err}`, { variant: 'error', autoHideDuration: 1500 })
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500 })
             setState(prevState => { return { ...prevState, isLoading: !prevState.isLoading } })
-            console.log(err)
         }
     }
 

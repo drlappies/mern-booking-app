@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState, useContext } from 'react';
 import { AuthenticationContext } from './contexts/AuthenticationContext'
+import { useSnackbar } from 'notistack';
 import AppointmentView from './AppointmentView';
 import Container from '@material-ui/core/Container'
 import Tabs from '@material-ui/core/Tabs';
@@ -9,6 +10,7 @@ import axios from 'axios'
 
 function AppointmentManagement() {
     const auth = useContext(AuthenticationContext)
+    const { enqueueSnackbar } = useSnackbar();
     const [state, setState] = useState({
         room: "",
         rooms: [],
@@ -23,11 +25,10 @@ function AppointmentManagement() {
         try {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
             setState(prevState => { return { ...prevState, rooms: res.data.room } })
-            console.log(res.data)
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
-    }, [auth.state.uid])
+    }, [auth.state.uid, enqueueSnackbar])
 
 
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { useSnackbar } from 'notistack';
 import { AuthenticationContext } from './contexts/AuthenticationContext'
 import { TabPanel, a11yProps } from './Tabpanel'
 import Roomview from './Roomview';
@@ -8,6 +9,7 @@ import axios from 'axios'
 import Container from '@material-ui/core/Container'
 
 function RoomManagement() {
+    const { enqueueSnackbar } = useSnackbar();
     const auth = useContext(AuthenticationContext)
     const [state, setState] = useState({
         room: [],
@@ -19,9 +21,9 @@ function RoomManagement() {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
             setState(prevState => { return { ...prevState, room: res.data.room } })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
-    }, [auth.state.uid])
+    }, [auth.state.uid, enqueueSnackbar])
 
     const handleSwitch = (event, newValue) => {
         setState(prevState => { return { ...prevState, tab: newValue } })

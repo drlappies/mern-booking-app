@@ -16,6 +16,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { useSnackbar } from 'notistack';
 import axios from 'axios'
 
 const useStyles = makeStyles(() => ({
@@ -30,6 +31,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 function Payment() {
+    const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
     const { serviceId } = useParams();
     const { selectedTimeslots } = useContext(AppointmentContext);
@@ -58,9 +60,9 @@ function Payment() {
                 }
             })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
-    }, [selectedTimeslots, serviceId])
+    }, [enqueueSnackbar, selectedTimeslots, serviceId])
 
     const fetchStripeObject = useCallback(async () => {
         try {

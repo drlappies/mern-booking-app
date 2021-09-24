@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useContext, useState } from 'react';
 import { AuthenticationContext } from './contexts/AuthenticationContext'
+import { useSnackbar } from 'notistack';
 import { TabPanel, a11yProps } from './Tabpanel'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -8,6 +9,7 @@ import Container from '@material-ui/core/Container'
 import axios from 'axios'
 
 function ServiceManagement() {
+    const { enqueueSnackbar } = useSnackbar();
     const auth = useContext(AuthenticationContext)
     const [state, setState] = useState({
         room: [],
@@ -19,9 +21,9 @@ function ServiceManagement() {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
             setState(prevState => { return { ...prevState, room: res.data.room } })
         } catch (err) {
-            console.log(err)
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
-    }, [auth.state.uid])
+    }, [auth.state.uid, enqueueSnackbar])
 
     const handleSwitch = (event, newValue) => {
         setState(prevState => { return { ...prevState, tab: newValue } })
@@ -33,21 +35,21 @@ function ServiceManagement() {
 
     return (
         <Container>
-                <Tabs
-                    variant="scrollable"
-                    value={state.tab}
-                    name="tab"
-                    onChange={handleSwitch}
-                >
-                    {state.room.map((el, i) =>
-                        <Tab label={el.title} key={i}  {...a11yProps(i)} />
-                    )}
-                </Tabs>
+            <Tabs
+                variant="scrollable"
+                value={state.tab}
+                name="tab"
+                onChange={handleSwitch}
+            >
                 {state.room.map((el, i) =>
-                    <TabPanel value={state.tab} index={i} key={i}>
-                        <ServiceView services={el.services} fetchData={fetchData} room={el._id} />
-                    </TabPanel>
+                    <Tab label={el.title} key={i}  {...a11yProps(i)} />
                 )}
+            </Tabs>
+            {state.room.map((el, i) =>
+                <TabPanel value={state.tab} index={i} key={i}>
+                    <ServiceView services={el.services} fetchData={fetchData} room={el._id} />
+                </TabPanel>
+            )}
         </Container>
     )
 }

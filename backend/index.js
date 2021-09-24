@@ -15,7 +15,7 @@ const port = 8080;
 const ip = '0.0.0.0';
 
 const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(process.NODE_ENV === 'production' ? process.env.MONGO_URI : "mongodb://localhost:27017/practice-room-rental", {
     dbName: process.env.DB_NAME,
     useNewUrlParser: true,
     useUnifiedTopology: true,
