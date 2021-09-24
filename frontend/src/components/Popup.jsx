@@ -16,7 +16,7 @@ import TableRow from '@material-ui/core/TableRow';
 function Popup(props) {
     return (
         <Modal open={props.open} onClose={props.onClose} >
-            <Grid container justifyContent="center" aligntItems="center" style={{ marginTop: "20%" }}>
+            <Grid container justifyContent="center" style={{marginTop: "200px"}}>
                 <Grid item xs={11} sm={7} md={5} lg={4} xl={3}>
                     <Card>
                         <CardHeader title="預訂資訊" subheader={props.invoiceId} />
