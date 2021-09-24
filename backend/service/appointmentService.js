@@ -9,7 +9,7 @@ module.exports.fetchAppointments = async (roomId, serviceId) => {
             { service: serviceId },
             { room: roomId }
         ]
-    }, { user: 0, createdAt: 0, updatedAt: 0, invoice: 0, room: 0, service: 0, __v: 0, _id: 0 })
+    }, { user: 0, createdAt: 0, updatedAt: 0, invoice: 0, room: 0, service: 0, __v: 0 })
 
     return appointments
 }

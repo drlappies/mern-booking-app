@@ -2,9 +2,9 @@ import React, { useState, useMemo } from 'react';
 import Timeslot from './Timeslot';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card'
+import { CardContent } from '@material-ui/core';
 
 const weekday = ['日', '一', '二', '三', '四', '五', '六',]
 
@@ -80,8 +80,9 @@ function getAppointmentID(appointments, year, month, date, hour) {
     const appointment = appointments.find(el => el.year === year && el.month === month && el.date === date && el.hour === hour)
     if (appointment) {
         return appointment._id
+    } else {
+        return ""
     }
-    return ""
 }
 
 function Calendar(props) {
@@ -128,8 +129,8 @@ function Calendar(props) {
     }
 
     return (
-        <Container>
-            <Card raised style={{ padding: '20px' }}>
+        <Card raised>
+            <CardContent>
                 <Grid container direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
                     <Grid item>
                         <Grid container spacing={1}>
@@ -186,8 +187,8 @@ function Calendar(props) {
                         </table>
                     </Grid>
                 </Grid>
-            </Card>
-        </Container >
+            </CardContent>
+        </Card>
     )
 }
 export default Calendar
