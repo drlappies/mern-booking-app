@@ -1,7 +1,9 @@
 import React, { useEffect, useCallback, useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { AuthenticationContext } from './contexts/AuthenticationContext'
 import { useSnackbar } from 'notistack';
 import { TabPanel, a11yProps } from './Tabpanel'
+import Noroom from './Noroom'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import ServiceView from './ServiceView'
@@ -20,6 +22,9 @@ function ServiceManagement() {
         try {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
             setState(prevState => { return { ...prevState, room: res.data.room } })
+            if (res.data.room.length <= 0) {
+                return <Noroom block={"服務管理"} />
+            }
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }

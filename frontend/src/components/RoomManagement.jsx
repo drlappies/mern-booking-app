@@ -6,6 +6,7 @@ import Roomview from './Roomview';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import axios from 'axios'
+import Noroom from './Noroom'
 import Container from '@material-ui/core/Container'
 
 function RoomManagement() {
@@ -20,6 +21,9 @@ function RoomManagement() {
         try {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
             setState(prevState => { return { ...prevState, room: res.data.room } })
+            if (res.data.room.length <= 0) {
+                return <Noroom block={"房間管理"} />
+            }
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }

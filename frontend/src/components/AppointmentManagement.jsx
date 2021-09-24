@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState, useContext } from 'react';
 import { AuthenticationContext } from './contexts/AuthenticationContext'
 import { useSnackbar } from 'notistack';
 import AppointmentView from './AppointmentView';
+import Noroom from './Noroom'
 import Container from '@material-ui/core/Container'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -25,6 +26,9 @@ function AppointmentManagement() {
         try {
             const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
             setState(prevState => { return { ...prevState, rooms: res.data.room } })
+            if (res.data.room.length <= 0) {
+                return <Noroom block={"預訂管理"} />
+            }
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
