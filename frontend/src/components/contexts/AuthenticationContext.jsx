@@ -74,7 +74,7 @@ export function AuthenticationProvider(props) {
                 isAuthenticated: true
             })
             enqueueSnackbar(`你好！${res.data.username}`, { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
-            history.goBack();
+            history.push('/')
         } catch (err) {
             enqueueSnackbar(`${err.response.data.error}`, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
         }
