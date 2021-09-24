@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { obtainUser } = require('../service/userService')
 const { getPricing } = require('../service/transactionService')
 
-module.exports.onboard = async (req, res, next) => {
+module.exports.onboard = async (req, res) => {
     try {
         const { id } = req.user
         const user = await obtainUser(id)
@@ -21,11 +21,12 @@ module.exports.onboard = async (req, res, next) => {
             url: accountLinks.url
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getOnboardStatus = async (req, res, next) => {
+module.exports.getOnboardStatus = async (req, res) => {
     try {
         if (req.user.id !== req.params.id) throw new Error('Unauthorised')
         const { id } = req.user;
@@ -36,11 +37,12 @@ module.exports.getOnboardStatus = async (req, res, next) => {
             isOnboarded: account.charges_enabled && account.details_submitted ? true : false
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getPaymentIntent = async (req, res, next) => {
+module.exports.getPaymentIntent = async (req, res) => {
     try {
         const { id } = req.user;
         const user = await obtainUser(id)
@@ -65,6 +67,7 @@ module.exports.getPaymentIntent = async (req, res, next) => {
             pricing: pricing
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

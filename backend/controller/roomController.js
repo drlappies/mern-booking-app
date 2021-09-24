@@ -1,27 +1,29 @@
 const { remove } = require('../utils/s3');
 const { fetchRooms, fetchOneRoom, insertRoom, updateRoom, removeRoom } = require('../service/roomService')
 
-module.exports.getRooms = async (req, res, next) => {
+module.exports.getRooms = async (req, res) => {
     try {
         const rooms = await fetchRooms()
         return res.status(200).json(rooms)
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getOneRoom = async (req, res, next) => {
+module.exports.getOneRoom = async (req, res) => {
     try {
         const { id } = req.params
         const room = await fetchOneRoom(id)
         if (!room) throw new Error('查無此房間，可能已被作者或管理員刪除');
         return res.status(200).json(room)
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.createRoom = async (req, res, next) => {
+module.exports.createRoom = async (req, res) => {
     try {
         const { id } = req.user
         const { title, description, room, floor, building, street, region, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen } = req.body
@@ -35,7 +37,8 @@ module.exports.createRoom = async (req, res, next) => {
             success: `成功建立房間 ${insertedRoom.title}`
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
@@ -53,7 +56,7 @@ module.exports.editRoom = async (req, res, next) => {
     }
 }
 
-module.exports.deleteRoom = async (req, res, next) => {
+module.exports.deleteRoom = async (req, res) => {
     try {
         const { id } = req.params;
         const room = await removeRoom(id)
@@ -62,6 +65,7 @@ module.exports.deleteRoom = async (req, res, next) => {
             success: `成功移除房間 ${room.title}`
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

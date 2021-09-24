@@ -2,17 +2,18 @@ const Review = require('../model/Review');
 const Room = require('../model/Room');
 const { getReviewsByRoom, insertReview } = require('../service/reviewService')
 
-module.exports.fetchReviewsByRoom = async (req, res, next) => {
+module.exports.fetchReviewsByRoom = async (req, res) => {
     try {
         const { roomid } = req.params;
         const reviews = await getReviewsByRoom(roomid)
         return res.status(200).json(reviews)
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.createReview = async (req, res, next) => {
+module.exports.createReview = async (req, res) => {
     try {
         const { roomid } = req.params;
         const { id } = req.user;
@@ -27,11 +28,12 @@ module.exports.createReview = async (req, res, next) => {
             success: '成功留言！'
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getOneReview = async (req, res, next) => {
+module.exports.getOneReview = async (req, res) => {
     try {
         const foundReview = await Review.findById(req.params.reviewId);
         if (!foundReview) throw new Error('查無此留言，可能已被作者或管理員刪除')
@@ -39,11 +41,12 @@ module.exports.getOneReview = async (req, res, next) => {
             review: foundReview
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.deleteOneReview = async (req, res, next) => {
+module.exports.deleteOneReview = async (req, res) => {
     try {
         const deletedReview = await Review.findByIdAndDelete(req.params.reviewId);
         if (!deletedReview) throw new Error('查無此留言，可能已被作者或管理員刪除')
@@ -51,6 +54,7 @@ module.exports.deleteOneReview = async (req, res, next) => {
             deletedReview: deletedReview
         });
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

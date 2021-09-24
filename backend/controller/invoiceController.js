@@ -1,6 +1,6 @@
 const { getInvoiceByFinder, getInvoiceById } = require('../service/invoiceService')
 
-module.exports.fetchInvoiceByFinder = async (req, res, next) => {
+module.exports.fetchInvoiceByFinder = async (req, res) => {
     try {
         const { id } = req.user
         const invoice = await getInvoiceByFinder(id)
@@ -8,11 +8,12 @@ module.exports.fetchInvoiceByFinder = async (req, res, next) => {
             invoice: invoice
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.fetchInvoiceById = async (req, res, next) => {
+module.exports.fetchInvoiceById = async (req, res) => {
     try {
         const { id } = req.params;
         const invoice = await getInvoiceById(id)
@@ -20,6 +21,7 @@ module.exports.fetchInvoiceById = async (req, res, next) => {
             invoice: invoice
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

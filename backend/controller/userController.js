@@ -7,7 +7,7 @@ const { obtainUserByUsername, createFinderUser, createOwnerUser, obtainUserById 
 const { getAllRoomsByUser } = require('../service/roomService')
 const { getAllServicesByUser } = require('../service/serviceService')
 
-module.exports.registerFinder = async (req, res, next) => {
+module.exports.registerFinder = async (req, res) => {
     try {
         const { username, password, confirmPassword, name } = req.body;
 
@@ -45,11 +45,12 @@ module.exports.registerFinder = async (req, res, next) => {
         })
 
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.registerOwner = async (req, res, next) => {
+module.exports.registerOwner = async (req, res) => {
     try {
         const { username, password, confirmPassword, title } = req.body;
 
@@ -86,11 +87,12 @@ module.exports.registerOwner = async (req, res, next) => {
             success: '註冊成功！'
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getRoomsByUser = async (req, res, next) => {
+module.exports.getRoomsByUser = async (req, res) => {
     try {
         if (req.params.id !== req.user.id) {
             return res.status(400).json({
@@ -103,11 +105,12 @@ module.exports.getRoomsByUser = async (req, res, next) => {
             room: room
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getServicesByUser = async (req, res, next) => {
+module.exports.getServicesByUser = async (req, res) => {
     try {
         if (req.params.id !== req.user.id) {
             return res.status(400).json({
@@ -121,11 +124,12 @@ module.exports.getServicesByUser = async (req, res, next) => {
             service: service
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getUserById = async (req, res, next) => {
+module.exports.getUserById = async (req, res) => {
     try {
         const { id } = req.user
         const user = await obtainUserById(id)
@@ -133,6 +137,7 @@ module.exports.getUserById = async (req, res, next) => {
             user: user
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

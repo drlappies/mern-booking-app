@@ -1,27 +1,29 @@
 const { fetchAppointments, createAppointment, checkTimeslotAvailability, checkServiceAvailability, fetchAppointment } = require('../service/appointmentService')
 const { obtainUserById } = require('../service/userService')
 
-module.exports.getAppointments = async (req, res, next) => {
+module.exports.getAppointments = async (req, res) => {
     try {
         const { roomid, serviceid } = req.params;
         const appointments = await fetchAppointments(roomid, serviceid)
         return res.status(200).json(appointments)
     } catch (err) {
-        next(err);
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getAppointment = async (req, res, next) => {
+module.exports.getAppointment = async (req, res) => {
     try {
         const { id } = req.params;
         const appointment = await fetchAppointment(id)
         return res.status(200).json(appointment)
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.makeAppointment = async (req, res, next) => {
+module.exports.makeAppointment = async (req, res) => {
     try {
         const { appointments, roomId, serviceId } = req.body;
         const { id } = req.user;
@@ -61,6 +63,7 @@ module.exports.makeAppointment = async (req, res, next) => {
             success: '預訂成功！'
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

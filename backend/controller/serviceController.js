@@ -1,17 +1,18 @@
 const { insertService, getServiceById, updateService, removeService, getAllServices, getServiceCounts } = require('../service/serviceService')
 
-module.exports.getServices = async (req, res, next) => {
+module.exports.getServices = async (req, res) => {
     try {
         const service = await getAllServices();
         return res.status(200).json({
             service: service
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.createService = async (req, res, next) => {
+module.exports.createService = async (req, res) => {
     try {
         const { id } = req.user
         const { name, pricing, capacity, remark, room } = req.body;
@@ -39,21 +40,23 @@ module.exports.createService = async (req, res, next) => {
             success: `成功創建服務 ${service.name}`
         });
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.getService = async (req, res, next) => {
+module.exports.getService = async (req, res) => {
     try {
         const { id } = req.params;
         const service = getServiceById(id)
         return res.status(200).json(service);
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.editService = async (req, res, next) => {
+module.exports.editService = async (req, res) => {
     try {
         const { name, pricing, capacity, remark, isOnline } = req.body;
         const { id } = req.params;
@@ -62,11 +65,12 @@ module.exports.editService = async (req, res, next) => {
             success: `成功更新服務 ${service.name}`
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.deleteService = async (req, res, next) => {
+module.exports.deleteService = async (req, res) => {
     try {
         const { id } = req.params;
         const service = await removeService(id);
@@ -74,6 +78,7 @@ module.exports.deleteService = async (req, res, next) => {
             success: `成功刪除服務 ${service.name}`
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

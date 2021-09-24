@@ -3,7 +3,7 @@ const verifyPassword = require('../utils/verifyPassword');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { obtainUser, obtainUserByUsername } = require('../service/userService')
 
-module.exports.verifyUser = async (req, res, next) => {
+module.exports.verifyUser = async (req, res) => {
     try {
         const token = req.header('x-auth-token');
         jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
@@ -21,11 +21,12 @@ module.exports.verifyUser = async (req, res, next) => {
             }
         });
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }
 
-module.exports.loginUser = async (req, res, next) => {
+module.exports.loginUser = async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await obtainUserByUsername(username)
@@ -56,6 +57,7 @@ module.exports.loginUser = async (req, res, next) => {
             })
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        res.status(400).json({ error: err })
     }
 }

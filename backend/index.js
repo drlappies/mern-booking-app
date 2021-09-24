@@ -42,16 +42,6 @@ app.use('/api/transaction', transactionRoute);
 app.use('/api/room/:roomid/review', reviewRoute);
 app.use('/api/appointment', appointmentRoute);
 
-app.use((err, req, res, next) => {
-    if (!err.message) {
-        err.message = `出現未知的錯誤 :'(`
-    }
-    return res.status(400).json({
-        message: err.message,
-        stack: process.env.NODE_ENV !== 'production' ? err.stack : null
-    })
-})
-
 app.listen(port, ip, () => {
     console.log(`running at http://${ip}:${port}`);
 })
