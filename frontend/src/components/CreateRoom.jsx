@@ -9,20 +9,14 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControl from '@material-ui/core/FormControl';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid'
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import Container from '@material-ui/core/Container'
+import CardMedia from '@material-ui/core/CardMedia'
 import axios from 'axios';
 
 const useStyles = makeStyles({
@@ -156,23 +150,38 @@ function CreateRoom() {
     }
 
     return (
-        <div>
-            <Grid container direction="row" justifyContent="center">
-                <Grid item xl={8} lg={8} md={10} sm={11} xs={12}>
-                    <Card>
+        <Container>
+            <Grid container justifyContent="flex-start" spacing={1}>
+                <Grid item xs={6} sm={12}>
+                    <Button color="primary" variant="contained" onClick={() => handleSubmit()}> 確定並提交</Button>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card raised>
                         <CardContent>
                             <Typography variant="h6">房間資訊</Typography>
-                            <TextField margin="normal" fullWidth label="房間名稱" name="title" value={state.title} onChange={(e) => handleChange(e)} />
-                            <TextField margin="normal" fullWidth multiline maxRows={4} label="房間介紹" name="description" value={state.description} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="房間名稱" name="title" value={state.title} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth multiline rows={12} label="房間介紹" name="description" value={state.description} onChange={(e) => handleChange(e)} />
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        <CardContent>
                             <Typography variant="h6">房間地址</Typography>
-                            <TextField margin="normal" fullWidth label="室" name="room" value={state.room} onChange={(e) => handleChange(e)} />
-                            <TextField margin="normal" fullWidth label="樓層" name="floor" value={state.floor} onChange={(e) => handleChange(e)} />
-                            <TextField margin="normal" fullWidth label="大廈" name="building" value={state.building} onChange={(e) => handleChange(e)} />
-                            <TextField margin="normal" fullWidth label="街道" name="street" value={state.street} onChange={(e) => handleChange(e)} />
-                            <TextField margin="normal" fullWidth label="區域" name="region" value={state.region} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="室" name="room" value={state.room} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="樓層" name="floor" value={state.floor} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="大廈" name="building" value={state.building} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="街道" name="street" value={state.street} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="區域" name="region" value={state.region} onChange={(e) => handleChange(e)} />
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        <CardContent>
                             <Typography variant="h6" display="inline">開放時間</Typography><Typography variant="caption" display="inline">  分鐘/秒數不計算在內</Typography>
-                            <TextField margin="normal" fullWidth label="開門時間" type="time" name="openingTime" value={state.openingTime} disabled={state.is247} onChange={(e) => handleChange(e)} />
-                            <TextField margin="normal" fullWidth label="關門時間" type="time" name="closingTime" value={state.closingTime} disabled={state.is247} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="開門時間" type="time" name="openingTime" value={state.openingTime} disabled={state.is247} onChange={(e) => handleChange(e)} />
+                            <TextField size="small" margin="normal" fullWidth label="關門時間" type="time" name="closingTime" value={state.closingTime} disabled={state.is247} onChange={(e) => handleChange(e)} />
                             <FormControl margin="normal">
                                 <FormGroup row>
                                     <FormControlLabel
@@ -182,6 +191,12 @@ function CreateRoom() {
                                     />
                                 </FormGroup>
                             </FormControl>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        <CardContent>
                             <Typography variant="h6">開放日期</Typography>
                             <FormControl margin="normal">
                                 <FormGroup row>
@@ -222,139 +237,144 @@ function CreateRoom() {
                                     />
                                 </FormGroup>
                             </FormControl>
-                            <Typography variant="h6">房間圖片</Typography>
-                            <TableContainer>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>圖片預覽</TableCell>
-                                            <TableCell align="right">修改</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell>{state.image1 ? <img alt={state.image1} src={URL.createObjectURL(state.image1)} height="400" width="600" /> : null}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    state.image1 ?
-                                                        <Button variant="contained" color="secondary" component="span" onClick={() => removeImagePreview("image1")}>移除圖片</Button>
-                                                        :
-                                                        <div>
-                                                            <label htmlFor="createRoomImage1">
-                                                                <Button variant="contained" color="primary" component="span">上傳圖片</Button>
-                                                            </label>
-                                                            <input
-                                                                className={classes.upload}
-                                                                accept="image/*"
-                                                                id="createRoomImage1"
-                                                                name="image1"
-                                                                type="file"
-                                                                onChange={(e) => addImagePreview(e)}
-                                                            />
-                                                        </div>
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>{state.image2 ? <img alt={state.image2} src={URL.createObjectURL(state.image2)} height="400" width="600" /> : null}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    state.image2 ?
-                                                        <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image2")}>移除圖片</Button>
-                                                        :
-                                                        <div>
-                                                            <label htmlFor="createRoomImage2">
-                                                                <Button variant="contained" color="primary" component="span">上傳圖片</Button>
-                                                            </label>
-                                                            <input
-                                                                className={classes.upload}
-                                                                accept="image/*"
-                                                                id="createRoomImage2"
-                                                                name="image2"
-                                                                type="file"
-                                                                onChange={(e) => addImagePreview(e)}
-                                                            />
-                                                        </div>
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>{state.image3 ? <img alt={state.image3} src={URL.createObjectURL(state.image3)} height="400" width="600" /> : null}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    state.image3 ?
-                                                        <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image3")}>移除圖片</Button>
-                                                        :
-                                                        <div>
-                                                            <label htmlFor="createRoomImage3">
-                                                                <Button variant="contained" color="primary" component="span">上傳圖片</Button>
-                                                            </label>
-                                                            <input
-                                                                className={classes.upload}
-                                                                accept="image/*"
-                                                                id="createRoomImage3"
-                                                                name="image3"
-                                                                type="file"
-                                                                onChange={(e) => addImagePreview(e)}
-                                                            />
-                                                        </div>
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>{state.image4 ? <img alt={state.image4} src={URL.createObjectURL(state.image4)} height="400" width="600" /> : null}</TableCell>
-                                            <TableCell align="right">
-                                                {
-                                                    state.image4 ? <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image4")}>移除圖片</Button>
-                                                        :
-                                                        <div>
-                                                            <label htmlFor="createRoomImage4">
-                                                                <Button variant="contained" color="primary" component="span">上傳圖片</Button>
-                                                            </label>
-                                                            <input
-                                                                className={classes.upload}
-                                                                accept="image/*"
-                                                                id="createRoomImage4"
-                                                                name="image4"
-                                                                type="file"
-                                                                onChange={(e) => addImagePreview(e)}
-                                                            />
-                                                        </div>
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell>{state.image5 ? <img alt={state.image5} src={URL.createObjectURL(state.image5)} height="400" width="600" /> : null}</TableCell>
-                                            <TableCell align="right">
-                                                {state.image5 ?
-                                                    <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image5")}>移除圖片</Button>
-                                                    :
-                                                    <div>
-                                                        <label htmlFor="createRoomImage5">
-                                                            <Button variant="contained" color="primary" component="span">上傳圖片</Button>
-                                                        </label>
-                                                        <input
-                                                            className={classes.upload}
-                                                            accept="image/*"
-                                                            id="createRoomImage5"
-                                                            name="image5"
-                                                            type="file"
-                                                            onChange={(e) => addImagePreview(e)}
-                                                        />
-                                                    </div>
-                                                }
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                        </CardContent>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        {state.image1 ? <CardMedia image={URL.createObjectURL(state.image1)} style={{ height: 0, paddingTop: '56.25%' }} /> : null}
+                        <CardContent>
+                            <Typography variant="h6">房間圖片 #1</Typography>
                         </CardContent>
                         <CardActions>
-                            <FormControl margin="normal" >
-                                <Fab variant="extended" color="primary" onClick={() => handleSubmit()}>
-                                    <NavigateNextIcon /> 確定並提交
-                                </Fab>
-                            </FormControl>
+                            {
+                                state.image1 ?
+                                    <Button variant="contained" color="secondary" component="span" onClick={() => removeImagePreview("image1")}>移除圖片</Button>
+                                    :
+                                    <div>
+                                        <label htmlFor="createRoomImage1">
+                                            <Button variant="contained" color="primary" component="span">上傳圖片</Button>
+                                        </label>
+                                        <input
+                                            className={classes.upload}
+                                            accept="image/*"
+                                            id="createRoomImage1"
+                                            name="image1"
+                                            type="file"
+                                            onChange={(e) => addImagePreview(e)}
+                                        />
+                                    </div>
+                            }
+                        </CardActions>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        {state.image2 ? <CardMedia image={URL.createObjectURL(state.image2)} style={{ height: 0, paddingTop: '56.25%' }} /> : null}
+                        <CardContent>
+                            <Typography variant="h6">房間圖片 #2</Typography>
+                        </CardContent>
+                        <CardActions>
+                            {
+                                state.image2 ?
+                                    <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image2")}>移除圖片</Button>
+                                    :
+                                    <div>
+                                        <label htmlFor="createRoomImage2">
+                                            <Button variant="contained" color="primary" component="span">上傳圖片</Button>
+                                        </label>
+                                        <input
+                                            className={classes.upload}
+                                            accept="image/*"
+                                            id="createRoomImage2"
+                                            name="image2"
+                                            type="file"
+                                            onChange={(e) => addImagePreview(e)}
+                                        />
+                                    </div>
+                            }
+                        </CardActions>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        {state.image3 ? <CardMedia image={URL.createObjectURL(state.image3)} style={{ height: 0, paddingTop: '56.25%' }} /> : null}
+                        <CardContent>
+                            <Typography variant="h6">房間圖片 #3</Typography>
+                        </CardContent>
+                        <CardActions>
+                            {
+                                state.image3 ?
+                                    <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image3")}>移除圖片</Button>
+                                    :
+                                    <div>
+                                        <label htmlFor="createRoomImage3">
+                                            <Button variant="contained" color="primary" component="span">上傳圖片</Button>
+                                        </label>
+                                        <input
+                                            className={classes.upload}
+                                            accept="image/*"
+                                            id="createRoomImage3"
+                                            name="image3"
+                                            type="file"
+                                            onChange={(e) => addImagePreview(e)}
+                                        />
+                                    </div>
+                            }
+                        </CardActions>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        {state.image4 ? <CardMedia image={URL.createObjectURL(state.image4)} style={{ height: 0, paddingTop: '56.25%' }} /> : null}
+                        <CardContent>
+                            <Typography variant="h6">房間圖片 #4</Typography>
+                        </CardContent>
+                        <CardActions>
+                            {
+                                state.image4 ? <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image4")}>移除圖片</Button>
+                                    :
+                                    <div>
+                                        <label htmlFor="createRoomImage4">
+                                            <Button variant="contained" color="primary" component="span">上傳圖片</Button>
+                                        </label>
+                                        <input
+                                            className={classes.upload}
+                                            accept="image/*"
+                                            id="createRoomImage4"
+                                            name="image4"
+                                            type="file"
+                                            onChange={(e) => addImagePreview(e)}
+                                        />
+                                    </div>
+                            }
+                        </CardActions>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        {state.image5 ? <CardMedia image={URL.createObjectURL(state.image5)} style={{ height: 0, paddingTop: '56.25%' }} /> : null}
+                        <CardContent>
+                            <Typography variant="h6">房間圖片 #5</Typography>
+                        </CardContent>
+                        <CardActions>
+                            {state.image5 ?
+                                <Button variant="contained" color="secondary" onClick={() => removeImagePreview("image5")}>移除圖片</Button>
+                                :
+                                <div>
+                                    <label htmlFor="createRoomImage5">
+                                        <Button variant="contained" color="primary" component="span">上傳圖片</Button>
+                                    </label>
+                                    <input
+                                        className={classes.upload}
+                                        accept="image/*"
+                                        id="createRoomImage5"
+                                        name="image5"
+                                        type="file"
+                                        onChange={(e) => addImagePreview(e)}
+                                    />
+                                </div>
+                            }
                         </CardActions>
                     </Card>
                 </Grid>
@@ -362,7 +382,7 @@ function CreateRoom() {
             <Backdrop className={classes.backdrop} open={state.isCreating} >
                 <CircularProgress color="inherit" />
             </Backdrop>
-        </div >
+        </Container>
     )
 }
 
