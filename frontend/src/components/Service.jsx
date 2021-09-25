@@ -22,17 +22,9 @@ function Service() {
             </Grid>
             {currentRoom.service.length <= 0 ?
                 <Grid item xs={12}>
-                    <Card raised>
-                        <CardContent>
-                            <Grid container justifyContent="center">
-                                <Grid item>
-                                    <Typography variant="body1">
-                                        此房間暫時沒有提供如何服務 :/
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
+                    <Typography variant="subtitle1" align="center">
+                        此房間暫時沒有提供如何服務 :/
+                    </Typography>
                 </Grid>
                 :
                 currentRoom.service.map((el, i) =>
