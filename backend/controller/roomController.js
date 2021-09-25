@@ -7,7 +7,7 @@ module.exports.getRooms = async (req, res) => {
         return res.status(200).json(rooms)
     } catch (err) {
         console.log(err)
-        res.status(400).json({ error: err })
+        return res.status(400).json({ error: err })
     }
 }
 
@@ -19,7 +19,7 @@ module.exports.getOneRoom = async (req, res) => {
         return res.status(200).json(room)
     } catch (err) {
         console.log(err)
-        res.status(400).json({ error: err })
+        return res.status(400).json({ error: err })
     }
 }
 
@@ -32,13 +32,20 @@ module.exports.createRoom = async (req, res) => {
                 error: '房間資料不足！'
             })
         }
+
+        if ([isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen].every(e => e === "false")) {
+            return res.status(400).json({
+                error: '至少選擇一個開放日期！'
+            })
+        }
+
         const insertedRoom = await insertRoom(id, title, description, room, floor, building, street, region, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen, req.files)
         return res.status(200).json({
             success: `成功建立房間 ${insertedRoom.title}`
         })
     } catch (err) {
         console.log(err)
-        res.status(400).json({ error: err })
+        return res.status(400).json({ error: err })
     }
 }
 
@@ -46,13 +53,28 @@ module.exports.editRoom = async (req, res, next) => {
     try {
         const { id } = req.params
         const { title, description, addressStreet, addressBuilding, addressRegion, addressFlat, addressFloor, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen, deletedKeys, deletedImages } = req.body
+
+        if (!title || !description || !addressStreet || !addressBuilding ||  !addressRegion ||  !addressFlat || !addressFloor || !openingTime || !closingTime) {
+            return res.status(400).json({
+                error: '房間資料不足！'
+            })
+        }
+
+        if ([isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen].every(e => e === "false")) {
+            return res.status(400).json({
+                error: '至少選擇一個開放日期！'
+            })
+
+        }
         if (deletedKeys) remove(deletedKeys)
+
         const room = await updateRoom(id, title, description, addressStreet, addressBuilding, addressRegion, addressFlat, addressFloor, openingTime, closingTime, isMonOpen, isTuesOpen, isWedOpen, isThursOpen, isFriOpen, isSatOpen, isSunOpen, req.files, deletedImages)
         return res.status(200).json({
             success: `成功更新房間 ${room.title}`
         })
     } catch (err) {
-        next(err)
+        console.log(err)
+        return res.status(400).json({ error: err })
     }
 }
 
@@ -60,12 +82,13 @@ module.exports.deleteRoom = async (req, res) => {
     try {
         const { id } = req.params;
         const room = await removeRoom(id)
-        const imageKey = deletedRoom.image.imageKey[0];
-        return res.json(200).json({
+        const deleteImage = room.images.map(el => el.key)
+        remove(deleteImage)
+        return res.status(200).json({
             success: `成功移除房間 ${room.title}`
         })
     } catch (err) {
         console.log(err)
-        res.status(400).json({ error: err })
+        return res.status(400).json({ error: err })
     }
 }
