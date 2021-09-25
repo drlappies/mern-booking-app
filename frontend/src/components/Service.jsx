@@ -20,20 +20,35 @@ function Service() {
             <Grid item xs={12}>
                 <Typography paragraph variant="h6">服務選項</Typography>
             </Grid>
-            {currentRoom.service.map((el, i) =>
-                <Grid item key={i} xs={12}>
+            {currentRoom.service.length <= 0 ?
+                <Grid item xs={12}>
                     <Card raised>
-                        <CardHeader title={el.name} subheader={el.remark} />
                         <CardContent>
-                            <Typography variant="subtitle2">${el.pricing} / 小時</Typography>
-                            <Typography variant="subtitle2">適合{el.capacity}人使用</Typography>
+                            <Grid container justifyContent="center">
+                                <Grid item>
+                                    <Typography variant="body1">
+                                        此房間暫時沒有提供如何服務 :/
+                                    </Typography>
+                                </Grid>
+                            </Grid>
                         </CardContent>
-                        <CardActions>
-                            {state.permission === 'Finder' ? <Button color="primary" variant="contained" component={Link} to={`/room/${id}/service/${el._id}/appointment`}>租借</Button> : null}
-                        </CardActions>
                     </Card>
                 </Grid>
-            )}
+                :
+                currentRoom.service.map((el, i) =>
+                    <Grid item key={i} xs={12}>
+                        <Card raised>
+                            <CardHeader title={el.name} subheader={el.remark} />
+                            <CardContent>
+                                <Typography variant="subtitle2">${el.pricing} / 小時</Typography>
+                                <Typography variant="subtitle2">適合{el.capacity}人使用</Typography>
+                            </CardContent>
+                            <CardActions>
+                                {state.permission === 'Finder' ? <Button color="primary" variant="contained" component={Link} to={`/room/${id}/service/${el._id}/appointment`}>租借</Button> : null}
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                )}
         </Grid>
     )
 }
