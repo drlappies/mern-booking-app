@@ -34,7 +34,8 @@ function generateCalendar(openingTime, closingTime, currentWeek) {
             for (let j = 0; j < 7; j++) {
                 week.push({
                     time: i,
-                    date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek))
+                    date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek)),
+                    isNextDay: false
                 })
             }
             calendar.push(week)
@@ -43,14 +44,15 @@ function generateCalendar(openingTime, closingTime, currentWeek) {
         return calendar
     } else {
         let increment = 0;
-        for (let i = 0; i < openingTime - closingTime - 2; i++) {
 
+        for (let i = 0; i < closingTime - openingTime + 25; i++) {
             const week = [];
             if (i + openingTime >= 24) {
                 for (let j = 0; j < 7; j++) {
                     week.push({
                         time: increment,
-                        date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek))
+                        date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek + 1)),
+                        isNextDay: true
                     })
                 }
                 increment = increment + 1
@@ -58,7 +60,8 @@ function generateCalendar(openingTime, closingTime, currentWeek) {
                 for (let j = 0; j < 7; j++) {
                     week.push({
                         time: i + openingTime,
-                        date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek))
+                        date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek)),
+                        isNextDay: false
                     })
                 }
             }
@@ -164,7 +167,7 @@ function Calendar(props) {
                             <tbody>
                                 {calendar.map((time, i, arr) =>
                                     <tr key={i}>
-                                        <td style={{ border: "1px solid lightgrey", width: "100px", textAlign: "center" }}><Typography variant="subtitle1">{arr[i][0].time}:00</Typography></td>
+                                        <td style={{ border: "1px solid lightgrey", width: "100px", textAlign: "center" }}><Typography variant="subtitle2">{arr[i][0].isNextDay ? "翌日" : null} {arr[i][0].time.toString().padStart(2, "0")}:00 </Typography></td>
                                         {time.map((slot, j) =>
                                             <td key={j} style={{ border: "1px solid lightgrey" }}>
                                                 <Timeslot
