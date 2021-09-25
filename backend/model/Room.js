@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const Review = require('../model/Review');
 
 const imageSchema = new Schema({
     url: { type: String, required: true },
@@ -34,13 +33,5 @@ const roomSchema = new Schema({
     openingTime: { type: Number, required: true },
     closingTime: { type: Number, required: true },
 }, { timestamps: true })
-
-roomSchema.post('findOneAndDelete', async function (data) {
-    await Review.deleteMany({
-        _id: {
-            $in: data.reviews
-        }
-    })
-})
 
 module.exports = mongoose.model('Room', roomSchema);
