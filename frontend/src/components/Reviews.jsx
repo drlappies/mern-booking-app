@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import { useSnackbar } from 'notistack';
-import CardContent from '@material-ui/core/CardContent';
-import Card from '@material-ui/core/Card';
 import axios from 'axios'
 
 function Reviews(props) {
