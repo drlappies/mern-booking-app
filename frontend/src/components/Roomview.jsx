@@ -88,6 +88,9 @@ function Roomview(props) {
     const handleChange = (event) => {
         let { name, value, checked, type } = event.target;
         if (type === 'checkbox') value = checked;
+        if (name === "openingTime" || name === "closingTime") {
+            value = `${value.slice(0, -3)}:00`
+        }
         setState(prevState => { return { ...prevState, [name]: value } })
     }
 
@@ -117,8 +120,18 @@ function Roomview(props) {
     const handleSave = async () => {
         try {
             setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving } })
-            let formdata = new FormData()
 
+            if (!state.title || !state.description || !state.addressStreet || !state.addressBuilding || !state.addressRegion || !state.addressFloor || !state.openingTime || !state.closingTime) {
+                enqueueSnackbar("資料不足", { variant: 'success', autoHideDuration: 1500 })
+                return setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving } })
+            }
+
+            if ([state.isMonOpen, state.isTuesOpen, state.isWedOpen, state.isThursOpen, state.isFriOpen, state.isSatOpen, state.isSunOpen].every(e => e === false)) {
+                enqueueSnackbar("請至少選擇一個開放日期！", { variant: 'error', autoHideDuration: 3000 })
+                return setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving } })
+            }
+
+            let formdata = new FormData()
             formdata.append('title', state.title)
             formdata.append('description', state.description)
             formdata.append('addressStreet', state.addressStreet)
@@ -126,8 +139,8 @@ function Roomview(props) {
             formdata.append('addressRegion', state.addressRegion)
             formdata.append('addressFlat', state.addressFlat)
             formdata.append('addressFloor', state.addressFloor)
-            formdata.append('openingTime', state.openingTime)
-            formdata.append('closingTime', state.closingTime)
+            formdata.append("openingTime", parseInt(state.openingTime.slice(0, -3)))
+            formdata.append("closingTime", parseInt(state.closingTime.slice(0, -3)))
             formdata.append('isMonOpen', state.isMonOpen)
             formdata.append('isTuesOpen', state.isTuesOpen)
             formdata.append('isWedOpen', state.isWedOpen)
@@ -155,7 +168,23 @@ function Roomview(props) {
             enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500 })
             setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving, isEditing: !prevState.isEditing } })
         } catch (err) {
-            enqueueSnackbar(`錯誤: ${err}`, { variant: 'error', autoHideDuration: 1500 })
+            console.log(err)
+            // enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500 })
+            setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving, isEditing: !prevState.isEditing } })
+        }
+    }
+
+    const handleDelete = async () => {
+        try {
+            setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving } })
+            const res = await axios.delete(`/api/room/${props.id}`, {
+                headers: { 'x-auth-token': window.localStorage.getItem('token') }
+            })
+            props.fetch()
+            enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500 })
+            setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving, isEditing: !prevState.isEditing } })
+        } catch (err) {
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500 })
             setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving, isEditing: !prevState.isEditing } })
         }
     }
@@ -172,8 +201,8 @@ function Roomview(props) {
                 addressRegion: props.address.region,
                 addressFlat: props.address.flat,
                 addressFloor: props.address.floor,
-                openingTime: props.openingTime,
-                closingTime: props.closingTime,
+                openingTime: `${props.openingTime.toString().padStart(2, '0')}:00`,
+                closingTime: `${props.closingTime.toString().padStart(2, '0')}:00`,
                 isMonOpen: props.openWeekday.monday,
                 isTuesOpen: props.openWeekday.tuesday,
                 isWedOpen: props.openWeekday.wednesday,
@@ -190,11 +219,11 @@ function Roomview(props) {
     }, [state.isEditing, props.address.building, props.address.flat, props.address.floor, props.address.region, props.address.street, props.closingTime, props.description, props.id, props.openWeekday.friday, props.openWeekday.monday, props.openWeekday.saturday, props.openWeekday.sunday, props.openWeekday.thursday, props.openWeekday.tuesday, props.openWeekday.wednesday, props.openingTime, props.services, props.title, props.imageUrl, props.imageKey, props.images])
 
     return (
-        <Card className={classes.panel} raised>
+        <Card raised>
             <CardActions>
-                <Button variant="contained" onClick={() => toggleEditing()} color={state.isEditing ? "secondary" : "primary"}>{state.isEditing ? "取消" : "修改"}</Button>
+                <Button variant="contained" onClick={() => toggleEditing()} color={state.isEditing ? "default" : "primary"}>{state.isEditing ? "取消" : "修改"}</Button>
                 {state.isEditing ? <Button variant="contained" color="primary" onClick={() => handleSave()}>確定並提交</Button> : null}
-
+                {state.isEditing ? <Button variant="contained" color="secondary" onClick={() => handleDelete()}>刪除房間</Button> : null}
             </CardActions>
             <CardContent>
                 <Typography variant="h6">房間資訊</Typography>
@@ -254,7 +283,7 @@ function Roomview(props) {
                     </FormGroup>
                 </FormControl>
                 <Typography variant="h6">房間圖片</Typography>
-                <Table>
+                <Table style={{ overflowX: "scroll" }}>
                     <TableHead>
                         <TableRow>
                             <TableCell>圖片</TableCell>

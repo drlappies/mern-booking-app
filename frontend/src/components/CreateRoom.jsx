@@ -105,13 +105,21 @@ function CreateRoom() {
     const handleSubmit = async () => {
         try {
             setState(prevState => { return { ...prevState, isCreating: true } })
+            if (!state.title || !state.description || !state.floor || !state.building || !state.street || !state.region || !state.image1 || !state.image2 || !state.image3 || !state.image4 || !state.image5) {
+                enqueueSnackbar("資料不足！", { variant: 'error', autoHideDuration: 3000 })
+                return setState(prevState => { return { ...prevState, isCreating: false } })
+            }
+            if ([state.isMonOpen, state.isTuesOpen, state.isWedOpen, state.isThursOpen, state.isFriOpen, state.isSatOpen, state.isSunOpen].every(e => e === false)) {
+                enqueueSnackbar("請至少選擇一個開放日期！", { variant: 'error', autoHideDuration: 3000 })
+                return setState(prevState => { return { ...prevState, isCreating: false } })
+            }
             const formdata = new FormData()
             if (state.is247) {
                 formdata.append("openingTime", "0")
                 formdata.append("closingTime", "23")
             } else {
-                formdata.append("openingTime", state.openingTime.slice(0, -3))
-                formdata.append("closingTime", state.closingTime.slice(0, -3))
+                formdata.append("openingTime", parseInt(state.openingTime.slice(0, -3)))
+                formdata.append("closingTime", parseInt(state.closingTime.slice(0, -3)))
             }
             formdata.append("title", state.title)
             formdata.append("description", state.description)
@@ -150,7 +158,7 @@ function CreateRoom() {
     return (
         <div>
             <Grid container direction="row" justifyContent="center">
-                <Grid item xl={5} lg={5} md={6} sm={8} xs={10}>
+                <Grid item xl={8} lg={8} md={10} sm={11} xs={12}>
                     <Card>
                         <CardContent>
                             <Typography variant="h6">房間資訊</Typography>
