@@ -11,13 +11,10 @@ import { useSnackbar } from 'notistack';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions';
+import CardMedia from '@material-ui/core/CardMedia';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles(() => ({
     input: {
@@ -46,10 +43,11 @@ const useStyles = makeStyles(() => ({
         zIndex: 999,
         color: '#fff',
     },
-    appBar: {
-        top: 'auto',
-        bottom: 0,
-    },
+    media: {
+        height: 0,
+        paddingTop: '56.25%',
+        margin: "5px"
+    }
 }));
 
 function Roomview(props) {
@@ -168,8 +166,7 @@ function Roomview(props) {
             enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500 })
             setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving, isEditing: !prevState.isEditing } })
         } catch (err) {
-            console.log(err)
-            // enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500 })
+            enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500 })
             setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving, isEditing: !prevState.isEditing } })
         }
     }
@@ -219,111 +216,130 @@ function Roomview(props) {
     }, [state.isEditing, props.address.building, props.address.flat, props.address.floor, props.address.region, props.address.street, props.closingTime, props.description, props.id, props.openWeekday.friday, props.openWeekday.monday, props.openWeekday.saturday, props.openWeekday.sunday, props.openWeekday.thursday, props.openWeekday.tuesday, props.openWeekday.wednesday, props.openingTime, props.services, props.title, props.imageUrl, props.imageKey, props.images])
 
     return (
-        <Card raised>
-            <CardActions>
-                <Button variant="contained" onClick={() => toggleEditing()} color={state.isEditing ? "default" : "primary"}>{state.isEditing ? "取消" : "修改"}</Button>
-                {state.isEditing ? <Button variant="contained" color="primary" onClick={() => handleSave()}>確定並提交</Button> : null}
-                {state.isEditing ? <Button variant="contained" color="secondary" onClick={() => handleDelete()}>刪除房間</Button> : null}
-            </CardActions>
-            <CardContent>
-                <Typography variant="h6">房間資訊</Typography>
-                <TextField fullWidth margin="normal" size="small" label="ID" value={state.id} disabled />
-                <TextField fullWidth margin="normal" size="small" label="房間名稱" name="title" value={state.title} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <TextField fullWidth margin="normal" multiline size="small" maxRows={4} label="房間介紹" name="description" value={state.description} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <Typography variant="h6">房間地址</Typography>
-                <TextField fullWidth margin="normal" label="室" size="small" value={state.addressFlat} name="addressFlat" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <TextField fullWidth margin="normal" label="樓層" size="small" value={state.addressFloor} name="addressFloor" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <TextField fullWidth margin="normal" label="大廈" size="small" value={state.addressBuilding} name="addressBuilding" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <TextField fullWidth margin="normal" label="街道" size="small" value={state.addressStreet} name="addressStreet" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <TextField fullWidth margin="normal" label="區域" size="small" value={state.addressRegion} name="addressRegion" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <Typography variant="h6">開放時間</Typography>
-                <TextField fullWidth margin="normal" label="開門時間" size="small" type="time" name="openingTime" value={`${state.openingTime.toString().padStart(2, 0)}:00`} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <TextField fullWidth margin="normal" label="關門時間" size="small" type="time" name="closingTime" value={`${state.closingTime.toString().padStart(2, 0)}:00`} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
-                <Typography variant="h6">開放日期</Typography>
-                <FormControl>
-                    <FormGroup>
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={state.isMonOpen} name="isMonOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
-                            label="星期一"
-                            labelPlacement="start"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={state.isTuesOpen} name="isTuesOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
-                            label="星期二"
-                            labelPlacement="start"
+        <Grid container spacing={1}>
+            <Grid item xs={12}>
+                <Grid container spacing={1}>
+                    <Grid item>
+                        <Button variant="contained" onClick={() => toggleEditing()} color={state.isEditing ? "default" : "primary"}>{state.isEditing ? "取消" : "修改"}</Button>
+                    </Grid>
+                    <Grid item>
+                        {state.isEditing ? <Button variant="contained" color="primary" onClick={() => handleSave()}>確定並提交</Button> : null}
+                    </Grid>
+                    <Grid item>
+                        {state.isEditing ? <Button variant="contained" color="secondary" onClick={() => handleDelete()}>刪除房間</Button> : null}
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <Card raised>
+                    <CardContent>
+                        <Typography variant="h6">房間資訊</Typography>
+                        <TextField fullWidth margin="normal" size="small" label="ID" value={state.id} disabled />
+                        <TextField fullWidth margin="normal" size="small" label="房間名稱" name="title" value={state.title} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                        <TextField fullWidth margin="normal" multiline size="small" rows={8} label="房間介紹" name="description" value={state.description} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                    </CardContent>
+                </Card>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <Card raised>
+                    <CardContent>
+                        <Typography variant="h6">房間地址</Typography>
+                        <TextField fullWidth margin="normal" label="室" size="small" value={state.addressFlat} name="addressFlat" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                        <TextField fullWidth margin="normal" label="樓層" size="small" value={state.addressFloor} name="addressFloor" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                        <TextField fullWidth margin="normal" label="大廈" size="small" value={state.addressBuilding} name="addressBuilding" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                        <TextField fullWidth margin="normal" label="街道" size="small" value={state.addressStreet} name="addressStreet" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                        <TextField fullWidth margin="normal" label="區域" size="small" value={state.addressRegion} name="addressRegion" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                    </CardContent>
+                </Card>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <Card raised>
+                    <CardContent>
+                        <Typography variant="h6">開放時間</Typography>
+                        <TextField fullWidth margin="normal" label="開門時間" size="small" type="time" name="openingTime" value={`${state.openingTime.toString().padStart(2, 0)}:00`} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                        <TextField fullWidth margin="normal" label="關門時間" size="small" type="time" name="closingTime" value={`${state.closingTime.toString().padStart(2, 0)}:00`} disabled={!state.isEditing} onChange={(e) => handleChange(e)} />
+                    </CardContent>
+                </Card>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <Card raised>
+                    <CardContent>
+                        <Typography variant="h6">開放日期</Typography>
+                        <FormControl>
+                            <FormGroup row>
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={state.isMonOpen} name="isMonOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
+                                    label="星期一"
+                                    labelPlacement="start"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={state.isTuesOpen} name="isTuesOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
+                                    label="星期二"
+                                    labelPlacement="start"
 
-                        />
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={state.isWedOpen} name="isWedOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
-                            label="星期三"
-                            labelPlacement="start"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={state.isWedOpen} name="isWedOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
+                                    label="星期三"
+                                    labelPlacement="start"
 
-                        />
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={state.isThursOpen} name="isThursOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
-                            label="星期四"
-                            labelPlacement="start"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={state.isFriOpen} name="isFriOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
-                            label="星期五"
-                            labelPlacement="start"
-                        />
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={state.isSatOpen} name="isSatOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
-                            label="星期六"
-                            labelPlacement="start"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={state.isThursOpen} name="isThursOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
+                                    label="星期四"
+                                    labelPlacement="start"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={state.isFriOpen} name="isFriOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
+                                    label="星期五"
+                                    labelPlacement="start"
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={state.isSatOpen} name="isSatOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
+                                    label="星期六"
+                                    labelPlacement="start"
 
-                        />
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={state.isSunOpen} name="isSunOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
-                            label="星期日"
-                            labelPlacement="start"
-                        />
-                    </FormGroup>
-                </FormControl>
-                <Typography variant="h6">房間圖片</Typography>
-                <Table style={{ overflowX: "scroll" }}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>圖片</TableCell>
-                            <TableCell align="right">{state.isEditing ? '預覽' : null}</TableCell>
-                            <TableCell align="right">{state.isEditing ? '動作' : null}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {state.images.map((el, i) =>
-                            <TableRow key={i}>
-                                <TableCell>
-                                    <img src={el.url} alt={el.url} width="250" height="150" />
-                                </TableCell>
-                                <TableCell align="right">
-                                    {state.previews[i] && state.isEditing ? <img src={URL.createObjectURL(state.previews[i])} alt={i} width="250" height="150" /> : <div style={{ width: 250, height: 150 }}></div>}
-                                </TableCell>
-                                <TableCell align="right">
-                                    <input
-                                        accept="image/*"
-                                        className={classes.input}
-                                        id={i}
-                                        type="file"
-                                        onChange={(e) => handleImageChange(e, i, el.key, el._id)} // ???
-                                    />
-                                    {state.previews[i] ? <Button variant="contained" color="secondary" style={{ margin: 10 }} onClick={() => removePreview(i, el.key)}>刪除</Button>
-                                        :
-                                        <label htmlFor={i}>
-                                            {state.isEditing ? <Button component="span" variant="contained" color="primary" style={{ margin: 10 }}>重新上傳</Button> : null}
-                                        </label>
-                                    }
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-                <Backdrop className={classes.backdrop} open={state.isSaving}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
-            </CardContent>
-        </Card>
+                                />
+                                <FormControlLabel
+                                    control={<Checkbox color="primary" checked={state.isSunOpen} name="isSunOpen" disabled={!state.isEditing} onChange={(e) => handleChange(e)} />}
+                                    label="星期日"
+                                    labelPlacement="start"
+                                />
+                            </FormGroup>
+                        </FormControl>
+                    </CardContent>
+                </Card>
+            </Grid>
+            {state.images.map((el, i) =>
+                <Grid item xs={12} sm={6}>
+                    <Card>
+                        <CardContent>
+                            <CardMedia image={el.url} alt={el.url} className={classes.media} />
+                            {state.previews[i] && state.isEditing ? <CardMedia image={URL.createObjectURL(state.previews[i])} alt={i} className={classes.media} /> : null}
+                        </CardContent>
+                        <CardActions>
+                            <input
+                                accept="image/*"
+                                className={classes.input}
+                                id={i}
+                                type="file"
+                                onChange={(e) => handleImageChange(e, i, el.key, el._id)} 
+                            />
+                            {state.previews[i] ? <Button variant="contained" color="secondary" style={{ margin: 10 }} onClick={() => removePreview(i, el.key)}>刪除</Button>
+                                :
+                                <label htmlFor={i}>
+                                    {state.isEditing ? <Button component="span" variant="contained" color="primary" style={{ margin: 10 }}>重新上傳</Button> : null}
+                                </label>
+                            }
+                        </CardActions>
+                    </Card>
+                </Grid>
+            )}
+            <Backdrop className={classes.backdrop} open={state.isSaving}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+        </Grid>
+
     )
 }
 
