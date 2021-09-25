@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import { useSnackbar } from 'notistack';
+import CardContent from '@material-ui/core/CardContent';
+import Card from '@material-ui/core/Card';
 import axios from 'axios'
 
 function Reviews(props) {
@@ -39,11 +41,17 @@ function Reviews(props) {
             <Grid item><Typography paragraph variant="h6">用家評價</Typography></Grid>
             <Grid item>{auth.state.permission === 'Finder' ? <Button color={state.isReviewing ? "secondary" : "primary"} variant="contained" size="small" onClick={toggleReviewing}>{state.isReviewing ? "取消" : "建立評價"}</Button> : null}</Grid>
             <Grid item xs={12}> {state.isReviewing ? <CreateReview fetchReviews={fetchReviews} /> : null}</Grid>
-            {state.reviews.map((el, i) =>
-                <Grid item xs={12} key={i}>
-                    <Review body={el.body} createdAt={el.createdAt} author={el.author.name} />
+
+            {state.reviews.length <= 0 ?
+                <Grid item xs={12} justifyContent="center">
+                    <Typography variant="subtitle1" align="center">暫時沒有留言 ：/</Typography>
                 </Grid>
-            )}
+                :
+                state.reviews.map((el, i) =>
+                    <Grid item xs={12} key={i}>
+                        <Review body={el.body} createdAt={el.createdAt} author={el.author.name} />
+                    </Grid>
+                )}
         </Grid>
     )
 }
