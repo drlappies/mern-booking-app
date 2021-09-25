@@ -29,7 +29,7 @@ function generateCalendar(openingTime, closingTime, currentWeek) {
     const calendar = [];
 
     if (closingTime > openingTime) {
-        for (let i = openingTime; i < closingTime; i++) {
+        for (let i = openingTime; i <= closingTime; i++) {
             const week = [];
             for (let j = 0; j < 7; j++) {
                 week.push({
