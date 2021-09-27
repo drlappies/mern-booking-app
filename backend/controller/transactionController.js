@@ -13,8 +13,8 @@ module.exports.onboard = async (req, res) => {
         }
         const accountLinks = await stripe.accountLinks.create({
             account: user.stripe_id,
-            refresh_url: 'http://localhost:3000/user',
-            return_url: 'http://localhost:3000/user',
+            refresh_url: 'http://localhost:8000/user',
+            return_url: 'http://localhost:8000/user',
             type: 'account_onboarding'
         })
         res.json({

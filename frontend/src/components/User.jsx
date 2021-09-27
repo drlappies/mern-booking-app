@@ -23,8 +23,6 @@ function User() {
 
     const handleOnboard = async () => {
         try {
-            auth.fetchUser()
-            if (auth.permission !== 'Owner') return;
             const res = await axios.get(`/api/transaction/${auth.state.uid}/onboard`, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             });

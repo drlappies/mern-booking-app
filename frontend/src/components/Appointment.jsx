@@ -46,6 +46,7 @@ function Appointment(props) {
                         openingTime={currentRoom.openingTime}
                         closingTime={currentRoom.closingTime}
                         appointments={state.appointments}
+                        openWeekday={currentRoom.openWeekday}
                     />
                 </Grid>
             </Grid>

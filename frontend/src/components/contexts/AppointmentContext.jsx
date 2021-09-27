@@ -2,19 +2,6 @@ import React, { createContext, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 
-function checkIsDayOpen(availableWeekday) {
-    const availability = [];
-    let increment = 0;
-    for (let key in availableWeekday) {
-        if (availableWeekday[key]) {
-            availability.push(increment);
-        }
-        increment = increment + 1;
-    }
-
-    return availability;
-}
-
 export const AppointmentContext = createContext();
 
 export function AppointmentProvider(props) {
@@ -31,7 +18,15 @@ export function AppointmentProvider(props) {
         region: "",
         openingTime: 0,
         closingTime: 0,
-        availabileWeekday: [0, 1, 2, 3, 4, 5, 6],
+        openWeekday: {
+            0: true,
+            1: true,
+            2: true,
+            3: true,
+            4: true,
+            5: true,
+            6: true
+        },
         image: [],
         service: [],
     })
@@ -50,7 +45,7 @@ export function AppointmentProvider(props) {
                 region: res.data.address.region,
                 openingTime: res.data.openingTime,
                 closingTime: res.data.closingTime,
-                availableWeekday: checkIsDayOpen(res.data.openWeekday),
+                openWeekday: res.data.openWeekday,
                 image: res.data.images,
                 service: res.data.services,
             })

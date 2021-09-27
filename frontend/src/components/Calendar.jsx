@@ -8,17 +8,18 @@ import { CardContent } from '@material-ui/core';
 
 const weekday = ['日', '一', '二', '三', '四', '五', '六',]
 
-function checkIsDayOpen(availableWeekday) {
-    const availability = [];
-    let increment = 0;
-    for (let key in availableWeekday) {
-        if (availableWeekday[key]) {
-            availability.push(increment);
-        }
-        increment = increment + 1;
+function checkIsDayOpen(openWeekday) {
+    let map = {
+        0: openWeekday.sunday,
+        1: openWeekday.monday,
+        2: openWeekday.tuesday,
+        3: openWeekday.wednesday,
+        4: openWeekday.thursday,
+        5: openWeekday.friday,
+        6: openWeekday.saturday
     }
 
-    return availability;
+    return map
 }
 
 function generateCalendar(openingTime, closingTime, currentWeek) {
@@ -178,7 +179,7 @@ function Calendar(props) {
                                                     month={slot.date.getMonth() + 1}
                                                     date={slot.date.getDate()}
                                                     day={slot.date.getDay()}
-                                                    isOpen={props.openWeekday ? availabilityWeekday.includes(slot.date.getDay()) : true}
+                                                    isOpen={availabilityWeekday[slot.date.getDay()]}
                                                     isTaken={checkIsTimeslotTaken(props.appointments, slot.date.getFullYear(), slot.date.getMonth() + 1, slot.date.getDate(), slot.time)}
                                                     isViewOnly={props.isViewOnly}
                                                 />
