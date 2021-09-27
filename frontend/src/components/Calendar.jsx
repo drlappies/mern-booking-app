@@ -135,10 +135,10 @@ function Calendar(props) {
                     <Grid item>
                         <Grid container spacing={1}>
                             <Grid item>
-                                <Button color="primary" variant="contained" size="small" onClick={prevWeek}>{state.currentView === 7 ? "上一天" : "上星期"}</Button>
+                                <Button color="primary" variant="contained" size="small" onClick={prevWeek}>{state.currentView === 7 ? "上星期" : "上一天"}</Button>
                             </Grid>
                             <Grid item>
-                                <Button color="primary" variant="contained" size="small" onClick={nextWeek}>{state.currentView === 7 ? "下一天" : "下星期"}</Button>
+                                <Button color="primary" variant="contained" size="small" onClick={nextWeek}>{state.currentView === 7 ? "下星期" : "下一天"}</Button>
                             </Grid>
                             <Grid item>
                                 <Button color="primary" variant="contained" size="small" onClick={switchView}>{state.currentView === 7 ? "每日" : "每週"}</Button>
