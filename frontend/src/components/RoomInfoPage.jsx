@@ -10,8 +10,6 @@ import Grid from '@material-ui/core/Grid'
 import Service from './Service';
 import Reviews from './Reviews'
 
-const weekday = ['日', '一', '二', '三', '四', '五', '六',]
-
 function RoomInfoPage() {
     const { fetchRoom, currentRoom } = useContext(AppointmentContext)
     const { id } = useParams();
@@ -30,7 +28,7 @@ function RoomInfoPage() {
                     <Typography variant="h6">{currentRoom.description}</Typography>
                     <Typography variant="subtitle1">地址：{currentRoom.flat} 室 {currentRoom.floor} 樓 {currentRoom.building} {currentRoom.street} {currentRoom.region}</Typography>
                     <Typography variant="subtitle1">營業時間： {currentRoom.openingTime}:00 - {currentRoom.closingTime}:00</Typography>
-                    <Typography variant="subtitle1">營業日子：逢星期{currentRoom.availableWeekday ? currentRoom.availableWeekday.map((el, i) => <span key={i}>&nbsp;{weekday[el]}&nbsp;</span>) : null}</Typography>
+                    <Typography variant="subtitle1">營業日子：逢星期{currentRoom.openWeekday[1] ? '一' : ""} {currentRoom.openWeekday[2] ? '二' : ""} {currentRoom.openWeekday[3] ? '三' : ""} {currentRoom.openWeekday[4] ? '四' : ""} {currentRoom.openWeekday[5] ? '五' : ""} {currentRoom.openWeekday[6] ? '六' : ""} {currentRoom.openWeekday[0] ? '日' : ""} </Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Hidden only={['xl', 'lg', 'md']}>

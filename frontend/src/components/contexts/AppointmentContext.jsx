@@ -45,10 +45,19 @@ export function AppointmentProvider(props) {
                 region: res.data.address.region,
                 openingTime: res.data.openingTime,
                 closingTime: res.data.closingTime,
-                openWeekday: res.data.openWeekday,
+                openWeekday: {
+                    0: res.data.openWeekday.sunday,
+                    1: res.data.openWeekday.monday,
+                    2: res.data.openWeekday.tuesday,
+                    3: res.data.openWeekday.wednesday,
+                    4: res.data.openWeekday.thursday,
+                    5: res.data.openWeekday.friday,
+                    6: res.data.openWeekday.saturday,
+                },
                 image: res.data.images,
                 service: res.data.services,
             })
+            console.log(res.data)
         } catch (err) {
             console.log(err)
         }
