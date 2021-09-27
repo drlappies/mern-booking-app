@@ -8,31 +8,18 @@ import { CardContent } from '@material-ui/core';
 
 const weekday = ['日', '一', '二', '三', '四', '五', '六',]
 
-function checkIsDayOpen(openWeekday) {
-    let map = {
-        0: openWeekday.sunday,
-        1: openWeekday.monday,
-        2: openWeekday.tuesday,
-        3: openWeekday.wednesday,
-        4: openWeekday.thursday,
-        5: openWeekday.friday,
-        6: openWeekday.saturday
-    }
-
-    return map
-}
-
-function generateCalendar(openingTime, closingTime, currentWeek) {
+function generateCalendar(openingTime, closingTime, currentWeek, currentView) {
     if (openingTime === undefined) openingTime = 9;
     if (closingTime === undefined) closingTime = 23;
     if (currentWeek === undefined) currentWeek = 0;
+    if (currentView === undefined) currentView = 7;
 
     const calendar = [];
 
     if (closingTime > openingTime) {
         for (let i = openingTime; i <= closingTime; i++) {
             const week = [];
-            for (let j = 0; j < 7; j++) {
+            for (let j = 0; j < currentView; j++) {
                 week.push({
                     time: i,
                     date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek)),
@@ -49,7 +36,7 @@ function generateCalendar(openingTime, closingTime, currentWeek) {
         for (let i = 0; i < closingTime - openingTime + 25; i++) {
             const week = [];
             if (i + openingTime >= 24) {
-                for (let j = 0; j < 7; j++) {
+                for (let j = 0; j < currentView; j++) {
                     week.push({
                         time: increment,
                         date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek + 1)),
@@ -58,7 +45,7 @@ function generateCalendar(openingTime, closingTime, currentWeek) {
                 }
                 increment = increment + 1
             } else {
-                for (let j = 0; j < 7; j++) {
+                for (let j = 0; j < currentView; j++) {
                     week.push({
                         time: i + openingTime,
                         date: new Date(new Date().setDate(new Date().getDate() + j + currentWeek)),
@@ -93,19 +80,19 @@ function Calendar(props) {
     const [state, setState] = useState({
         currentWeek: 0,
         currentWeekFrom: new Date(),
-        currentWeekTo: new Date(new Date().setDate(new Date().getDate() + 6))
+        currentWeekTo: new Date(new Date().setDate(new Date().getDate() + 6)),
+        currentView: 7
     })
 
-    const calendar = useMemo(() => generateCalendar(props.openingTime, props.closingTime, state.currentWeek), [props.openingTime, props.closingTime, state.currentWeek])
-    const availabilityWeekday = useMemo(() => checkIsDayOpen(props.openWeekday), [props.openWeekday])
+    const calendar = useMemo(() => generateCalendar(props.openingTime, props.closingTime, state.currentWeek, state.currentView), [props.openingTime, props.closingTime, state.currentWeek, state.currentView])
 
     const prevWeek = () => {
         setState(prevState => {
             return {
                 ...prevState,
-                currentWeek: prevState.currentWeek - 7,
-                currentWeekFrom: new Date(prevState.currentWeekFrom.setDate(prevState.currentWeekFrom.getDate() - 7)),
-                currentWeekTo: new Date(prevState.currentWeekTo.setDate(prevState.currentWeekTo.getDate() - 7))
+                currentWeek: prevState.currentWeek - prevState.currentView,
+                currentWeekFrom: new Date(prevState.currentWeekFrom.setDate(prevState.currentWeekFrom.getDate() - prevState.currentView)),
+                currentWeekTo: new Date(prevState.currentWeekTo.setDate(prevState.currentWeekTo.getDate() - prevState.currentView))
             }
         })
     }
@@ -114,9 +101,9 @@ function Calendar(props) {
         setState(prevState => {
             return {
                 ...prevState,
-                currentWeek: prevState.currentWeek + 7,
-                currentWeekFrom: new Date(prevState.currentWeekFrom.setDate(prevState.currentWeekFrom.getDate() + 7)),
-                currentWeekTo: new Date(prevState.currentWeekTo.setDate(prevState.currentWeekTo.getDate() + 7))
+                currentWeek: prevState.currentWeek + prevState.currentView,
+                currentWeekFrom: new Date(prevState.currentWeekFrom.setDate(prevState.currentWeekFrom.getDate() + prevState.currentView)),
+                currentWeekTo: new Date(prevState.currentWeekTo.setDate(prevState.currentWeekTo.getDate() + prevState.currentView))
             }
         })
     }
@@ -132,6 +119,15 @@ function Calendar(props) {
         })
     }
 
+    const switchView = () => {
+        setState(prevState => {
+            return {
+                ...prevState,
+                currentView: prevState.currentView === 7 ? 1 : 7
+            }
+        })
+    }
+
     return (
         <Card raised>
             <CardContent>
@@ -143,6 +139,9 @@ function Calendar(props) {
                             </Grid>
                             <Grid item>
                                 <Button color="primary" variant="contained" size="small" onClick={nextWeek}>下星期</Button>
+                            </Grid>
+                            <Grid item>
+                                <Button color="primary" variant="contained" size="small" onClick={switchView}>{state.currentView === 7 ? "每日" : "每週"}</Button>
                             </Grid>
                             <Grid item>
                                 <Button color="secondary" variant="contained" size="small" onClick={thisWeek}>重設</Button>
@@ -179,7 +178,7 @@ function Calendar(props) {
                                                     month={slot.date.getMonth() + 1}
                                                     date={slot.date.getDate()}
                                                     day={slot.date.getDay()}
-                                                    isOpen={availabilityWeekday[slot.date.getDay()]}
+                                                    isOpen={props.openWeekday[slot.date.getDay()]}
                                                     isTaken={checkIsTimeslotTaken(props.appointments, slot.date.getFullYear(), slot.date.getMonth() + 1, slot.date.getDate(), slot.time)}
                                                     isViewOnly={props.isViewOnly}
                                                 />
