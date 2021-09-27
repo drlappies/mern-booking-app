@@ -19,7 +19,7 @@ function AppointmentView(props) {
     const fetchData = useCallback(async () => {
         try {
             if (!state.serviceId) return;
-            const res = await axios.get(`/api/appointment/${roomId}/room/${state.serviceId}/service`)
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/appointment/${roomId}/room/${state.serviceId}/service`)
             setState(prevState => { return { ...prevState, appointments: res.data } })
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })

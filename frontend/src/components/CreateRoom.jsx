@@ -135,7 +135,7 @@ function CreateRoom() {
             formdata.append("image", state.image4)
             formdata.append("image", state.image5)
 
-            const res = await axios.post('/api/room', formdata, {
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/room`, formdata, {
                 headers: {
                     'x-auth-token': window.localStorage.getItem('token')
                 },

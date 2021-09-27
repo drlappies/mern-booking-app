@@ -38,7 +38,7 @@ function CreateReview(props) {
             const payload = {
                 body: state.body,
             }
-            const res = await axios.post(`/api/room/${id}/review`, payload, {
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/room/${id}/review`, payload, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500 })

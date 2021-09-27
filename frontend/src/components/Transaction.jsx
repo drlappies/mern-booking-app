@@ -31,7 +31,7 @@ function Transaction() {
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await axios.get('/api/invoice', {
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/invoice`, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             setState(prevState => {
@@ -57,7 +57,7 @@ function Transaction() {
                 })
             }
 
-            const res = await axios.get(`/api/invoice/${id}`, {
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/invoice/${id}`, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             setState(prevState => {

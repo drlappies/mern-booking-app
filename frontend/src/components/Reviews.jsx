@@ -19,7 +19,7 @@ function Reviews(props) {
 
     const fetchReviews = useCallback(async () => {
         try {
-            const res = await axios.get(`/api/room/${roomId}/review`)
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/room/${roomId}/review`)
             setState(prevState => { return { ...prevState, reviews: res.data, isReviewing: false } })
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })

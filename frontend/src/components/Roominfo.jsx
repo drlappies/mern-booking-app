@@ -36,7 +36,7 @@ function Roominfo(props) {
                 title: state.title,
                 description: state.description
             }
-            await axios.put(`/room/${props.id}`, payload, {
+            await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/room/${props.id}`, payload, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
 

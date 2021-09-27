@@ -23,7 +23,7 @@ function User() {
 
     const handleOnboard = async () => {
         try {
-            const res = await axios.get(`/api/transaction/${auth.state.uid}/onboard`, {
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/transaction/${auth.state.uid}/onboard`, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             });
             window.location = res.data.url
@@ -34,7 +34,7 @@ function User() {
 
     const fetchOnboardStatus = useCallback(async () => {
         try {
-            const res = await axios.get(`/api/transaction/${auth.state.uid}/status`, {
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/transaction/${auth.state.uid}/status`, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             });
             setState(prevState => {

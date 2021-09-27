@@ -23,7 +23,7 @@ function Roomweekday(props) {
     })
 
     const fetchData = useCallback(async () => {
-        const res = await axios.get(`/room/${props.id}`)
+        const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/room/${props.id}`)
         setState({
             ...res.data.openWeekday,
             isEditing: false
@@ -64,7 +64,7 @@ function Roomweekday(props) {
                     sunday: state.sunday
                 }
             }
-            await axios.put(`/room/${props.id}`, payload, {
+            await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/room/${props.id}`, payload, {
                 headers: {
                     'x-auth-token': window.localStorage.getItem('token')
                 }

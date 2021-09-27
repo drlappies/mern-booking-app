@@ -42,7 +42,7 @@ function RecordSearch() {
             const payload = {
                 invoiceId: state.invoiceId
             }
-            const res = await axios.post('/transaction/invoice', payload, {
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/transaction/invoice`, payload, {
                 headers: {
                     'x-auth-token': window.localStorage.getItem('token')
                 }

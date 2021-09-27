@@ -35,7 +35,7 @@ function Payment() {
                 serviceId: serviceId,
                 appointments: selectedTimeslots,
             }
-            const res = await axios.post('/api/transaction', payload, {
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/transaction`, payload, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             setState(prevState => {

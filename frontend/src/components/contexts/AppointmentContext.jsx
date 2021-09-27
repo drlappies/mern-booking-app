@@ -33,7 +33,7 @@ export function AppointmentProvider(props) {
 
     const fetchRoom = async (id) => {
         try {
-            const res = await axios.get(`/api/room/${id}`)
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/room/${id}`)
             setCurrentRoom({
                 title: res.data.title,
                 description: res.data.description,
@@ -87,7 +87,7 @@ export function AppointmentProvider(props) {
                 roomId: roomId,
                 serviceId: serviceId,
             }
-            await axios.post('/api/appointment', payload, {
+            await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/appointment`, payload, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             });
             setSelectedTimeslots([]);

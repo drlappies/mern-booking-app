@@ -11,7 +11,7 @@ function Catalog() {
 
     const fetchRooms = useCallback(async () => {
         try {
-            const res = await axios.get('/api/room');
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/room`);
             setState(res.data)
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })

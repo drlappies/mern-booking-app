@@ -35,7 +35,7 @@ export function AuthenticationProvider(props) {
                 confirmPassword: confirmPassword,
                 name: name
             }
-            const res = await axios.post('/api/user/finder', payload)
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/user/finder`, payload)
             enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
             history.push('/user/login')
         } catch (err) {
@@ -51,7 +51,7 @@ export function AuthenticationProvider(props) {
                 confirmPassword: confirmPassword,
                 title: title
             }
-            const res = await axios.post('/api/user/owner', payload)
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/user/owner`, payload)
             enqueueSnackbar(res.data.success, { variant: 'success', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })
             history.push('/user/login')
         } catch (err) {
@@ -65,7 +65,7 @@ export function AuthenticationProvider(props) {
                 username: username,
                 password: password,
             }
-            const res = await axios.post('/api/auth', payload, { withCredentials: true });
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/auth`, payload);
             window.localStorage.setItem('token', res.data.token);
             setState({
                 uid: res.data.userid,
@@ -83,7 +83,7 @@ export function AuthenticationProvider(props) {
     const fetchUser = async () => {
         try {
             if (window.localStorage.getItem('token')) {
-                const res = await axios.get('/api/auth', {
+                const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/auth`, {
                     headers: { 'x-auth-token': window.localStorage.getItem('token') }
                 })
                 setState({

@@ -159,7 +159,7 @@ function Roomview(props) {
                 if (el) formdata.append('deletedImages', el)
             })
 
-            const res = await axios.put(`/api/room/${props.id}`, formdata, {
+            const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/api/room/${props.id}`, formdata, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             props.fetch()
@@ -174,7 +174,7 @@ function Roomview(props) {
     const handleDelete = async () => {
         try {
             setState(prevState => { return { ...prevState, isSaving: !prevState.isSaving } })
-            const res = await axios.delete(`/api/room/${props.id}`, {
+            const res = await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/api/room/${props.id}`, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             props.fetch()

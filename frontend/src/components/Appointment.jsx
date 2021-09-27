@@ -21,7 +21,7 @@ function Appointment(props) {
 
     const fetchData = useCallback(async () => {
         try {
-            const appointments = await axios.get(`/api/appointment/${roomId}/room/${serviceId}/service`);
+            const appointments = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/appointment/${roomId}/room/${serviceId}/service`);
             setState({ appointments: appointments.data })
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })

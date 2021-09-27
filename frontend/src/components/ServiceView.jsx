@@ -95,6 +95,17 @@ function ServiceView(props) {
     const handleSave = async (index) => {
         try {
             setState(prevState => { return { ...prevState, isLoading: !prevState.isLoading } })
+
+            if (state.services[index].capacity <= 0 || state.services[index].capacity >= 100) {
+                enqueueSnackbar('人數不能等於或少於 0 或 100', { variant: 'error', autoHideDuration: 1500 })
+                return setState(prevState => { return { ...prevState, isLoading: !prevState.isLoading } })
+            }
+
+            if (state.services[index].pricing <= 0 || state.services[index].pricing >= 9999) {
+                enqueueSnackbar('價錢不能等於或少於 0 或 9999', { variant: 'error', autoHideDuration: 1500 })
+                return setState(prevState => { return { ...prevState, isLoading: !prevState.isLoading } })
+            }
+
             const payload = {
                 name: state.services[index].name,
                 pricing: state.services[index].pricing,
@@ -103,7 +114,7 @@ function ServiceView(props) {
                 isOnline: state.services[index].isOnline
             }
 
-            const res = await axios.put(`/api/service/${state.services[index]._id}`, payload, {
+            const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/api/service/${state.services[index]._id}`, payload, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             props.fetchData()
@@ -126,7 +137,7 @@ function ServiceView(props) {
                 isOnline: state.isOnline
             }
 
-            const res = await axios.post('/api/service', payload, {
+            const res = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/api/service`, payload, {
                 headers: { 'x-auth-token': window.localStorage.getItem('token') }
             })
             props.fetchData()

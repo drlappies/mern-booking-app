@@ -25,7 +25,7 @@ function AppointmentManagement() {
 
     const fetchData = useCallback(async () => {
         try {
-            const res = await axios.get(`/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/user/${auth.state.uid}/room`, { headers: { 'x-auth-token': window.localStorage.getItem('token') } })
             setState(prevState => { return { ...prevState, rooms: res.data.room, isFetching: false } })
         } catch (err) {
             enqueueSnackbar(err.response.data.error, { variant: 'error', autoHideDuration: 1500, anchorOrigin: { vertical: 'top', horizontal: 'center' }, preventDuplicate: true })

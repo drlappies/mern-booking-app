@@ -62,7 +62,7 @@ function Timeslot(props) {
         try {
             if (!props.id) return
             setIsViewing(true)
-            const res = await axios.get(`/api/appointment/${props.id}`)
+            const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/api/appointment/${props.id}`)
             setBooking({
                 invoiceId: res.data.invoice._id,
                 invoiceAmount: res.data.invoice.amount,
