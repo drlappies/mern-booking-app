@@ -25,6 +25,7 @@ import FinderRoute from './components/FinderRoute';
 import Notfound from './components/Notfound';
 import ServiceManagement from './components/ServiceManagement';
 import AppointmentManagement from './components/AppointmentManagement'
+import PrivateRoute from './components/PrivateRoute'
 import './App.css'
 
 function App() {
@@ -38,7 +39,7 @@ function App() {
               <Route exact path="/" component={Homepage} />
               <Route exact path="/about" component={About} />
               <Route exact path="/room" component={Catalog} />
-              <Route exact path="/user" component={User} />
+              <PrivateRoute exact path="/user" component={User} />
               <Route exact path="/user/login" component={Login} />
               <FinderRoute exact path="/user/invoice" component={Transaction} />
               <Route exact path="/user/register" component={Register} />
