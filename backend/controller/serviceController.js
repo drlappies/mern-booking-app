@@ -22,9 +22,15 @@ module.exports.createService = async (req, res) => {
             })
         }
 
-        if (pricing <= 0) {
+        if (pricing <= 0 || pricing >= 9999) {
             return res.status(400).json({
-                error: '價錢不能等於或少於 0'
+                error: '價錢不能等於或少於 0 或 9999'
+            })
+        }
+
+        if (capacity <= 0 || capacity >= 100) {
+            return res.status(400).json({
+                error: '人數不能等於或少於 0 或 100'
             })
         }
 

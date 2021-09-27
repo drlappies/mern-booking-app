@@ -31,7 +31,7 @@ db.once('open', function () {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ credentials: true }));
+app.use(cors());
 
 app.use('/api/auth', authRoute);
 app.use('/api/room', roomRoute);
