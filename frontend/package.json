@@ -28,7 +28,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "react-scripts build && aws s3 rm s3://www.practiceroomrental.com/ --recursive && aws s3 cp ./build s3://www.practiceroomrental.com/ --recursive"
   },
   "eslintConfig": {
     "extends": [

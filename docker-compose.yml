@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  practice-room-rental-backend:
+    image: drlappies/practice-room-rental-backend:v4
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports: 
+      - 8080:8080
+    depends_on:
+      - mongodb
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb://admin:admin@mongodb
+    networks:
+      - practice-room-rental
+  
+  mongodb:
+    image: mongo
+    restart: always
+    ports: 
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - practice-room-rental
+
+  practice-room-rental-nginx:
+    image: practice-room-rental-nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    restart: always
+    ports: 
+      - 80:80
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - practice-room-rental-backend
+    networks:
+      - practice-room-rental
+
+  certbot: 
+    image: certbot/certbot
+    volumes: 
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - practice-room-rental-nginx
+    command: certonly --webroot --webroot-path=/var/www/html --email yau1chun2lap3@gmail.com --agree-tos --no-eff-email 
+
+networks: 
+  practice-room-rental:
+    driver: bridge
+
+volumes: 
+  mongodb-data:
+    driver: local
